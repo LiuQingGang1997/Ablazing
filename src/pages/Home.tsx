@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronUp, ChevronDown, ArrowRight, ArrowLeft, TrendingUp, Users, Target, Quote } from 'lucide-react';
+import useImageConfig from '../hooks/useImageConfig';
+import { useI18n } from '../i18n/I18nProvider';
 
 const Home = () => {
+  const { config } = useImageConfig();
+  const heroBg = config.banners?.[0]?.image;
+  const caseStudyVideoUrl = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+  const { t, lang } = useI18n();
   // 分类卡片数据
   const categoryCards = [
     {
@@ -10,30 +16,35 @@ const Home = () => {
       title: '全球专业运动器材',
       subtitle: 'Global Professional Sports Equipment',
       image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&h=600&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 2,
       title: '潮流与运动潮物',
       subtitle: 'Global Trendy And Sporty Items',
       image: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800&h=600&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 3,
       title: '运动营养与心灵疗愈',
       subtitle: 'Sports Nutrition And Mental Healing',
       image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&h=600&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 4,
       title: '全球健康恢复科技',
       subtitle: 'Global Health Recovery Technology',
       image: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?w=800&h=600&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 5,
       title: '数字健身解决方案',
       subtitle: 'Global Digital Fitness Solutions',
       image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&h=600&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
   ];
 
@@ -301,6 +312,11 @@ const Home = () => {
   // 案例状态管理
   const [activeCaseIndex, setActiveCaseIndex] = useState(0);
   const [activeAccordion, setActiveAccordion] = useState(0);
+  const [caseStudyImageIndex, setCaseStudyImageIndex] = useState(0);
+
+  useEffect(() => {
+    setCaseStudyImageIndex(0);
+  }, [activeCaseIndex]);
 
   // 切换案例的函数
   const handleCaseChange = (direction: 'prev' | 'next') => {
@@ -313,6 +329,18 @@ const Home = () => {
   };
 
   const currentCaseStudy = venueCards[activeCaseIndex].caseStudy;
+  const caseStudyImages = [
+    currentCaseStudy.image,
+    venueCards[activeCaseIndex].image.replace(/w=\d+&h=\d+/, 'w=1400&h=1000'),
+    'https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=1400&h=1000&fit=crop',
+  ];
+  const displayedCaseStudyImage = caseStudyImages[caseStudyImageIndex] ?? currentCaseStudy.image;
+  const caseStudyVideos = [
+    caseStudyVideoUrl,
+    'https://www.w3schools.com/html/mov_bbb.mp4',
+    'https://www.w3schools.com/html/movie.mp4',
+  ];
+  const displayedCaseStudyVideo = caseStudyVideos[caseStudyImageIndex] ?? caseStudyVideoUrl;
 
   // 自动轮播 - 热点场所
   useEffect(() => {
@@ -451,45 +479,59 @@ const Home = () => {
 
   // 为了实现无缝轮播，复制一份数据
   const displayCards = [...venueCards, ...venueCards, ...venueCards];
+  const [hoveredCategoryCardId, setHoveredCategoryCardId] = useState<number | null>(null);
+  const [isCaseStudyHovered, setIsCaseStudyHovered] = useState(false);
 
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32">
-        <div className="container-custom">
+      <section className="relative min-h-[100svh] pt-20 pb-0 md:pt-32 md:pb-0">
+        <div className="absolute inset-0 overflow-hidden">
+          {heroBg ? (
+            <img
+              src={heroBg}
+              alt=""
+              className="w-full h-full object-cover object-center"
+              draggable="false"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/60" />
+        </div>
+
+        <div className="content-container relative z-10">
          
          
 
           {/* Main Title */}
           <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight">
-            全球运动健身 <span className="text-[#c8ff00]">·</span> 专业选品服务商
+            {t('home.hero.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.hero.titleRight')}
           </h1>
 
           {/* Description */}
           <p className="text-white/70 text-lg mb-12 max-w-2xl">
-           在运动的进化浪潮中，醒动是您的首席选品官。
-          我们以全球视野甄选，以战略思维匹配，让每一次直指增长核心。
+            {t('home.hero.descLine1')}
+            <br />
+            {t('home.hero.descLine2')}
           </p>
 
           {/* CTA Button */}
           
-            <button className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
-                    <span>GET STARTED</span>
+            <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                    <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
                     </span>
-                  </button>
+                  </Link>
            
         </div>
-      </section>
-
-      {/* Venue Cards Slider Section */}
-      <section className="pb-16 bg-black overflow-hidden relative group">
-        <div className="container-custom">
+        {/* Venue Cards Slider Section */}
+        <section className="mt-16 md:mt-24 pb-16 overflow-hidden relative group z-10">
+          <div className="content-container">
           {/* Header & Controls */}
           <div className="flex justify-between items-end mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-white">
-              热门运动场所
+              {t('home.venues.title')}
             </h2>
           </div>
 
@@ -505,7 +547,7 @@ const Home = () => {
               onTouchEnd={handleVenueDragEnd}
               onTouchCancel={handleVenueDragEnd}
               onTouchMove={handleVenueTouchMove}
-              className={`flex overflow-x-hidden gap-4 pb-6 select-none ${isVenueDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+              className={`flex overflow-x-hidden gap-4 pb-8 select-none ${isVenueDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
               style={{ scrollBehavior: 'auto' }} // 拖拽和自动轮播时不需要 smooth 行为
             >
               {displayCards.map((venue, index) => (
@@ -519,24 +561,22 @@ const Home = () => {
                     const el = document.getElementById('case-study');
                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  // 根据间距 (gap-4: 1rem) 计算6个卡片时的宽度
-                  // 100% / 6 - (5 * 1rem / 6)
-                  className="flex-none w-[140px] md:w-[calc(16.666%-0.833rem)] bg-[#111] rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-colors cursor-pointer"
+                  className="flex-none w-[170px] md:w-[calc(14.285%-0.857rem)] bg-[#111] rounded-xl overflow-hidden border border-white/10 hover:border-white/30 transition-colors cursor-pointer"
                 >
-                  <div className="aspect-[4/3] w-full overflow-hidden relative pointer-events-none">
+                  <div className="aspect-[3/4] w-full overflow-hidden relative pointer-events-none">
                     <img 
                       src={venue.image} 
                       alt={venue.name}
                       className="w-full h-full object-cover pointer-events-none"
                       draggable="false"
                     />
-                    <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] text-[#c8ff00] font-medium pointer-events-none">
+                    <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[11px] text-[#c8ff00] font-medium pointer-events-none">
                       {venue.date}
                     </div>
                   </div>
-                  <div className="p-3 pointer-events-none">
-                    <h4 className="text-white font-bold text-sm mb-1.5 truncate" title={venue.name}>{venue.name}</h4>
-                    <div className="flex items-center text-white/60 text-xs">
+                  <div className="p-4 pointer-events-none">
+                    <h4 className="text-white font-bold text-base mb-2 truncate" title={venue.name}>{venue.name}</h4>
+                    <div className="flex items-center text-white/60 text-sm">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-[#c8ff00] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -552,12 +592,13 @@ const Home = () => {
             <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-black to-transparent pointer-events-none" />
             <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-black to-transparent pointer-events-none" />
           </div>
-        </div>
+          </div>
+        </section>
       </section>
 
       {/* Category Cards Section */}
       <section className="py-16 md:py-24 bg-white">
-        <div className="container-custom max-w-7xl">
+        <div className="content-container">
           {/* Section Header */}
           <div className="mb-12">
             {/* Small Badge */}
@@ -565,22 +606,22 @@ const Home = () => {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
                 <path fillRule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.87a.75.75 0 00-1.152.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z" clipRule="evenodd" />
               </svg>
-              醒动严选
+              {t('home.section.curated.badge')}
             </div>
             
             {/* Main Title with Circles */}
             <h2 className="text-3xl md:text-[40px] font-black text-black flex items-center flex-wrap gap-2 leading-tight tracking-tight mb-2">
-              全球运动健身
+              {t('home.hero.titleLeft')}
               <div className="flex -space-x-2">
                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#c8ff00]"></div>
                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200"></div>
               </div>
-              专业选品服务商
+              {t('home.hero.titleRight')}
             </h2>
             
             {/* Subtitle */}
             <p className="text-gray-400 text-sm md:text-base font-light">
-              Global Professional Sports And Fitness Product Selection Service Provider
+              {t('home.section.curated.subtitle')}
             </p>
           </div>
 
@@ -589,110 +630,185 @@ const Home = () => {
             {/* Row 1: Two Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Card 1 */}
-              <div className="group relative overflow-hidden rounded-3xl aspect-[4/3] md:aspect-[16/11]">
+              <div
+                className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
+                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[0].id)}
+                onMouseLeave={() => setHoveredCategoryCardId(null)}
+              >
                 <img
                   src={categoryCards[0].image}
                   alt={categoryCards[0].title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[0].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
                 />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-500" />
+                {hoveredCategoryCardId === categoryCards[0].id ? (
+                  <video
+                    src={categoryCards[0].video}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[0].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[0].subtitle}</p>
-                  <button className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
-                    <span>GET STARTED</span>
+                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                    <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
                     </span>
-                  </button>
+                  </Link>
                 </div>
               </div>
 
               {/* Card 2 */}
-              <div className="group relative overflow-hidden rounded-3xl aspect-[4/3] md:aspect-[16/11]">
+              <div
+                className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
+                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[1].id)}
+                onMouseLeave={() => setHoveredCategoryCardId(null)}
+              >
                 <img
                   src={categoryCards[1].image}
                   alt={categoryCards[1].title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[1].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
                 />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-500" />
+                {hoveredCategoryCardId === categoryCards[1].id ? (
+                  <video
+                    src={categoryCards[1].video}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[1].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[1].subtitle}</p>
-                  <button className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
-                    <span>GET STARTED</span>
+                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                    <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
                     </span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
 
             {/* Row 2: Full Width Card */}
-            <div className="group relative overflow-hidden rounded-3xl aspect-[4/3] md:aspect-[21/9]">
+            <div
+              className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-[16/9] border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
+              onMouseEnter={() => setHoveredCategoryCardId(categoryCards[2].id)}
+              onMouseLeave={() => setHoveredCategoryCardId(null)}
+            >
               <img
                 src={categoryCards[2].image}
                 alt={categoryCards[2].title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[2].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
               />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-500" />
+              {hoveredCategoryCardId === categoryCards[2].id ? (
+                <video
+                  src={categoryCards[2].video}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              ) : null}
+              <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                 <div className="absolute top-1/2 left-0 right-0 h-32 bg-black/30 -translate-y-1/2 blur-2xl pointer-events-none" />
                 <h3 className="text-2xl md:text-5xl font-bold text-white mb-3 relative z-10">{categoryCards[2].title}</h3>
                 <p className="text-white/80 text-xs md:text-base font-light mb-10 relative z-10">{categoryCards[2].subtitle}</p>
-                <button className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-6 pr-2 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform">
-                  <span>GET STARTED</span>
+                <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-6 pr-2 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform">
+                  <span>{t('cta.getStarted')}</span>
                   <span className="bg-white rounded-full p-2 flex items-center justify-center">
                     <ArrowRight className="w-4 h-4" />
                   </span>
-                </button>
+                </Link>
               </div>
             </div>
 
             {/* Row 3: Two Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Card 4 */}
-              <div className="group relative overflow-hidden rounded-3xl aspect-[4/3] md:aspect-[16/11]">
+              <div
+                className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
+                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[3].id)}
+                onMouseLeave={() => setHoveredCategoryCardId(null)}
+              >
                 <img
                   src={categoryCards[3].image}
                   alt={categoryCards[3].title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[3].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
                 />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-500" />
+                {hoveredCategoryCardId === categoryCards[3].id ? (
+                  <video
+                    src={categoryCards[3].video}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[3].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[3].subtitle}</p>
-                  <button className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
-                    <span>GET STARTED</span>
+                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                    <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
                     </span>
-                  </button>
+                  </Link>
                 </div>
               </div>
 
               {/* Card 5 */}
-              <div className="group relative overflow-hidden rounded-3xl aspect-[4/3] md:aspect-[16/11]">
+              <div
+                className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
+                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[4].id)}
+                onMouseLeave={() => setHoveredCategoryCardId(null)}
+              >
                 <img
                   src={categoryCards[4].image}
                   alt={categoryCards[4].title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[4].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
                 />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-500" />
+                {hoveredCategoryCardId === categoryCards[4].id ? (
+                  <video
+                    src={categoryCards[4].video}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[4].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[4].subtitle}</p>
-                  <button className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
-                    <span>GET STARTED</span>
+                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                    <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
                     </span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -703,7 +819,7 @@ const Home = () => {
      
       {/* Case Study Section */}
       <section id="case-study" className="py-16 md:py-24 bg-[#111]">
-        <div className="container-custom">
+        <div className="content-container">
           {/* Main Card Container */}
           <div className="bg-[#0B0B0B] rounded-[40px] p-8 md:p-16 border border-white/5 relative overflow-hidden">
             {/* Header Area */}
@@ -716,7 +832,7 @@ const Home = () => {
                       <path fillRule="evenodd" d="M12 2.25a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM6.166 5.106a.75.75 0 010 1.06 8.25 8.25 0 1011.668 0 .75.75 0 111.06-1.06c3.808 3.807 3.808 9.98 0 13.788-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788a.75.75 0 011.06 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span className="text-gray-300 text-sm font-medium">案例展示</span>
+                  <span className="text-gray-300 text-sm font-medium">{t('home.caseStudy.badge')}</span>
                 </div>
                 
                 {/* Title */}
@@ -726,14 +842,14 @@ const Home = () => {
                 
                 {/* Meta */}
                 <div className="flex items-center gap-6 text-gray-400 text-sm">
-                  <span>地点—{currentCaseStudy.location}</span>
+                  <span>{t('home.caseStudy.locationPrefix')}{currentCaseStudy.location}</span>
                   <span>{currentCaseStudy.date}</span>
                 </div>
               </div>
               
               {/* Utility Link */}
               <Link to="/hot-stores" className="text-gray-400 hover:text-white transition-colors text-sm font-medium flex items-center gap-2 uppercase tracking-wider shrink-0 mt-4 md:mt-0">
-                SEE ALL PROJECT <ArrowRight className="w-4 h-4" />
+                {t('home.caseStudy.seeAll')} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
@@ -792,14 +908,50 @@ const Home = () => {
               </div>
 
               {/* Right Column: Image */}
-              <div className="lg:col-span-7 h-full min-h-[400px] md:min-h-[600px] relative">
+              <div
+                className="lg:col-span-7 relative aspect-[9/16] md:aspect-auto min-h-[400px] md:min-h-[600px]"
+                onMouseEnter={() => setIsCaseStudyHovered(true)}
+                onMouseLeave={() => setIsCaseStudyHovered(false)}
+              >
                 <div className="absolute inset-0 rounded-[32px] overflow-hidden">
                   <img
-                    key={currentCaseStudy.image} // 添加 key 让 React 在切换图片时重新渲染触发动画 (如果后续需要加过渡动画)
-                    src={currentCaseStudy.image}
+                    key={displayedCaseStudyImage}
+                    src={displayedCaseStudyImage}
                     alt={`${currentCaseStudy.title} Gym Interior`}
-                    className="w-full h-full object-cover object-center animate-fade-in"
+                    className={`w-full h-full object-cover object-center transition-all duration-700 ${isCaseStudyHovered ? 'opacity-0 scale-105' : 'opacity-100'} animate-fade-in`}
+                    draggable="false"
                   />
+                  {isCaseStudyHovered ? (
+                    <video
+                      key={displayedCaseStudyVideo}
+                      src={displayedCaseStudyVideo}
+                      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : null}
+
+                  <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCaseStudyImageIndex((prev) => (prev + caseStudyImages.length - 1) % caseStudyImages.length)
+                      }
+                      className="pointer-events-auto w-12 h-12 rounded-full bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center backdrop-blur-sm"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCaseStudyImageIndex((prev) => (prev + 1) % caseStudyImages.length)}
+                      className="pointer-events-auto w-12 h-12 rounded-full bg-[#c8ff00] text-black hover:bg-white transition-colors flex items-center justify-center"
+                    >
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -809,7 +961,7 @@ const Home = () => {
 
       {/* Services Section / Brand Introduction */}
       <section className="py-20 md:py-32 bg-black">
-        <div className="container-custom max-w-7xl">
+        <div className="content-container">
           <div className="flex flex-col items-start">
             
             {/* Top Badge */}
@@ -818,7 +970,7 @@ const Home = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
                   <path fillRule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.87a.75.75 0 00-1.152.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z" clipRule="evenodd" />
                 </svg>
-                了解醒动
+                {t('home.services.badge')}
               </div>
             </div>
 
@@ -826,12 +978,14 @@ const Home = () => {
             <div className="w-full">
               {/* Heading */}
               <h2 className="text-3xl md:text-[40px] font-black text-white leading-tight tracking-wide mb-8">
-                全球运动健身 专业选品服务商
+                {t('home.services.title')}
               </h2>
 
               {/* Body Paragraph */}
               <p className="text-[#a3a3a3] text-sm md:text-base leading-[1.8] font-light mb-16 text-justify max-w-5xl">
-                在运动健身产业全球化与消费升级的浪潮初起之时，醒动的创始人团队深刻洞察到一个核心矛盾：市场上仍不乏海量产品，但“专业买家与品牌方却难以高效、精准地找到真正符合未来趋势、品质可靠且具有商业潜力的解决方案”。带着“重塑选品逻辑，成为产业连接器”的初心，醒动于2016年正式启航。初期，我们聚焦于全球专业运动器械这一垂直领域，凭借深耕行业的资源网络与专业判断，为第一批合作伙伴成功引入了多款颠覆性产品，奠定了“专业选品”的信任基石。
+                {lang === 'zh'
+                  ? '在运动健身产业全球化与消费升级的浪潮初起之时，醒动的创始人团队深刻洞察到一个核心矛盾：市场上仍不乏海量产品，但“专业买家与品牌方却难以高效、精准地找到真正符合未来趋势、品质可靠且具有商业潜力的解决方案”。带着“重塑选品逻辑，成为产业连接器”的初心，醒动于2016年正式启航。初期，我们聚焦于全球专业运动器械这一垂直领域，凭借深耕行业的资源网络与专业判断，为第一批合作伙伴成功引入了多款颠覆性产品，奠定了“专业选品”的信任基石。'
+                  : "At the dawn of globalization and consumption upgrade in the sports & fitness industry, Ablazing's founding team identified a core contradiction: the market is full of products, yet professional buyers and brands still struggle to efficiently find solutions that truly match future trends, reliable quality, and commercial potential. With the mission to reshape product-selection logic and become the industry's connector, Ablazing officially launched in 2016. Early on, we focused on global professional fitness equipment, leveraging deep industry networks and expertise to introduce disruptive products for our first partners—building trust in professional curation."}
               </p>
 
               {/* Metrics Grid */}
@@ -842,7 +996,9 @@ const Home = () => {
                     <TrendingUp className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h4 className="text-white font-bold text-xl mb-2 leading-snug">300%助力合作伙伴销售增幅</h4>
+                    <h4 className="text-white font-bold text-xl mb-2 leading-snug">
+                      {lang === 'zh' ? '300%助力合作伙伴销售增幅' : 'Boosted partner sales by 300%'}
+                    </h4>
                     <p className="text-[#a3a3a3] text-sm leading-relaxed font-light">300% helping partners achieve the highest sales growth.</p>
                   </div>
                 </div>
@@ -853,7 +1009,9 @@ const Home = () => {
                     <Users className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h4 className="text-white font-bold text-xl mb-2 leading-snug">200+深度合作优质工厂与品牌</h4>
+                    <h4 className="text-white font-bold text-xl mb-2 leading-snug">
+                      {lang === 'zh' ? '200+深度合作优质工厂与品牌' : '200+ deeply partnered factories & brands'}
+                    </h4>
                     <p className="text-[#a3a3a3] text-sm leading-relaxed font-light">200+ high-quality factories and innovative brands with cooperation.</p>
                   </div>
                 </div>
@@ -864,7 +1022,9 @@ const Home = () => {
                     <Target className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h4 className="text-white font-bold text-xl mb-2 leading-snug">10年+深耕全球运动健身产业链</h4>
+                    <h4 className="text-white font-bold text-xl mb-2 leading-snug">
+                      {lang === 'zh' ? '10年+深耕全球运动健身产业链' : '10+ years in the global sports & fitness supply chain'}
+                    </h4>
                     <p className="text-[#a3a3a3] text-sm leading-relaxed font-light">10+ years of deep cultivation in the global sports and fitness industry chain.</p>
                   </div>
                 </div>
@@ -875,17 +1035,17 @@ const Home = () => {
       </section>
 
       {/* Brands Section / Testimonials */}
-      <section className="py-16 md:py-24 bg-white border-y border-gray-100 overflow-hidden relative">
-        <div className="container-custom relative z-10">
+      <section className="py-16 md:py-24 bg-white overflow-hidden relative">
+        <div className="content-container relative z-10">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-1.5 rounded-full mb-6 shadow-[0_0_15px_rgba(200,255,0,0.3)]">
                 <Quote className="w-4 h-4 text-black" />
-                <span className="text-black text-sm tracking-wide font-bold">客户评价</span>
+                <span className="text-black text-sm tracking-wide font-bold">{t('home.testimonials.badge')}</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-black text-black mb-4 tracking-tight">
-                听听他们怎么说
+                {t('home.testimonials.title')}
               </h2>
             </div>
 
@@ -942,12 +1102,12 @@ const Home = () => {
         </div>
       </section>
  {/* Brands Logo Wall Section */}
-      <section className="py-16 md:py-24 bg-white border-y border-gray-100 overflow-hidden">
-        <div className="container-custom max-w-[1400px]">
+      <section className="py-16 md:py-24 bg-white overflow-hidden">
+        <div className="content-container">
           {/* Section Header */}
           <div className="text-center mb-16">
             <h3 className="text-sm md:text-base font-bold text-gray-800 tracking-wider">
-              ABLAZING的合作伙伴遍布全球
+              {t('home.brands.title')}
             </h3>
           </div>
 
@@ -970,36 +1130,76 @@ const Home = () => {
               {[1, 2, 3].map((setIndex) => (
                 <div key={`brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
                   {/* BORGWARNER */}
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg" alt="BORGWARNER" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg"
+                      alt="BORGWARNER"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                   {/* LENNAR */}
-                  <div className="h-5 md:h-6 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/lennar.svg" alt="LENNAR" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/lennar.svg"
+                      alt="LENNAR"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                   {/* NORWEGIAN CRUISE LINE */}
-                  <div className="h-8 md:h-10 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg" alt="NORWEGIAN CRUISE LINE" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg"
+                      alt="NORWEGIAN CRUISE LINE"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                   {/* adidas */}
-                  <div className="h-8 md:h-10 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/adidas-4.svg" alt="adidas" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/adidas-4.svg"
+                      alt="adidas"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                   {/* FILA */}
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/fila-9.svg" alt="FILA" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/fila-9.svg"
+                      alt="FILA"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                   {/* Nike */}
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/nike-11.svg" alt="Nike" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/nike-11.svg"
+                      alt="Nike"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                   {/* PUMA */}
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/puma-logo.svg" alt="PUMA" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/puma-logo.svg"
+                      alt="PUMA"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                   {/* Reebok */}
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/reebok-1.svg" alt="Reebok" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img
+                      src="https://cdn.worldvectorlogo.com/logos/reebok-1.svg"
+                      alt="Reebok"
+                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                      draggable="false"
+                    />
                   </div>
                 </div>
               ))}
@@ -1013,14 +1213,14 @@ const Home = () => {
       </section>
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-black">
-        <div className="container-custom">
+        <div className="content-container">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
-              了解醒动 <span className="text-[#c8ff00]">·</span> 全球运动健身专业选品服务商
+              {t('home.cta.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.cta.titleRight')}
             </h2>
-            <button className="bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
-              了解更多
-            </button>
+            <Link to="/contact" className="inline-flex bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
+              {t('cta.learnMore')}
+            </Link>
           </div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
 
 type VariantOption = { value: string; label: string };
 type VariantGroup = { key: string; label: string; options: VariantOption[]; selectedValue?: string };
@@ -12,6 +13,9 @@ type RecommendedProduct = {
   tag?: string;
   weightKg?: number;
   weightLb?: number;
+  priceUsd?: number;
+  categoryId?: string;
+  categoryLabel?: string;
 };
 
 type ProductDetailPayload = {
@@ -24,6 +28,7 @@ type ProductDetailPayload = {
   tag?: string;
   weightKg?: number;
   weightLb?: number;
+  priceUsd?: number;
   categoryId?: string;
   categoryLabel?: string;
   variantGroups?: VariantGroup[];
@@ -33,6 +38,7 @@ type ProductDetailPayload = {
 const ProductDetail = () => {
   const { productId } = useParams();
   const location = useLocation();
+  const { lang, t } = useI18n();
 
   const payload = useMemo(() => {
     const fromState = (location.state as ProductDetailPayload | null) ?? null;
@@ -49,6 +55,7 @@ const ProductDetail = () => {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [detailTab, setDetailTab] = useState<'overview' | 'specs'>('overview');
+  const [priceCurrency, setPriceCurrency] = useState<'USD' | 'CNY'>('USD');
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
   const [isPartnersLogoWallDragging, setIsPartnersLogoWallDragging] = useState(false);
   const [partnersLogoWallStartX, setPartnersLogoWallStartX] = useState(0);
@@ -81,17 +88,40 @@ const ProductDetail = () => {
   const activeImage = images[activeImageIndex] ?? images[0];
   const heroBg = images[1] ?? images[0] ?? '';
   const overviewImage = images[0] ?? heroBg;
+  const usdToCnyRate = 7.2;
+  const displayedPriceText = useMemo(() => {
+    const usd = payload?.priceUsd;
+    if (typeof usd !== 'number' || Number.isNaN(usd)) return null;
+    const locale = lang === 'zh' ? 'zh-CN' : 'en-US';
+    if (priceCurrency === 'USD') {
+      return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(usd);
+    }
+    const cny = usd * usdToCnyRate;
+    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 }).format(cny);
+  }, [lang, payload?.priceUsd, priceCurrency]);
+  const withUnsplashSize = (url: string, w: number, h: number) => {
+    if (!url || !url.includes('images.unsplash.com')) return url;
+    try {
+      const u = new URL(url);
+      u.searchParams.set('w', String(w));
+      u.searchParams.set('h', String(h));
+      return u.toString();
+    } catch {
+      return url;
+    }
+  };
+  const activeMainImage = activeImage ? withUnsplashSize(activeImage, 800, 800) : activeImage;
 
   const partnersLogos = useMemo(
     () => [
-      { src: 'https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg', alt: 'BORGWARNER', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/lennar.svg', alt: 'LENNAR', h: 'h-5 md:h-6' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg', alt: 'NORWEGIAN CRUISE LINE', h: 'h-8 md:h-10' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/adidas-4.svg', alt: 'adidas', h: 'h-8 md:h-10' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/fila-9.svg', alt: 'FILA', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/nike-11.svg', alt: 'Nike', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/puma-logo.svg', alt: 'PUMA', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/reebok-1.svg', alt: 'Reebok', h: 'h-6 md:h-8' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg', alt: 'BORGWARNER' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/lennar.svg', alt: 'LENNAR' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg', alt: 'NORWEGIAN CRUISE LINE' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/adidas-4.svg', alt: 'adidas' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/fila-9.svg', alt: 'FILA' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/nike-11.svg', alt: 'Nike' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/puma-logo.svg', alt: 'PUMA' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/reebok-1.svg', alt: 'Reebok' },
     ],
     []
   );
@@ -203,13 +233,13 @@ const ProductDetail = () => {
     const list = uniq.length >= 6 ? uniq.slice(0, 6) : [...uniq, ...uniq, ...uniq].slice(0, 6);
     return [...list, ...list, ...list].map((src, idx) => ({
       id: `fallback-${idx}`,
-      name: payload?.brandName ? `${payload.brandName} · 精选` : '精选',
+      name: payload?.brandName ? `${payload.brandName} · ${t('productDetail.selected')}` : t('productDetail.selected'),
       image: src,
       tag: undefined,
       weightKg: undefined,
       weightLb: undefined,
     }));
-  }, [images, heroBg, payload?.brandName, payload?.recommendedProducts]);
+  }, [heroBg, images, payload?.brandName, payload?.recommendedProducts, t]);
 
   const buildPayloadForRecommended = (item: RecommendedProduct) => {
     const imagesForItem = [item.image, heroBg, item.image].filter(Boolean);
@@ -225,8 +255,9 @@ const ProductDetail = () => {
       tag: item.tag,
       weightKg: item.weightKg,
       weightLb: item.weightLb,
-      categoryId: payload?.categoryId,
-      categoryLabel: payload?.categoryLabel,
+      priceUsd: item.priceUsd,
+      categoryId: item.categoryId ?? payload?.categoryId,
+      categoryLabel: item.categoryLabel ?? payload?.categoryLabel,
       variantGroups: payload?.variantGroups,
       recommendedProducts: nextRecs,
     } satisfies ProductDetailPayload;
@@ -345,17 +376,17 @@ const ProductDetail = () => {
     return (
       <div className="bg-white min-h-screen">
         <section className="py-16 md:py-24">
-          <div className="container-custom">
+          <div className="content-container">
             <div className="max-w-2xl">
-              <div className="text-sm text-black/60">商品详情</div>
-              <h1 className="mt-4 text-2xl md:text-3xl font-black text-black">未找到该商品</h1>
+              <div className="text-sm text-black/60">{t('productDetail.title')}</div>
+              <h1 className="mt-4 text-2xl md:text-3xl font-black text-black">{t('productDetail.notFound')}</h1>
               <div className="mt-6">
                 <Link
                   to="/hot-stores"
                   className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-sm font-bold"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  返回醒动热店
+                  {t('productDetail.backToHotStores')}
                 </Link>
               </div>
             </div>
@@ -367,131 +398,170 @@ const ProductDetail = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      <section className="py-20 md:py-32 relative overflow-hidden">
-        <div className="absolute inset-0">
-          {heroBg ? <img src={heroBg} alt="" className="w-full h-full object-cover" draggable="false" /> : null}
+      <section className="relative min-h-[25svh] pt-20 pb-0 md:pt-32 md:pb-0">
+        <div className="absolute inset-0 overflow-hidden">
+          {heroBg ? <img src={heroBg} alt="" className="w-full h-full object-cover object-center" draggable="false" /> : null}
           <div className="absolute inset-0 bg-black/60" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-black/75" />
         </div>
-        <div className="container-custom relative">
+        <div className="content-container relative">
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-bold tracking-wider">
-              商品详情
+              {t('productDetail.title')}
             </div>
             <div className="mt-6 text-4xl md:text-6xl font-black tracking-tight text-white">
               {payload.title}
             </div>
             <div className="mt-4 text-white/70 text-sm md:text-base">
-              {payload.brandName ? `${payload.brandName} · ${payload.categoryLabel ?? '产品'}` : payload.categoryLabel ?? '产品'}
+              {payload.brandName
+                ? `${payload.brandName} · ${payload.categoryLabel ?? t('productDetail.categoryFallback')}`
+                : payload.categoryLabel ?? t('productDetail.categoryFallback')}
             </div>
           </div>
         </div>
       </section>
 
       <section className="py-16 md:py-24">
-        <div className="container-custom">
-          <div className="flex items-center gap-2 text-xs md:text-sm text-black/60">
-            <span className="font-semibold text-black/70">酷动严选</span>
-            <span className="opacity-50">•</span>
-            <Link to="/hot-stores" className="hover:text-black transition-colors">
-              {payload.brandName ?? '品牌'}
-            </Link>
-            <span className="opacity-50">•</span>
-            <span className="text-black/60">商品详情</span>
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
-            <div className="lg:col-span-7">
-              <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
-                <div className="aspect-[16/10] md:aspect-[21/12]">
-                  {activeImage ? (
-                    <img src={activeImage} alt={payload.title} className="w-full h-full object-cover" draggable="false" />
-                  ) : (
-                    <div className="w-full h-full" />
-                  )}
-                </div>
-              </div>
-
-              {images.length > 1 ? (
-                <div className="mt-6 grid grid-cols-3 gap-4">
-                  {images.slice(0, 3).map((img, idx) => {
-                    const isActive = idx === activeImageIndex;
-                    return (
-                      <button
-                        key={`${img}-${idx}`}
-                        type="button"
-                        onClick={() => setActiveImageIndex(idx)}
-                        className={`rounded-2xl overflow-hidden border bg-black/5 transition-colors ${
-                          isActive ? 'border-[#c8ff00]' : 'border-black/10 hover:border-black/20'
-                        }`}
-                      >
-                        <div className="aspect-[4/3]">
-                          <img src={img} alt={`${payload.title} ${idx + 1}`} className="w-full h-full object-cover" draggable="false" />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : null}
+        <div className="content-container">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="flex items-center gap-2 text-xs md:text-sm text-black/60">
+              <span className="font-semibold text-black/70">{t('productDetail.breadcrumb.curated')}</span>
+              <span className="opacity-50">•</span>
+              <Link to="/hot-stores" className="hover:text-black transition-colors">
+                {payload.brandName ?? t('productDetail.brandFallback')}
+              </Link>
+              <span className="opacity-50">•</span>
+              <span className="text-black/60">{t('productDetail.breadcrumb.productDetail')}</span>
             </div>
 
-            <div className="lg:col-span-5">
-              <div className="text-3xl md:text-4xl font-black tracking-tight text-black">
-                {payload.title}
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+              <div className="lg:col-span-8">
+                <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
+                  <div className="aspect-square">
+                    {activeImage ? (
+                      <img src={activeMainImage} alt={payload.title} className="w-full h-full object-cover" draggable="false" />
+                    ) : (
+                      <div className="w-full h-full" />
+                    )}
+                  </div>
+                </div>
+
+                {images.length > 1 ? (
+                  <div className="mt-6 grid grid-cols-3 gap-4">
+                    {images.slice(0, 3).map((img, idx) => {
+                      const isActive = idx === activeImageIndex;
+                      return (
+                        <button
+                          key={`${img}-${idx}`}
+                          type="button"
+                          onClick={() => setActiveImageIndex(idx)}
+                          className={`rounded-2xl overflow-hidden border bg-black/5 transition-colors ${
+                            isActive ? 'border-[#c8ff00]' : 'border-black/10 hover:border-black/20'
+                          }`}
+                        >
+                          <div className="aspect-[4/3]">
+                            <img src={img} alt={`${payload.title} ${idx + 1}`} className="w-full h-full object-cover" draggable="false" />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
               </div>
 
-              {payload.description ? (
-                <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed whitespace-pre-line">
-                  {payload.description}
+              <div className="lg:col-span-4">
+                <div className="text-3xl md:text-4xl font-black tracking-tight text-black">
+                  {payload.title}
                 </div>
-              ) : (
-                <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed">
-                  {payload.categoryLabel ? `${payload.categoryLabel}产品，面向多场景训练需求，兼顾稳定性与体验。` : '面向多场景训练需求，兼顾稳定性与体验。'}
-                </div>
-              )}
 
-              {typeof payload.weightKg === 'number' && typeof payload.weightLb === 'number' ? (
-                <div className="mt-6 text-sm text-black/50 font-semibold">
-                  {payload.weightKg}kg / {payload.weightLb}lbs
-                </div>
-              ) : null}
-
-              {payload.variantGroups?.length ? (
-                <div className="mt-10 space-y-6">
-                  {payload.variantGroups.slice(0, 2).map((g) => (
-                    <div key={g.key} className="flex flex-wrap items-center gap-3">
-                      <div className="text-sm font-semibold text-black/70 w-14">{g.label}：</div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        {g.options.map((opt) => {
-                          const active = opt.value === (g.selectedValue ?? g.options[0]?.value);
-                          return (
-                            <button
-                              key={opt.value}
-                              type="button"
-                              className={`px-4 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
-                                active
-                                  ? 'bg-[#c8ff00] border-[#c8ff00] text-black'
-                                  : 'bg-white border-gray-200 text-black/60 hover:border-gray-300 hover:text-black/80'
-                              }`}
-                            >
-                              {opt.label}
-                            </button>
-                          );
-                        })}
-                      </div>
+              {displayedPriceText ? (
+                <div className="mt-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="text-sm font-semibold text-black/60">{t('productDetail.priceLabel')}</div>
+                    <div className="inline-flex items-center rounded-full bg-gray-50 border border-gray-200 p-1">
+                      <button
+                        type="button"
+                        onClick={() => setPriceCurrency('USD')}
+                        className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+                          priceCurrency === 'USD' ? 'bg-[#c8ff00] text-black' : 'text-black/60 hover:text-black'
+                        }`}
+                      >
+                        {t('price.usd')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPriceCurrency('CNY')}
+                        className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+                          priceCurrency === 'CNY' ? 'bg-[#c8ff00] text-black' : 'text-black/60 hover:text-black'
+                        }`}
+                      >
+                        {t('price.cny')}
+                      </button>
                     </div>
-                  ))}
+                  </div>
+                  <div className="mt-2 text-3xl md:text-4xl font-black tracking-tight text-black">
+                    {displayedPriceText}
+                  </div>
                 </div>
               ) : null}
 
-              <div className="mt-12">
-                <Link
-                  to="/hot-stores"
-                  className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 px-4 py-2 rounded-full text-sm font-semibold text-black hover:bg-[#c8ff00] hover:border-transparent transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  返回列表
-                </Link>
+                {payload.description ? (
+                  <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed whitespace-pre-line">
+                    {payload.description}
+                  </div>
+                ) : (
+                  <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed">
+                    {payload.categoryLabel
+                      ? lang === 'zh'
+                        ? `${payload.categoryLabel}产品，${t('productDetail.overview.fallbackShort')}`
+                        : `${payload.categoryLabel} product. ${t('productDetail.overview.fallbackShort')}`
+                      : t('productDetail.overview.fallbackShort')}
+                  </div>
+                )}
+
+                {typeof payload.weightKg === 'number' && typeof payload.weightLb === 'number' ? (
+                  <div className="mt-6 text-sm text-black/50 font-semibold">
+                    {payload.weightKg}kg / {payload.weightLb}lbs
+                  </div>
+                ) : null}
+
+                {payload.variantGroups?.length ? (
+                  <div className="mt-10 space-y-6">
+                    {payload.variantGroups.slice(0, 2).map((g) => (
+                      <div key={g.key} className="flex flex-wrap items-center gap-3">
+                        <div className="text-sm font-semibold text-black/70 w-14">{g.label}：</div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {g.options.map((opt) => {
+                            const active = opt.value === (g.selectedValue ?? g.options[0]?.value);
+                            return (
+                              <button
+                                key={opt.value}
+                                type="button"
+                                className={`px-4 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
+                                  active
+                                    ? 'bg-[#c8ff00] border-[#c8ff00] text-black'
+                                    : 'bg-white border-gray-200 text-black/60 hover:border-gray-300 hover:text-black/80'
+                                }`}
+                              >
+                                {opt.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="mt-12">
+                  <Link
+                    to="/hot-stores"
+                    className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 px-4 py-2 rounded-full text-sm font-semibold text-black hover:bg-[#c8ff00] hover:border-transparent transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    {t('productDetail.backToList')}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -499,7 +569,7 @@ const ProductDetail = () => {
       </section>
 
       <section className="py-16 md:py-24 bg-white">
-        <div className="container-custom">
+        <div className="content-container">
           <div className="border-t border-gray-200">
             <div className="flex items-center justify-between">
               <button
@@ -509,7 +579,7 @@ const ProductDetail = () => {
                   detailTab === 'overview' ? 'text-black' : 'text-black/50 hover:text-black/70'
                 }`}
               >
-                产品概述
+                {t('productDetail.tab.overview')}
                 {detailTab === 'overview' ? (
                   <span className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[3px] w-14 bg-[#c8ff00] rounded-full" />
                 ) : null}
@@ -521,7 +591,7 @@ const ProductDetail = () => {
                   detailTab === 'specs' ? 'text-black' : 'text-black/50 hover:text-black/70'
                 }`}
               >
-                规格尺寸
+                {t('productDetail.tab.specs')}
                 {detailTab === 'specs' ? (
                   <span className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[3px] w-14 bg-[#c8ff00] rounded-full" />
                 ) : null}
@@ -533,13 +603,15 @@ const ProductDetail = () => {
             <div className="pt-10">
               <div className="text-sm md:text-base text-black/70 leading-relaxed">
                 {payload.description ??
-                  `${payload.title} 面向多场景训练需求，兼顾稳定性与体验。通过模块化结构与人机工学细节设计，为商业与家庭场景提供更顺滑的训练感受。`}
+                  (lang === 'zh'
+                    ? `${payload.title} ${t('productDetail.overview.fallbackLong')}`
+                    : `${payload.title} — ${t('productDetail.overview.fallbackLong')}`)}
               </div>
 
               <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
                 <div className="lg:col-span-7">
                   <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
-                    <div className="aspect-[16/10]">
+                    <div className="aspect-square">
                       {overviewImage ? (
                         <img src={overviewImage} alt={`${payload.title} overview`} className="w-full h-full object-cover" draggable="false" />
                       ) : (
@@ -551,30 +623,32 @@ const ProductDetail = () => {
 
                 <div className="lg:col-span-5 space-y-10">
                   <div>
-                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">释放最佳性能</div>
+                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.overview.feature1.title')}</div>
                     <div className="mt-3 text-sm md:text-base text-black/70 leading-relaxed">
-                      以稳定结构与顺滑传动为核心，兼顾低噪表现与一致阻力输出；在训练强度变化时依然保持良好反馈。
+                      {t('productDetail.overview.feature1.desc')}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">攀登无忧 循序渐进</div>
+                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.overview.feature2.title')}</div>
                     <div className="mt-3 text-sm md:text-base text-black/70 leading-relaxed">
-                      针对不同训练阶段提供更友好的节奏控制与安全细节，帮助用户循序提升训练容量与心肺耐力。
+                      {t('productDetail.overview.feature2.desc')}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">更易维护 更耐久</div>
+                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.overview.feature3.title')}</div>
                     <div className="mt-3 text-sm md:text-base text-black/70 leading-relaxed">
-                      关键部件与外壳材质强调耐久与可维护性，降低长期使用成本，适配高频使用的商业场景。
+                      {t('productDetail.overview.feature3.desc')}
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="mt-10 text-sm md:text-base text-black/70 leading-relaxed">
-                {payload.categoryLabel ? `该产品覆盖 ${payload.categoryLabel} 场景需求，支持多样化训练方案与空间适配。` : '支持多样化训练方案与空间适配。'}
+                {payload.categoryLabel
+                  ? `${t('productDetail.overview.coverPrefix')}${payload.categoryLabel}${t('productDetail.overview.coverSuffix')}`
+                  : t('productDetail.overview.coverFallback')}
               </div>
             </div>
           ) : (
@@ -582,7 +656,7 @@ const ProductDetail = () => {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
                 <div className="lg:col-span-7">
                   <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
-                    <div className="aspect-[16/10]">
+                    <div className="aspect-square">
                       {overviewImage ? (
                         <img src={overviewImage} alt={`${payload.title} specs`} className="w-full h-full object-cover" draggable="false" />
                       ) : (
@@ -593,26 +667,30 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="lg:col-span-5">
-                  <div className="text-xl md:text-2xl font-black text-black tracking-tight">规格尺寸</div>
+                  <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.specs.title')}</div>
                   <div className="mt-6 space-y-3">
                     {[
-                      { k: '品牌', v: payload.brandName ?? '-' },
-                      { k: '品类', v: payload.categoryLabel ?? '-' },
-                      { k: '型号', v: payload.title },
+                      { k: t('productDetail.specs.brand'), v: payload.brandName ?? '-' },
+                      { k: t('productDetail.specs.category'), v: payload.categoryLabel ?? '-' },
+                      { k: t('productDetail.specs.model'), v: payload.title },
                       {
-                        k: '重量',
+                        k: t('productDetail.specs.weight'),
                         v:
                           typeof payload.weightKg === 'number' && typeof payload.weightLb === 'number'
                             ? `${payload.weightKg} kg / ${payload.weightLb} lbs`
                             : '-',
                       },
                       {
-                        k: '版本',
-                        v: payload.variantGroups?.[0]?.options?.find((o) => o.value === payload.variantGroups?.[0]?.selectedValue)?.label ?? '标准版',
+                        k: t('productDetail.specs.version'),
+                        v:
+                          payload.variantGroups?.[0]?.options?.find((o) => o.value === payload.variantGroups?.[0]?.selectedValue)?.label ??
+                          t('productDetail.specs.standard'),
                       },
                       {
-                        k: '颜色',
-                        v: payload.variantGroups?.[1]?.options?.find((o) => o.value === payload.variantGroups?.[1]?.selectedValue)?.label ?? '默认',
+                        k: t('productDetail.specs.color'),
+                        v:
+                          payload.variantGroups?.[1]?.options?.find((o) => o.value === payload.variantGroups?.[1]?.selectedValue)?.label ??
+                          t('productDetail.specs.default'),
                       },
                     ].map((row) => (
                       <div key={row.k} className="flex items-center justify-between gap-6 border-b border-gray-100 pb-3">
@@ -623,9 +701,9 @@ const ProductDetail = () => {
                   </div>
 
                   <div className="mt-8 rounded-2xl bg-black/5 border border-black/10 p-5">
-                    <div className="text-sm font-bold text-black">尺寸说明</div>
+                    <div className="text-sm font-bold text-black">{t('productDetail.specs.sizeNoteTitle')}</div>
                     <div className="mt-2 text-xs md:text-sm text-black/60 leading-relaxed">
-                      具体尺寸与安装间距会随配置与版本略有差异；如需获取精确 CAD/安装图，请联系顾问获取对应型号的规格文件。
+                      {t('productDetail.specs.sizeNoteBody')}
                     </div>
                   </div>
                 </div>
@@ -635,10 +713,10 @@ const ProductDetail = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-white border-y border-gray-100 overflow-hidden">
-        <div className="container-custom">
+      <section className="py-16 md:py-24 bg-white overflow-hidden">
+        <div className="content-container">
           <div className="flex items-center justify-center">
-            <h3 className="text-sm md:text-base font-bold text-gray-800 tracking-wider">ABLAZING的合作伙伴遍布全球</h3>
+            <h3 className="text-sm md:text-base font-bold text-gray-800 tracking-wider">{t('home.brands.title')}</h3>
           </div>
 
           <div className="mt-10 relative" onMouseEnter={() => setIsPartnersLogoWallHovered(true)} onMouseLeave={() => setIsPartnersLogoWallHovered(false)}>
@@ -662,8 +740,16 @@ const ProductDetail = () => {
               {[1, 2, 3].map((setIndex) => (
                 <div key={`partners-brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
                   {partnersLogos.map((l) => (
-                    <div key={`${setIndex}-${l.alt}`} className={`${l.h} opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0`}>
-                      <img src={l.src} alt={l.alt} className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                    <div
+                      key={`${setIndex}-${l.alt}`}
+                      className="h-8 md:h-9 flex items-center justify-center shrink-0"
+                    >
+                      <img
+                        src={l.src}
+                        alt={l.alt}
+                        className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                        draggable="false"
+                      />
                     </div>
                   ))}
                 </div>
@@ -677,14 +763,16 @@ const ProductDetail = () => {
       </section>
 
       <section className="py-16 md:py-24 bg-black">
-        <div className="container-custom">
+        <div className="content-container">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
               <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-bold tracking-wider">
-                产品精选
+                {t('productDetail.recommended.badge')}
               </div>
               <h2 className="mt-6 text-3xl md:text-5xl font-black text-white tracking-tight">
-                {payload.brandName ? `${payload.brandName} · ` : ''}{payload.categoryLabel ? `${payload.categoryLabel} · ` : ''}更多推荐
+                {payload.brandName ? `${payload.brandName} · ` : ''}
+                {payload.categoryLabel ? `${payload.categoryLabel} · ` : ''}
+                {t('productDetail.recommended.more')}
               </h2>
             </div>
             <div className="flex items-center gap-2">
@@ -754,7 +842,7 @@ const ProductDetail = () => {
                           {item.weightKg}kg / {item.weightLb}lbs
                         </div>
                       ) : (
-                        <div className="mt-1 text-white/60 text-xs">{payload.categoryLabel ?? '同类推荐'}</div>
+                        <div className="mt-1 text-white/60 text-xs">{payload.categoryLabel ?? t('productDetail.recommended.sameCategory')}</div>
                       )}
                     </div>
                   </div>
@@ -766,10 +854,10 @@ const ProductDetail = () => {
 
           <div className="mt-10 flex justify-center">
             <Link
-              to="/hot-stores"
+              to="/contact"
               className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-5 py-2 rounded-full text-sm font-bold"
             >
-              返回醒动热店
+              {t('productDetail.contactUs')}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

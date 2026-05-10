@@ -7,7 +7,7 @@ export const imageConfig = {
   banners: [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1920&h=1080&fit=crop',
       title: '品质生活，从这里开始',
       subtitle: '精选全球好物，为您打造优质生活体验'
     },

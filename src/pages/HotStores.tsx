@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle, ArrowLeft, ArrowRight, Play, X, ChevronDown } from 'lucide-react';
+import { CheckCircle, ArrowLeft, ArrowRight, Play, ChevronDown } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
 
 const HotStores = () => {
+  const { lang, t } = useI18n();
   const makeLogoDataUri = (text: string) =>
     `data:image/svg+xml,${encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="520" height="160" viewBox="0 0 520 160">
@@ -25,10 +27,10 @@ const HotStores = () => {
 
   // 数据统计
   const stats = [
-    { value: '72+', label: '合作品牌' },
-    { value: '2000+', label: '合作门店' },
-    { value: '5000+', label: 'SKU数量' },
-    { value: '100%', label: '正品保障' },
+    { value: '72+', label: lang === 'zh' ? '合作品牌' : 'Partner brands' },
+    { value: '2000+', label: lang === 'zh' ? '合作门店' : 'Partner stores' },
+    { value: '5000+', label: lang === 'zh' ? 'SKU数量' : 'SKUs' },
+    { value: '100%', label: lang === 'zh' ? '正品保障' : 'Authenticity' },
   ];
 
   type Option = { value: string; label: string };
@@ -42,6 +44,7 @@ const HotStores = () => {
     tag?: string;
     weightKg?: number;
     weightLb?: number;
+    priceUsd: number;
     attrs: Record<string, string>;
   };
   type BrandCatalog = {
@@ -60,10 +63,35 @@ const HotStores = () => {
     tagEvery = 4
   ) => {
     const list: ProductItem[] = [];
+    const basePriceMap: Record<string, number> = {
+      stairclimber: 4599,
+      treadmill: 3299,
+      elliptical: 2899,
+      bike: 1799,
+      strength: 3999,
+      plate: 3199,
+      selectorized: 3699,
+      benches: 899,
+      rehab: 1299,
+      mobility: 799,
+      recovery: 999,
+      running: 189,
+      training: 159,
+      football: 149,
+      lifestyle: 169,
+      footwear: 179,
+      apparel: 99,
+      accessory: 49,
+      digital: 599,
+      floor: 499,
+      solution: 2499,
+    };
     for (let i = 0; i < 18; i += 1) {
       const categoryId = categoryIds[i % categoryIds.length];
       const nm = makeName(categoryId, i);
       const attrs = attrPresets[i % attrPresets.length];
+      const base = basePriceMap[categoryId] ?? 199;
+      const priceUsd = Math.round((base + (i % 6) * (base >= 1000 ? 120 : 10)) * 100) / 100;
       list.push({
         id: `${brandId}-${categoryId}-${i}`,
         name: nm.name,
@@ -73,6 +101,7 @@ const HotStores = () => {
         tag: i % tagEvery === 0 ? '人气优选' : undefined,
         weightKg: 220 + (i % 6) * 18,
         weightLb: 485 + (i % 6) * 40,
+        priceUsd,
         attrs,
       });
     }
@@ -1420,6 +1449,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=600&h=400&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 'torque',
@@ -1480,6 +1510,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&h=400&fit=crop',
+      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
     },
     {
       id: 'gym80',
@@ -1540,6 +1571,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1606041623037-7763d6013b86?w=600&h=400&fit=crop',
+      video: 'https://www.w3schools.com/html/movie.mp4',
     },
     {
       id: 'totalgym',
@@ -1600,6 +1632,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=600&h=400&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 'puma',
@@ -1660,6 +1693,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&h=400&fit=crop',
+      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
     },
     {
       id: 'adidas',
@@ -1720,6 +1754,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1526401485004-2aa6b5f6c2e5?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1526401485004-2aa6b5f6c2e5?w=600&h=400&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 'nike',
@@ -1780,6 +1815,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1528701800489-20be3c7f80f6?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1528701800489-20be3c7f80f6?w=600&h=400&fit=crop',
+      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
     },
     {
       id: 'reebok',
@@ -1840,6 +1876,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=600&h=400&fit=crop',
+      video: 'https://www.w3schools.com/html/movie.mp4',
     },
     {
       id: 'fila',
@@ -1900,6 +1937,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1542293787938-29f2b04213ff?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1542293787938-29f2b04213ff?w=600&h=400&fit=crop',
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 'technogym',
@@ -1960,6 +1998,7 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1554284126-aa88f22d8b74?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1554284126-aa88f22d8b74?w=600&h=400&fit=crop',
+      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
     },
     {
       id: 'lifefitness',
@@ -2020,40 +2059,41 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1800&h=1000&fit=crop',
       cardImage:
         'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&h=400&fit=crop',
+      video: 'https://www.w3schools.com/html/movie.mp4',
     },
   ];
 
   const [activeBrandIndex, setActiveBrandIndex] = useState(0);
   const activeBrand = brands[activeBrandIndex];
   const brandPhilosophyRef = useRef<HTMLElement | null>(null);
-  const [isBrandVideoOpen, setIsBrandVideoOpen] = useState(false);
+  const [hoveredBrandIndex, setHoveredBrandIndex] = useState<number | null>(null);
   const [productFilters, setProductFilters] = useState<Record<string, string>>({ category: 'all' });
   const [productFilterOpenKey, setProductFilterOpenKey] = useState<string | null>(null);
   const productFilterBarRef = useRef<HTMLDivElement | null>(null);
   const [productPage, setProductPage] = useState(1);
+  const brandInlineVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [isBrandInlineVideoPlaying, setIsBrandInlineVideoPlaying] = useState(false);
+  const [isBrandListOpen, setIsBrandListOpen] = useState(false);
+  const brandSwitcherRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, []);
 
   useEffect(() => {
-    setIsBrandVideoOpen(false);
-  }, [activeBrandIndex]);
-
-  useEffect(() => {
     setProductFilters({ category: 'all' });
     setProductFilterOpenKey(null);
     setProductPage(1);
+    setIsBrandListOpen(false);
   }, [activeBrandIndex]);
 
   useEffect(() => {
-    if (!isBrandVideoOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsBrandVideoOpen(false);
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isBrandVideoOpen]);
+    setIsBrandInlineVideoPlaying(false);
+    const v = brandInlineVideoRef.current;
+    if (!v) return;
+    v.pause();
+    v.currentTime = 0;
+  }, [activeBrandIndex]);
 
   const brandStripRef = useRef<HTMLDivElement>(null);
   const [isBrandStripDragging, setIsBrandStripDragging] = useState(false);
@@ -2066,7 +2106,32 @@ const HotStores = () => {
     brandPhilosophyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const brandVideoUrl = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+  const productsBoxRef = useRef<HTMLDivElement | null>(null);
+  const scrollToProducts = (nextCategoryId: string) => {
+    setProductFilters({ category: nextCategoryId });
+    setProductFilterOpenKey(null);
+    setProductPage(1);
+    productsBoxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const switchBrand = (dir: -1 | 1) => {
+    setHoveredBrandIndex(null);
+    setIsBrandListOpen(false);
+    setActiveBrandIndex((prev) => {
+      const total = brands.length || 1;
+      return (prev + dir + total) % total;
+    });
+  };
+
+  const selectBrand = (nextIndex: number) => {
+    setHoveredBrandIndex(null);
+    setIsBrandListOpen(false);
+    setActiveBrandIndex(() => {
+      const total = brands.length || 1;
+      const normalized = ((nextIndex % total) + total) % total;
+      return normalized;
+    });
+  };
 
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
   const [isPartnersLogoWallDragging, setIsPartnersLogoWallDragging] = useState(false);
@@ -2230,7 +2295,7 @@ const HotStores = () => {
 
     const tick = () => {
       if (!paused && !isProductTypesDragging && Date.now() >= productTypesPauseUntilRef.current) {
-        el.scrollLeft += 0.8;
+        el.scrollLeft += 0.3;
         const singleSetWidth = el.scrollWidth / 3;
         if (el.scrollLeft >= singleSetWidth * 2) {
           el.scrollLeft -= singleSetWidth;
@@ -2290,6 +2355,11 @@ const HotStores = () => {
     if (!el) return;
     productTypesPauseUntilRef.current = Date.now() + 1200;
     setIsProductTypesDragging(true);
+    const singleSetWidth = el.scrollWidth / 3;
+    if (singleSetWidth > 0) {
+      if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
+      if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+    }
     setProductTypesStartX(clientX - el.offsetLeft);
     setProductTypesScrollLeft(el.scrollLeft);
   };
@@ -2300,6 +2370,17 @@ const HotStores = () => {
     const x = clientX - el.offsetLeft;
     const walk = (x - productTypesStartX) * 1.6;
     el.scrollLeft = productTypesScrollLeft - walk;
+    const singleSetWidth = el.scrollWidth / 3;
+    if (singleSetWidth > 0) {
+      if (el.scrollLeft >= singleSetWidth * 2) {
+        el.scrollLeft -= singleSetWidth;
+        setProductTypesScrollLeft((prev) => prev - singleSetWidth);
+      }
+      if (el.scrollLeft < singleSetWidth) {
+        el.scrollLeft += singleSetWidth;
+        setProductTypesScrollLeft((prev) => prev + singleSetWidth);
+      }
+    }
   };
 
   const handleProductTypesEnd = () => setIsProductTypesDragging(false);
@@ -2421,10 +2502,12 @@ const HotStores = () => {
   useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
       const el = productFilterBarRef.current;
-      if (!el) return;
       if (!(e.target instanceof Node)) return;
-      if (el.contains(e.target)) return;
+      const brandEl = brandSwitcherRef.current;
+      if (el && el.contains(e.target)) return;
+      if (brandEl && brandEl.contains(e.target)) return;
       setProductFilterOpenKey(null);
+      setIsBrandListOpen(false);
     };
     window.addEventListener('mousedown', onMouseDown);
     return () => window.removeEventListener('mousedown', onMouseDown);
@@ -2462,20 +2545,22 @@ const HotStores = () => {
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
-      <section className="py-20 md:py-32 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={activeBrand.heroImage}
-            alt={activeBrand.name}
-            className="w-full h-full object-cover object-center"
-            draggable="false"
+      <section className="relative min-h-[100svh] pt-20 pb-0 md:pt-32 md:pb-0">
+        <div className="absolute inset-0 overflow-hidden z-0">
+          <video
+            src={activeBrand.video}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover pointer-events-none"
           />
-          <div className="absolute inset-0 bg-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#c8ff00]/35 via-black/20 to-black/70" />
+          <div className="absolute inset-0 bg-black/70 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#c8ff00]/35 via-black/20 to-black/70 pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(200,255,0,0.15),transparent_45%)]" />
         </div>
 
-        <div className="container-custom relative z-10">
+        <div className="content-container relative z-10">
           <div className="max-w-3xl">
             <div className="mb-10">
               <img
@@ -2507,7 +2592,7 @@ const HotStores = () => {
         <div className="absolute left-0 right-0 bottom-0 z-20">
           <div className="h-28 md:h-36 bg-gradient-to-t from-[#c8ff00]/30 via-black/10 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 pb-10 md:pb-14">
-            <div className="container-custom">
+            <div className="content-container">
               <div
                 ref={brandStripRef}
                 onMouseDown={onBrandStripMouseDown}
@@ -2523,6 +2608,7 @@ const HotStores = () => {
                 {brandStripItems.map((brand, i) => {
                   const realIndex = i % brands.length;
                   const isActive = realIndex === activeBrandIndex;
+                  const isHovered = hoveredBrandIndex === realIndex;
                   return (
                     <button
                       key={`${brand.id}-${i}`}
@@ -2531,24 +2617,38 @@ const HotStores = () => {
                         setActiveBrandIndex(realIndex);
                         scrollToBrandPhilosophy();
                       }}
-                      className={`flex-none w-[160px] sm:w-[200px] md:w-[240px] rounded-xl overflow-hidden border transition-colors ${
-                        isActive ? 'border-[#c8ff00]' : 'border-white/10 hover:border-white/30'
+                      onMouseEnter={() => setHoveredBrandIndex(realIndex)}
+                      onMouseLeave={() => setHoveredBrandIndex(null)}
+                      className={`flex-none w-1/6 aspect-square rounded-full overflow-hidden border-2 transition-all duration-300 ${
+                        isActive ? 'border-[#c8ff00] scale-105' : 'border-white/10 hover:border-white/30'
                       }`}
                     >
-                      <div className="relative h-[88px] sm:h-[96px] md:h-[110px] bg-[#111]">
-                        <img
-                          src={brand.cardImage}
-                          alt={brand.name}
-                          className="absolute inset-0 w-full h-full object-cover opacity-90"
-                          draggable="false"
-                        />
+                      <div className="relative w-full h-full bg-[#111]">
+                        {isHovered && brand.video ? (
+                          <video
+                            src={brand.video}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={brand.cardImage}
+                            alt={brand.name}
+                            className="absolute inset-0 w-full h-full object-cover opacity-90"
+                            draggable="false"
+                          />
+                        )}
                         <div className={`absolute inset-0 transition-colors ${isActive ? 'bg-black/25' : 'bg-black/45'}`} />
                         <div className={`absolute inset-0 ring-1 transition-opacity ${isActive ? 'ring-[#c8ff00]/60 opacity-100' : 'ring-white/10 opacity-0'}`} />
-                        <div className="absolute inset-0 flex items-center justify-center px-4">
+                        <div className="absolute inset-0 flex items-center justify-center px-2">
                           <img
                             src={brand.logo}
                             alt={brand.name}
-                            className="h-7 sm:h-8 md:h-9 w-auto opacity-95 pointer-events-none"
+                            className="h-4 sm:h-5 md:h-6 w-auto opacity-95 pointer-events-none"
                             draggable="false"
                           />
                         </div>
@@ -2566,12 +2666,12 @@ const HotStores = () => {
 
       {/* Brand Philosophy Section */}
       <section ref={brandPhilosophyRef} className="py-16 md:py-24 bg-[#111]">
-        <div className="container-custom">
+        <div className="content-container">
           <div className="bg-white rounded-[28px] md:rounded-[36px] px-6 md:px-12 py-10 md:py-14">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
               <div className="lg:col-span-2 flex items-center justify-between lg:flex-col lg:items-start lg:justify-start gap-4">
                 <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-bold tracking-wider">
-                  了解品牌
+                  {lang === 'zh' ? '了解品牌' : 'About the Brand'}
                 </div>
                 <div className="hidden lg:flex items-center gap-2 text-xs text-black/60 tracking-widest">
                   SCROLL DOWN
@@ -2604,7 +2704,7 @@ const HotStores = () => {
                     <div className="text-xs text-black/50 font-semibold">24 Feb</div>
                   </div>
                   <div className="px-4 pb-4">
-                    <div className="aspect-[16/10] rounded-xl overflow-hidden bg-black/5">
+                    <div className="aspect-square md:aspect-[16/10] rounded-xl overflow-hidden bg-black/5">
                       <img
                         src={activeBrand.cardImage}
                         alt={activeBrand.name}
@@ -2619,7 +2719,9 @@ const HotStores = () => {
 
             <div className="mt-12 md:mt-16">
               <h2 className="text-2xl md:text-4xl font-black text-black tracking-tight text-center">
-                自{activeBrand.foundedYear}年，一直致力于为健身事业提供动力。
+                {lang === 'zh'
+                  ? `自${activeBrand.foundedYear}年，一直致力于为健身事业提供动力。`
+                  : `Since ${activeBrand.foundedYear}, empowering fitness with products and innovation.`}
               </h2>
               <p className="mt-6 md:mt-8 text-sm md:text-base text-black/60 leading-relaxed max-w-4xl mx-auto text-center">
                 {activeBrand.overview}
@@ -2649,19 +2751,25 @@ const HotStores = () => {
 
       {/* Feature Section */}
       <section className="py-16 md:py-24 bg-black">
-        <div className="container-custom">
+        <div className="content-container">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 md:gap-10 mb-10 md:mb-14">
             <div>
               <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-bold tracking-wider mb-6">
-                产品精选
+                {lang === 'zh' ? '产品精选' : 'Featured Products'}
               </div>
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-                用心突破，创造价值
+                {lang === 'zh' ? '用心突破，创造价值' : 'Break through. Create value.'}
               </h2>
             </div>
             <div className="text-white/60 text-sm md:text-base leading-relaxed max-w-xl md:text-right">
-              <div className="font-semibold text-white/70">{activeBrand.name} 产品矩阵</div>
-              <div className="mt-2">围绕场景化需求，覆盖从有氧、力量到功能训练的关键品类。</div>
+              <div className="font-semibold text-white/70">
+                {lang === 'zh' ? `${activeBrand.name} 产品矩阵` : `${activeBrand.name} portfolio`}
+              </div>
+              <div className="mt-2">
+                {lang === 'zh'
+                  ? '围绕场景化需求，覆盖从有氧、力量到功能训练的关键品类。'
+                  : 'Built around real scenarios, covering key categories from cardio and strength to functional training.'}
+              </div>
             </div>
           </div>
 
@@ -2681,7 +2789,7 @@ const HotStores = () => {
               onTouchEnd={handleProductTypesEnd}
               onTouchCancel={handleProductTypesEnd}
               className={`flex gap-5 md:gap-7 overflow-x-auto pb-2 select-none [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isProductTypesDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-              style={{ scrollBehavior: 'auto' }}
+              style={{ scrollBehavior: 'auto', touchAction: 'pan-y' }}
             >
               {productTypeItems.map((t, i) => {
                 const realIndex = productTypes.length === 0 ? 0 : i % productTypes.length;
@@ -2692,14 +2800,9 @@ const HotStores = () => {
                     <div
                       role="button"
                       tabIndex={0}
-                      onMouseEnter={() => {
-                        setProductTypeVirtualIndex(i, 1200);
-                      }}
-                      onFocus={() => {
-                        setProductTypeVirtualIndex(i, 1200);
-                      }}
                       onClick={() => {
                         setProductTypeVirtualIndex(i, 1500);
+                        scrollToProducts(t.id);
                       }}
                       className={`rounded-2xl overflow-hidden bg-[#111] border transition-all outline-none ${
                         isActive
@@ -2707,7 +2810,7 @@ const HotStores = () => {
                           : 'border-white/10 hover:border-white/30'
                       }`}
                     >
-                      <div className="relative aspect-[4/5] md:aspect-[3/4]">
+                      <div className="relative aspect-[9/16] md:aspect-[3/4]">
                         <img
                           src={t.image}
                           alt={t.zh}
@@ -2764,61 +2867,139 @@ const HotStores = () => {
       </section>
 
 <section className="py-16 md:py-24 bg-white">
-        <div className="container-custom">
+        <div className="content-container">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 md:gap-10">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-bold tracking-wider">
-                品牌视频
+                {lang === 'zh' ? '品牌视频' : 'Brand Video'}
               </div>
               <h2 className="mt-6 text-3xl md:text-5xl font-black text-black tracking-tight">
-                提升健身体验，赋能于人
+                {lang === 'zh' ? '提升健身体验，赋能于人' : 'Elevate fitness experiences'}
               </h2>
             </div>
             <div className="text-black/60 text-sm md:text-base leading-relaxed max-w-xl md:text-right">
-              <div className="font-semibold text-black/70">“{activeBrand.name}”品牌介绍</div>
+              <div className="font-semibold text-black/70">
+                {lang === 'zh' ? `“${activeBrand.name}”品牌介绍` : `${activeBrand.name} introduction`}
+              </div>
               <div className="mt-2">{activeBrand.subtitle}</div>
             </div>
           </div>
 
           <div className="mt-10 md:mt-12">
-            <button
-              type="button"
-              onClick={() => setIsBrandVideoOpen(true)}
-              className="group relative w-full rounded-[32px] overflow-hidden border border-black/10 bg-black/5"
-            >
-              <div className="aspect-[16/9] md:aspect-[21/9]">
-                <img
-                  src={activeBrand.heroImage}
-                  alt={`${activeBrand.name} video`}
-                  className="w-full h-full object-cover"
-                  draggable="false"
+            <div className="relative w-full rounded-[32px] overflow-hidden border border-black/10 bg-black/5">
+              <div className="relative aspect-[9/16] md:aspect-[16/9]">
+                <video
+                  ref={brandInlineVideoRef}
+                  key={activeBrand.id}
+                  src={activeBrand.video}
+                  poster={activeBrand.heroImage}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  onPlay={() => setIsBrandInlineVideoPlaying(true)}
+                  onPause={() => setIsBrandInlineVideoPlaying(false)}
+                  onEnded={() => setIsBrandInlineVideoPlaying(false)}
                 />
+                {!isBrandInlineVideoPlaying ? (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => brandInlineVideoRef.current?.play()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') brandInlineVideoRef.current?.play();
+                    }}
+                    className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/35 via-black/10 to-transparent cursor-pointer"
+                  >
+                    <span className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#c8ff00] text-black flex items-center justify-center shadow-[0_12px_32px_rgba(0,0,0,0.25)]">
+                      <Play className="w-6 h-6 md:w-7 md:h-7 translate-x-[1px]" />
+                    </span>
+                  </div>
+                ) : null}
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#c8ff00] text-black flex items-center justify-center shadow-[0_12px_32px_rgba(0,0,0,0.25)] group-hover:scale-105 transition-transform">
-                  <Play className="w-6 h-6 md:w-7 md:h-7 translate-x-[1px]" />
-                </span>
-              </div>
-            </button>
+            </div>
           </div>
         </div>
       </section>
       {/* Products Section */}
       <section className="py-16 md:py-24 bg-[#111]">
-        <div className="container-custom">
-          <div className="bg-white rounded-[28px] md:rounded-[36px] px-6 md:px-12 py-10 md:py-14">
+        <div className="content-container">
+          <div
+            ref={productsBoxRef}
+            className="bg-white rounded-[28px] md:rounded-[36px] px-6 md:px-12 py-10 md:py-14 scroll-mt-24 md:scroll-mt-32"
+          >
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 md:gap-10">
               <div className="max-w-3xl">
                 <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-bold tracking-wider">
-                  产品清单
+                  {lang === 'zh' ? '产品清单' : 'Product List'}
                 </div>
                 <h2 className="mt-6 text-3xl md:text-5xl font-black text-black tracking-tight">
                   {activeCatalog.title}
                 </h2>
               </div>
               <div className="text-black/60 text-sm md:text-base leading-relaxed max-w-xl md:text-right">
-                <div className="font-semibold text-black/70">{activeBrand.name} · 产品矩阵</div>
+                <div className="flex items-center justify-between md:justify-end gap-4">
+                  <div className="font-semibold text-black/70">
+                    {lang === 'zh' ? `${activeBrand.name} · 产品矩阵` : `${activeBrand.name} · Portfolio`}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div ref={brandSwitcherRef} className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setIsBrandListOpen((v) => !v)}
+                        className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-2 rounded-full text-xs md:text-sm font-semibold text-black hover:border-gray-300 transition-colors"
+                        aria-label={lang === 'zh' ? '展开品牌列表' : 'Open brand list'}
+                      >
+                        <img src={activeBrand.logo} alt={activeBrand.name} className="h-4 md:h-5 w-auto" draggable="false" />
+                        <span className="max-w-[8rem] truncate">{activeBrand.name}</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${isBrandListOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      {isBrandListOpen ? (
+                        <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white border border-black/10 shadow-[0_24px_60px_rgba(0,0,0,0.18)] p-1 z-30">
+                          <div className="max-h-80 overflow-auto">
+                            {brands.map((b, idx) => {
+                              const active = idx === activeBrandIndex;
+                              return (
+                                <button
+                                  key={b.id}
+                                  type="button"
+                                  onClick={() => selectBrand(idx)}
+                                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors ${
+                                    active ? 'bg-[#c8ff00]/30' : 'hover:bg-black/5'
+                                  }`}
+                                >
+                                  <img src={b.logo} alt={b.name} className="h-5 w-auto" draggable="false" />
+                                  <div className="min-w-0">
+                                    <div className="text-sm font-bold text-black truncate">{b.name}</div>
+                                    <div className="text-xs text-black/50 truncate">{b.subtitle}</div>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="inline-flex items-center rounded-full bg-gray-50 border border-gray-200 p-1">
+                      <button
+                        type="button"
+                        onClick={() => switchBrand(-1)}
+                        className="w-9 h-9 rounded-full text-black/70 hover:bg-[#c8ff00] hover:text-black transition-colors flex items-center justify-center"
+                        aria-label={lang === 'zh' ? '上一品牌' : 'Previous brand'}
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => switchBrand(1)}
+                        className="w-9 h-9 rounded-full text-black/70 hover:bg-[#c8ff00] hover:text-black transition-colors flex items-center justify-center"
+                        aria-label={lang === 'zh' ? '下一品牌' : 'Next brand'}
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <div className="mt-2">{activeCatalog.description}</div>
               </div>
             </div>
@@ -2870,7 +3051,7 @@ const HotStores = () => {
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
               {pagedProducts.length === 0 ? (
                 <div className="col-span-full rounded-2xl border border-black/10 bg-black/5 p-10 text-center text-black/60">
-                  暂无符合筛选条件的产品
+                  {lang === 'zh' ? '暂无符合筛选条件的产品' : 'No products match the current filters.'}
                 </div>
               ) : (
                 pagedProducts.map((p) => {
@@ -2887,8 +3068,24 @@ const HotStores = () => {
                     }))
                     .filter((g) => g.options.length > 0);
                   const images = [p.image, activeBrand.heroImage, activeBrand.cardImage].filter(Boolean);
-                  const recommendedProducts = filteredProducts
-                    .filter((x) => x.categoryId === p.categoryId && x.id !== p.id)
+                  const functionValue = p.attrs?.function ?? null;
+                  const getCategoryLabel = (id: string) =>
+                    categoryOptions.find((o) => o.value === id)?.label ?? '';
+                  const baseRecommended = activeCatalog.products.filter((x) => x.id !== p.id);
+                  const sameCategory = baseRecommended.filter((x) => x.categoryId === p.categoryId);
+                  const sameFunctionOtherCategory =
+                    functionValue == null
+                      ? []
+                      : baseRecommended.filter(
+                          (x) => x.categoryId !== p.categoryId && (x.attrs?.function ?? null) === functionValue
+                        );
+                  const otherProducts =
+                    functionValue == null
+                      ? baseRecommended.filter((x) => x.categoryId !== p.categoryId)
+                      : baseRecommended.filter(
+                          (x) => x.categoryId !== p.categoryId && (x.attrs?.function ?? null) !== functionValue
+                        );
+                  const recommendedProducts = [...sameCategory, ...sameFunctionOtherCategory, ...otherProducts]
                     .slice(0, 12)
                     .map((x) => ({
                       id: x.id,
@@ -2897,6 +3094,9 @@ const HotStores = () => {
                       tag: x.tag,
                       weightKg: x.weightKg,
                       weightLb: x.weightLb,
+                      priceUsd: x.priceUsd,
+                      categoryId: x.categoryId,
+                      categoryLabel: getCategoryLabel(x.categoryId),
                     }));
                   const payload = {
                     productId: p.id,
@@ -2908,6 +3108,7 @@ const HotStores = () => {
                     tag: p.tag,
                     weightKg: p.weightKg,
                     weightLb: p.weightLb,
+                    priceUsd: p.priceUsd,
                     categoryId: p.categoryId,
                     categoryLabel,
                     variantGroups,
@@ -2998,8 +3199,8 @@ const HotStores = () => {
         </div>
       </section>
 
- <section className="py-16 md:py-24 bg-white border-y border-gray-100 overflow-hidden">
-        <div className="container-custom max-w-[1400px]">
+ <section className="py-16 md:py-24 bg-white overflow-hidden">
+        <div className="content-container">
           <div className="text-center mb-16">
             <h3 className="text-sm md:text-base font-bold text-gray-800 tracking-wider">
               ABLAZING的合作伙伴遍布全球
@@ -3024,29 +3225,29 @@ const HotStores = () => {
             >
               {[1, 2, 3].map((setIndex) => (
                 <div key={`partners-brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg" alt="BORGWARNER" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg" alt="BORGWARNER" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
-                  <div className="h-5 md:h-6 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/lennar.svg" alt="LENNAR" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/lennar.svg" alt="LENNAR" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
-                  <div className="h-8 md:h-10 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg" alt="NORWEGIAN CRUISE LINE" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg" alt="NORWEGIAN CRUISE LINE" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
-                  <div className="h-8 md:h-10 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/adidas-4.svg" alt="adidas" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/adidas-4.svg" alt="adidas" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/fila-9.svg" alt="FILA" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/fila-9.svg" alt="FILA" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/nike-11.svg" alt="Nike" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/nike-11.svg" alt="Nike" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/puma-logo.svg" alt="PUMA" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/puma-logo.svg" alt="PUMA" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
-                  <div className="h-6 md:h-8 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0">
-                    <img src="https://cdn.worldvectorlogo.com/logos/reebok-1.svg" alt="Reebok" className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                    <img src="https://cdn.worldvectorlogo.com/logos/reebok-1.svg" alt="Reebok" className="h-full w-auto object-contain opacity-80 pointer-events-none" draggable="false" />
                   </div>
                 </div>
               ))}
@@ -3059,54 +3260,21 @@ const HotStores = () => {
       </section>
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-black">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
-              了解醒动 <span className="text-[#c8ff00]">·</span> 全球运动健身专业选品服务商
-            </h2>
-            <button className="bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
-              了解更多
-            </button>
+        <div className="content-container">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-white text-center md:text-left">
+                {t('home.cta.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.cta.titleRight')}
+              </h2>
+              <div className="flex items-center justify-center md:justify-end">
+                <Link to="/contact" className="bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
+                  {t('cta.learnMore')}
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
-
-      {isBrandVideoOpen ? (
-        <div
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-          onMouseDown={() => setIsBrandVideoOpen(false)}
-        >
-          <div
-            className="w-full max-w-5xl bg-black rounded-2xl overflow-hidden border border-white/10"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-white/10">
-              <div className="text-white text-sm md:text-base font-semibold">
-                {activeBrand.name} · 品牌视频
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsBrandVideoOpen(false)}
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/15 text-white flex items-center justify-center transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="bg-black">
-              <video
-                key={activeBrand.id}
-                src={brandVideoUrl}
-                poster={activeBrand.heroImage}
-                className="w-full h-auto"
-                controls
-                autoPlay
-                muted
-                playsInline
-              />
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 };

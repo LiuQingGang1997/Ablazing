@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, AtSign, MapPin, Phone, Quote } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
 
 const Contact = () => {
+  const { lang, t } = useI18n();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -29,40 +31,65 @@ const Contact = () => {
     e.preventDefault();
   };
 
-  const contactInfo = [
-    { title: '公众号', value: '@ABLAZING', icon: AtSign },
-    { title: '联系地址', value: '领巢大厦，上海市', icon: MapPin },
-    { title: '联系电话', value: '+1234 5678978', icon: Phone },
-  ];
+  const contactInfo = useMemo(
+    () => [
+      { title: lang === 'zh' ? '公众号' : 'Official', value: '@ABLAZING', icon: AtSign },
+      { title: lang === 'zh' ? '联系地址' : 'Address', value: lang === 'zh' ? '领巢大厦，上海市' : 'Lingchao Building, Shanghai', icon: MapPin },
+      { title: lang === 'zh' ? '联系电话' : 'Phone', value: '+1234 5678978', icon: Phone },
+    ],
+    [lang],
+  );
 
-  const typeOptions = ['家用', '企业', '酒店', '健身房', '设计', '学校', '售后', '其他'] as const;
+  const typeOptions = useMemo(
+    () =>
+      [
+        { value: '家用', label: lang === 'zh' ? '家用' : 'Home' },
+        { value: '企业', label: lang === 'zh' ? '企业' : 'Business' },
+        { value: '酒店', label: lang === 'zh' ? '酒店' : 'Hotel' },
+        { value: '健身房', label: lang === 'zh' ? '健身房' : 'Gym' },
+        { value: '设计', label: lang === 'zh' ? '设计' : 'Design' },
+        { value: '学校', label: lang === 'zh' ? '学校' : 'School' },
+        { value: '售后', label: lang === 'zh' ? '售后' : 'After-sales' },
+        { value: '其他', label: lang === 'zh' ? '其他' : 'Other' },
+      ] as const,
+    [lang],
+  );
 
-  const testimonials = [
-    {
-      id: 1,
-      content:
-        '醒动团队为我们提供了极其专业的选品建议。他们不仅懂产品，更懂市场趋势。在他们的帮助下，我们的健身房器械采购成本降低了20%，但会员满意度却大幅提升。',
-      author: '张总',
-      role: '某高端连锁健身房 创始人',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop',
-    },
-    {
-      id: 2,
-      content:
-        '作为一家初创的运动科技品牌，我们非常感谢醒动的供应链资源整合能力。他们帮助我们快速找到了符合严苛质量标准的代工厂，让我们的智能跳绳得以提前3个月量产上市。',
-      author: '李明',
-      role: '智能运动硬件公司 CEO',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
-    },
-    {
-      id: 3,
-      content:
-        '与醒动的合作是一次非常愉快的体验。他们对于全球运动健身产业的洞察令人印象深刻。从最初的概念规划到最终的产品落地，他们始终是我们最可靠的战略伙伴。',
-      author: 'Sarah',
-      role: '国际运动服饰品牌 亚太区总监',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop',
-    },
-  ];
+  const testimonials = useMemo(
+    () => [
+      {
+        id: 1,
+        content:
+          lang === 'zh'
+            ? '醒动团队为我们提供了极其专业的选品建议。他们不仅懂产品，更懂市场趋势。在他们的帮助下，我们的健身房器械采购成本降低了20%，但会员满意度却大幅提升。'
+            : 'Ablazing gave us highly professional product-selection advice. They understand products and market trends. With their help, our equipment costs dropped by 20% while member satisfaction increased significantly.',
+        author: lang === 'zh' ? '张总' : 'Mr. Zhang',
+        role: lang === 'zh' ? '某高端连锁健身房 创始人' : 'Founder, Premium Fitness Chain',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop',
+      },
+      {
+        id: 2,
+        content:
+          lang === 'zh'
+            ? '作为一家初创的运动科技品牌，我们非常感谢醒动的供应链资源整合能力。他们帮助我们快速找到了符合严苛质量标准的代工厂，让我们的智能跳绳得以提前3个月量产上市。'
+            : 'As a sports-tech startup, we truly appreciate Ablazing’s supply-chain integration. They helped us quickly find factories meeting strict quality standards, accelerating our product launch by three months.',
+        author: lang === 'zh' ? '李明' : 'Li Ming',
+        role: lang === 'zh' ? '智能运动硬件公司 CEO' : 'CEO, Smart Fitness Hardware',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
+      },
+      {
+        id: 3,
+        content:
+          lang === 'zh'
+            ? '与醒动的合作是一次非常愉快的体验。他们对于全球运动健身产业的洞察令人印象深刻。从最初的概念规划到最终的产品落地，他们始终是我们最可靠的战略伙伴。'
+            : "Working with Ablazing has been a great experience. Their insight into the global sports and fitness industry is impressive. From concept planning to product delivery, they've been our most reliable strategic partner.",
+        author: 'Sarah',
+        role: lang === 'zh' ? '国际运动服饰品牌 亚太区总监' : 'APAC Director, Global Sportswear Brand',
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop',
+      },
+    ],
+    [lang],
+  );
 
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
@@ -82,14 +109,14 @@ const Contact = () => {
 
   const partnersLogos = useMemo(
     () => [
-      { src: 'https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg', alt: 'BORGWARNER', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/lennar.svg', alt: 'LENNAR', h: 'h-5 md:h-6' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg', alt: 'NORWEGIAN CRUISE LINE', h: 'h-8 md:h-10' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/adidas-4.svg', alt: 'adidas', h: 'h-8 md:h-10' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/fila-9.svg', alt: 'FILA', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/nike-11.svg', alt: 'Nike', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/puma-logo.svg', alt: 'PUMA', h: 'h-6 md:h-8' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/reebok-1.svg', alt: 'Reebok', h: 'h-6 md:h-8' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg', alt: 'BORGWARNER' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/lennar.svg', alt: 'LENNAR' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg', alt: 'NORWEGIAN CRUISE LINE' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/adidas-4.svg', alt: 'adidas' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/fila-9.svg', alt: 'FILA' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/nike-11.svg', alt: 'Nike' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/puma-logo.svg', alt: 'PUMA' },
+      { src: 'https://cdn.worldvectorlogo.com/logos/reebok-1.svg', alt: 'Reebok' },
     ],
     []
   );
@@ -216,7 +243,7 @@ const Contact = () => {
 
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(data?.error || '发送失败，请稍后再试');
+        throw new Error(data?.error || (lang === 'zh' ? '发送失败，请稍后再试' : 'Failed to send. Please try again later.'));
       }
 
       setSubmitSuccess(true);
@@ -232,7 +259,7 @@ const Contact = () => {
         website: '',
       }));
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : '发送失败，请稍后再试');
+      setSubmitError(err instanceof Error ? err.message : (lang === 'zh' ? '发送失败，请稍后再试' : 'Failed to send. Please try again later.'));
     } finally {
       setSending(false);
     }
@@ -241,34 +268,28 @@ const Contact = () => {
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
-      <section className="py-20 md:py-32 relative overflow-hidden">
-        <div className="absolute inset-0">
+      <section className="relative min-h-[100svh] pt-20 pb-0 md:pt-32 md:pb-0">
+        <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-black via-[#6f7e35] to-[#f6f2e8]" />
           <div className="absolute -top-40 left-[-15%] w-[70vw] h-[70vw] rounded-full bg-[#c8ff00]/25 blur-3xl" />
           <div className="absolute top-0 right-[-20%] w-[60vw] h-[60vw] rounded-full bg-white/10 blur-3xl" />
           <div className="absolute inset-0 bg-black/20" />
         </div>
-        <div className="container-custom">
+        <div className="content-container">
           <div className="relative">
             <div className="flex flex-col items-center text-center">
-              <div className="w-10 h-10 rounded-full bg-black/30 border border-white/15 backdrop-blur flex items-center justify-center">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/85" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                </div>
-              </div>
+              
 
               <h1 className="mt-8 text-5xl md:text-7xl font-black tracking-tight text-white">
-                联系醒动
+                {lang === 'zh' ? '联系醒动' : 'Contact Ablazing'}
               </h1>
               <p className="mt-6 text-xl md:text-2xl font-bold text-white/85">
-                全球运动健身 专业选品服务商
+                {t('home.services.title')}
               </p>
               <p className="mt-8 max-w-3xl text-sm md:text-base text-white/75 md:text-black/70 leading-relaxed">
-                在运动的进化浪潮中，醒动是您的首席选品官。
+                {t('home.hero.descLine1')}
                 <br />
-                我们以全球视野甄选，以战略思维匹配，让每一次直指增长核心。
+                {t('home.hero.descLine2')}
               </p>
 
               <div className="mt-16 md:mt-20 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-14">
@@ -291,13 +312,15 @@ const Contact = () => {
 
       {/* Contact Form Section */}
       <section className="py-16 md:py-24 bg-white">
-        <div className="container-custom">
+        <div className="content-container">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white text-black rounded-[28px] md:rounded-[36px] px-6 md:px-12 py-10 md:py-14">
               <div className="text-center">
-                <h2 className="text-2xl md:text-3xl font-black">联系醒动</h2>
+                <h2 className="text-2xl md:text-3xl font-black">{lang === 'zh' ? '联系醒动' : 'Contact Ablazing'}</h2>
                 <div className="mt-4 text-sm text-black/60">
-                  立即获得支持 — 随时与我们的团队取得联系，获取快速帮助和专家指导！
+                  {lang === 'zh'
+                    ? '立即获得支持 — 随时与我们的团队取得联系，获取快速帮助和专家指导！'
+                    : 'Get support now — reach out to our team for fast help and expert guidance.'}
                 </div>
               </div>
 
@@ -311,7 +334,7 @@ const Contact = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="firstName" className="block text-xs font-semibold text-black/70">
-                      名 First name *
+                      {lang === 'zh' ? '名 First name *' : 'First name *'}
                     </label>
                     <input
                       id="firstName"
@@ -320,13 +343,13 @@ const Contact = () => {
                       required
                       value={formData.firstName}
                       onChange={handleChange}
-                      placeholder="First name"
+                      placeholder={lang === 'zh' ? 'First name' : 'First name'}
                       className="mt-3 w-full rounded-xl bg-gray-100 px-4 py-3 text-sm outline-none ring-1 ring-transparent focus:ring-[#c8ff00]"
                     />
                   </div>
                   <div>
                     <label htmlFor="lastName" className="block text-xs font-semibold text-black/70">
-                      姓 Last name *
+                      {lang === 'zh' ? '姓 Last name *' : 'Last name *'}
                     </label>
                     <input
                       id="lastName"
@@ -335,7 +358,7 @@ const Contact = () => {
                       required
                       value={formData.lastName}
                       onChange={handleChange}
-                      placeholder="Last name"
+                      placeholder={lang === 'zh' ? 'Last name' : 'Last name'}
                       className="mt-3 w-full rounded-xl bg-gray-100 px-4 py-3 text-sm outline-none ring-1 ring-transparent focus:ring-[#c8ff00]"
                     />
                   </div>
@@ -343,7 +366,7 @@ const Contact = () => {
 
                 <div>
                   <label htmlFor="email" className="block text-xs font-semibold text-black/70">
-                    邮箱 Email *
+                    {lang === 'zh' ? '邮箱 Email *' : 'Email *'}
                   </label>
                   <input
                     id="email"
@@ -359,7 +382,7 @@ const Contact = () => {
 
                 <div>
                   <label htmlFor="address" className="block text-xs font-semibold text-black/70">
-                    地址 Address *
+                    {lang === 'zh' ? '地址 Address *' : 'Address *'}
                   </label>
                   <input
                     id="address"
@@ -375,7 +398,7 @@ const Contact = () => {
 
                 <div>
                   <label htmlFor="phone" className="block text-xs font-semibold text-black/70">
-                    联系电话 Phone Number *
+                    {lang === 'zh' ? '联系电话 Phone Number *' : 'Phone Number *'}
                   </label>
                   <input
                     id="phone"
@@ -390,18 +413,18 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <div className="text-xs font-semibold text-black/70">需求类型 Type*</div>
+                  <div className="text-xs font-semibold text-black/70">{lang === 'zh' ? '需求类型 Type*' : 'Type *'}</div>
                   <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-y-4">
                     {typeOptions.map((opt) => (
-                      <label key={opt} className="inline-flex items-center gap-3 text-sm text-black/70">
+                      <label key={opt.value} className="inline-flex items-center gap-3 text-sm text-black/70">
                         <input
                           type="radio"
                           name="type"
-                          checked={formData.type === opt}
-                          onChange={() => handleTypeChange(opt)}
+                          checked={formData.type === opt.value}
+                          onChange={() => handleTypeChange(opt.value)}
                           className="w-4 h-4 accent-black"
                         />
-                        <span>{opt}</span>
+                        <span>{opt.label}</span>
                       </label>
                     ))}
                   </div>
@@ -409,7 +432,7 @@ const Contact = () => {
 
                 <div>
                   <label htmlFor="message" className="block text-xs font-semibold text-black/70">
-                    需求信息 Message
+                    {lang === 'zh' ? '需求信息 Message' : 'Message'}
                   </label>
                   <textarea
                     id="message"
@@ -417,7 +440,7 @@ const Contact = () => {
                     rows={6}
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Message here..."
+                    placeholder={lang === 'zh' ? 'Message here...' : 'Write your message...'}
                     className="mt-3 w-full rounded-xl bg-gray-100 px-4 py-3 text-sm outline-none ring-1 ring-transparent focus:ring-[#c8ff00] resize-none"
                   />
                 </div>
@@ -433,14 +456,28 @@ const Contact = () => {
                     disabled={sending}
                     className="w-full rounded-full bg-[#c8ff00] text-black py-4 text-sm font-bold hover:bg-[#d7ff33] disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
                   >
-                    {sending ? '发送中...' : 'Sent to Us'}
+                    {sending ? (lang === 'zh' ? '发送中...' : 'Sending...') : (lang === 'zh' ? '发送给我们' : 'Send to Us')}
                   </button>
 
                   {submitError ? <div className="mt-4 text-sm text-red-600 text-center">{submitError}</div> : null}
-                  {submitSuccess ? <div className="mt-4 text-sm text-emerald-600 text-center">已发送，我们会尽快联系你</div> : null}
+                  {submitSuccess ? (
+                    <div className="mt-4 text-sm text-emerald-600 text-center">
+                      {lang === 'zh' ? '已发送，我们会尽快联系你' : 'Sent! We will get back to you soon.'}
+                    </div>
+                  ) : null}
 
                   <div className="mt-6 text-center text-xs text-black/50">
-                    联系我们即表示您同意遵守我们的 <span className="font-semibold text-black/60">服务条款</span> 和 <span className="font-semibold text-black/60">隐私政策</span>。
+                    {lang === 'zh' ? (
+                      <>
+                        联系我们即表示您同意遵守我们的 <span className="font-semibold text-black/60">服务条款</span> 和{' '}
+                        <span className="font-semibold text-black/60">隐私政策</span>。
+                      </>
+                    ) : (
+                      <>
+                        By contacting us, you agree to our <span className="font-semibold text-black/60">Terms</span> and{' '}
+                        <span className="font-semibold text-black/60">Privacy Policy</span>.
+                      </>
+                    )}
                   </div>
                 </div>
               </form>
@@ -449,15 +486,15 @@ const Contact = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-white border-y border-gray-100 overflow-hidden relative">
-        <div className="container-custom relative z-10">
+      <section className="py-16 md:py-24 bg-white overflow-hidden relative">
+        <div className="content-container relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-1.5 rounded-full mb-6 shadow-[0_0_15px_rgba(200,255,0,0.3)]">
                 <Quote className="w-4 h-4 text-black" />
-                <span className="text-black text-sm tracking-wide font-bold">客户评价</span>
+                <span className="text-black text-sm tracking-wide font-bold">{t('home.testimonials.badge')}</span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-black text-black mb-4 tracking-tight">听听他们怎么说</h2>
+              <h2 className="text-3xl md:text-5xl font-black text-black mb-4 tracking-tight">{t('home.testimonials.title')}</h2>
             </div>
 
             <div className="relative py-8 md:py-12">
@@ -511,10 +548,10 @@ const Contact = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-white border-y border-gray-100 overflow-hidden">
-        <div className="container-custom max-w-[1400px]">
+      <section className="py-16 md:py-24 bg-white overflow-hidden">
+        <div className="content-container">
           <div className="text-center mb-16">
-            <h3 className="text-sm md:text-base font-bold text-gray-800 tracking-wider">ABLAZING的合作伙伴遍布全球</h3>
+            <h3 className="text-sm md:text-base font-bold text-gray-800 tracking-wider">{t('home.brands.title')}</h3>
           </div>
 
           <div className="mt-10 relative" onMouseEnter={() => setIsPartnersLogoWallHovered(true)} onMouseLeave={() => setIsPartnersLogoWallHovered(false)}>
@@ -540,9 +577,14 @@ const Contact = () => {
                   {partnersLogos.map((l) => (
                     <div
                       key={`${setIndex}-${l.alt}`}
-                      className={`${l.h} opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none grayscale flex items-center justify-center shrink-0`}
+                      className="h-8 md:h-9 flex items-center justify-center shrink-0"
                     >
-                      <img src={l.src} alt={l.alt} className="h-full w-auto object-contain pointer-events-none" draggable="false" />
+                      <img
+                        src={l.src}
+                        alt={l.alt}
+                        className="h-full w-auto object-contain opacity-80"
+                        draggable="false"
+                      />
                     </div>
                   ))}
                 </div>
