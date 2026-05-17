@@ -969,16 +969,16 @@ const Home = () => {
 
               {/* Right Column: Image */}
               <div
-                className="lg:col-span-7 relative aspect-[4/3] md:aspect-auto min-h-[400px] md:min-h-[600px]"
+                className="lg:col-span-7 relative aspect-[9/16] md:aspect-auto min-h-[400px] md:min-h-[600px]"
                 onMouseEnter={() => setIsCaseStudyHovered(true)}
                 onMouseLeave={() => setIsCaseStudyHovered(false)}
               >
-                <div className="absolute inset-0 rounded-[32px] overflow-hidden bg-black/5">
+                <div className="absolute inset-0 rounded-[32px] overflow-hidden">
                   <img
                     key={displayedCaseStudyImage}
                     src={displayedCaseStudyImage}
                     alt={`${currentCaseStudy.title} Gym Interior`}
-                    className={`w-full h-full object-contain object-center transition-all duration-700 animate-fade-in`}
+                    className={`w-full h-full object-cover object-center transition-all duration-700 animate-fade-in`}   /* 点击切换视频${isCaseStudyHovered ? 'opacity-0 scale-105' : 'opacity-100'}*/
                     draggable="false"
                   />
                   {/* {isCaseStudyHovered ? (
