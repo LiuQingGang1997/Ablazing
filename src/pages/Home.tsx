@@ -71,6 +71,12 @@ const Home = () => {
         location: "中国-深圳",
         date: "25th Oct",
         image: "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/case_01.jpg",
+        images: [
+          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case2.jpg",
+          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case1.jpg",
+          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case3.jpg",
+          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case4.jpg"
+        ],
         accordions: [
           {
             id: 0,
@@ -339,11 +345,13 @@ const Home = () => {
   };
 
   const currentCaseStudy = venueCards[activeCaseIndex].caseStudy;
-  const caseStudyImages = [
-    currentCaseStudy.image,
-    venueCards[activeCaseIndex].image.replace(/w=\d+&h=\d+/, 'w=1400&h=1000'),
-    'https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=1400&h=1000&fit=crop',
-  ];
+  const caseStudyImages = currentCaseStudy.images && currentCaseStudy.images.length > 0 
+    ? currentCaseStudy.images 
+    : [
+        currentCaseStudy.image,
+        venueCards[activeCaseIndex].image.replace(/w=\d+&h=\d+/, 'w=1400&h=1000'),
+        'https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=1400&h=1000&fit=crop',
+      ];
   const displayedCaseStudyImage = caseStudyImages[caseStudyImageIndex] ?? currentCaseStudy.image;
   const caseStudyVideos = [
     caseStudyVideoUrl,
