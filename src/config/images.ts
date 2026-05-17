@@ -7,21 +7,43 @@ export const imageConfig = {
   banners: [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1920&h=1080&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/banner1.webp?w=1920&h=1080&fit=crop',
       title: '品质生活，从这里开始',
-      subtitle: '精选全球好物，为您打造优质生活体验'
+      subtitle: '精选全球好物，为您打造优质生活体验',
+      desktopPosition: 'center',
+      mobilePosition: 'center'
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&h=600&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/banner2.webp?w=1920&h=600&fit=crop',
       title: '新品上市，限时特惠',
-      subtitle: '全场满减优惠，精彩不容错过'
+      subtitle: '全场满减优惠，精彩不容错过',
+      desktopPosition: 'center',
+      mobilePosition: '60% center'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=1920&h=600&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/banner3.webp?w=1920&h=600&fit=crop',
       title: '品质保证，售后无忧',
-      subtitle: '7天无理由退换，购物更放心'
+      subtitle: '7天无理由退换，购物更放心',
+      desktopPosition: 'center',
+      mobilePosition: '40% center'
+    },
+    {
+      id: 4,
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/banner4.webp?w=1920&h=600&fit=crop',
+      title: '品质保证，售后无忧',
+      subtitle: '7天无理由退换，购物更放心',
+      desktopPosition: 'center',
+      mobilePosition: '70% center'
+    },
+    {
+      id: 5 ,
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/banner5.webp?w=1920&h=600&fit=crop',
+      title: '品质保证，售后无忧',
+      subtitle: '7天无理由退换，购物更放心',
+      desktopPosition: 'center',
+      mobilePosition: '30% center'
     }
   ],
   

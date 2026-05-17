@@ -9,6 +9,8 @@ export interface Banner {
   title: string;
   subtitle?: string;
   link?: string;
+  mobilePosition?: string;
+  desktopPosition?: string;
 }
 
 export interface Product {

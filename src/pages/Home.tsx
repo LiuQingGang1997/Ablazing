@@ -502,9 +502,13 @@ const Home = () => {
               key={banner.id || idx}
               src={banner.image}
               alt=""
-              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 [object-position:var(--m-pos)] md:[object-position:var(--pc-pos)] ${
                 idx === activeHeroIndex ? 'opacity-100' : 'opacity-0'
               }`}
+              style={{
+                '--m-pos': banner.mobilePosition || 'center',
+                '--pc-pos': banner.desktopPosition || 'center',
+              } as React.CSSProperties}
               draggable="false"
             />
           ))}
@@ -555,19 +559,6 @@ const Home = () => {
                 <ArrowRight className="w-6 h-6" />
               </button>
 
-              {/* Centered Indicators */}
-              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-3">
-                {heroBanners.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveHeroIndex(idx)}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      idx === activeHeroIndex ? 'w-8 bg-[#c8ff00]' : 'w-2 bg-white/40 hover:bg-white/70'
-                    }`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
             </>
           )}
            
