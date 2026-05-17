@@ -59,7 +59,7 @@ const Header = () => {
           <Link to="/" className="flex items-center">
             <div className="flex flex-col leading-none md:flex-row md:items-center md:gap-3">
               <span className="text-[#c8ff00] text-xl font-bold tracking-wider">醒动</span>
-              <span className="text-white/60 text-xs md:text-sm tracking-widest mt-1 md:mt-0">ABLAZING</span>
+              <span className="text-[#c8ff00] text-xl font-bold tracking-wider">ABLAZING</span>
             </div>
           </Link>
 

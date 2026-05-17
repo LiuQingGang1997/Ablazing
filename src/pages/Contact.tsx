@@ -292,7 +292,7 @@ const Contact = () => {
                 {t('home.hero.descLine2')}
               </p>
 
-              <div className="mt-16 md:mt-20 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-14">
+              <div className="mt-16 md:mt-20 flex flex-col md:flex-row items-start md:items-center justify-center gap-10 md:gap-14 w-fit mx-auto">
                 {contactInfo.map((info) => (
                   <div key={info.title} className="flex items-center gap-4">
                     <div className="w-11 h-11 rounded-2xl bg-[#c8ff00] text-black flex items-center justify-center shrink-0">
