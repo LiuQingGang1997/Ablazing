@@ -2571,11 +2571,11 @@ const HotStores = () => {
                   draggable="false"
                 />
               </div>
-              <div className="mt-8 text-4xl md:text-5xl lg:text-6xl font-black tracking-tight">
+              <div className="mt-8 md:mt-6 text-4xl md:text-4xl font-black tracking-tight">
                 {activeBrand.title}
               </div>
-              <div className="mt-8 text-white/70 text-base md:text-lg lg:text-xl leading-relaxed max-w-2xl">
-                <div className="text-white/80 font-medium mb-3 text-lg md:text-xl">{activeBrand.subtitle}</div>
+              <div className="mt-8 text-white/70 text-base md:text-base leading-relaxed max-w-2xl">
+                <div className="text-white/80 font-medium mb-3 md:mb-0 md:font-normal text-lg md:text-base">{activeBrand.subtitle}</div>
                 <div className="mt-2">{activeBrand.description}</div>
               </div>
             </div>
@@ -2583,8 +2583,8 @@ const HotStores = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
               {stats.map((stat, index) => (
                 <div key={index} className="text-left">
-                  <div className="text-4xl md:text-5xl lg:text-6xl font-black text-[#c8ff00] mb-2">{stat.value}</div>
-                  <div className="text-white/60 text-base md:text-lg tracking-wider">{stat.label}</div>
+                  <div className="text-4xl md:text-4xl font-black text-[#c8ff00] mb-2 md:mb-1">{stat.value}</div>
+                  <div className="text-white/60 text-base md:text-sm tracking-wider">{stat.label}</div>
                 </div>
               ))}
             </div>
