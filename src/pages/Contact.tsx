@@ -268,7 +268,7 @@ const Contact = () => {
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-[100svh] pt-20 pb-0 md:pt-32 md:pb-0">
+      <section className="relative min-h-[100svh] flex flex-col justify-center pt-20 pb-20 md:pt-32 md:pb-32">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-black via-[#6f7e35] to-[#f6f2e8]" />
           <div className="absolute -top-40 left-[-15%] w-[70vw] h-[70vw] rounded-full bg-[#c8ff00]/25 blur-3xl" />
