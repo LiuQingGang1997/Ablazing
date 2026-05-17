@@ -537,20 +537,24 @@ const Home = () => {
                     </span>
                   </Link>
 
-          {/* Indicators */}
+          {/* Navigation Arrows */}
           {heroBanners.length > 1 && (
-            <div className="mt-12 flex gap-2">
-              {heroBanners.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveHeroIndex(idx)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    idx === activeHeroIndex ? 'w-8 bg-[#c8ff00]' : 'w-4 bg-white/30 hover:bg-white/50'
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
+            <>
+              <button
+                onClick={() => setActiveHeroIndex((prev) => (prev - 1 + heroBanners.length) % heroBanners.length)}
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm transition-all border border-white/10 hover:scale-105"
+                aria-label="Previous slide"
+              >
+                <ArrowLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => setActiveHeroIndex((prev) => (prev + 1) % heroBanners.length)}
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm transition-all border border-white/10 hover:scale-105"
+                aria-label="Next slide"
+              >
+                <ArrowRight className="w-6 h-6" />
+              </button>
+            </>
           )}
            
         </div>
