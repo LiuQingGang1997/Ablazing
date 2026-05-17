@@ -951,12 +951,20 @@ const Home = () => {
                 onMouseEnter={() => setIsCaseStudyHovered(true)}
                 onMouseLeave={() => setIsCaseStudyHovered(false)}
               >
-                <div className="absolute inset-0 rounded-[32px] overflow-hidden">
+                <div className="absolute inset-0 rounded-[32px] overflow-hidden bg-black flex items-center justify-center">
+                  {/* 背景高斯模糊效果，填补空白 */}
+                  <img
+                    key={`blur-${displayedCaseStudyImage}`}
+                    src={displayedCaseStudyImage}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110"
+                    draggable="false"
+                  />
                   <img
                     key={displayedCaseStudyImage}
                     src={displayedCaseStudyImage}
                     alt={`${currentCaseStudy.title} Gym Interior`}
-                    className={`w-full h-full object-contain object-center transition-all duration-700 animate-fade-in`}   /* 点击切换视频${isCaseStudyHovered ? 'opacity-0 scale-105' : 'opacity-100'}*/
+                    className={`relative z-10 w-full h-full object-contain object-center transition-all duration-700 animate-fade-in`}   /* 点击切换视频${isCaseStudyHovered ? 'opacity-0 scale-105' : 'opacity-100'}*/
                     draggable="false"
                   />
                   {/* {isCaseStudyHovered ? (
