@@ -2560,20 +2560,22 @@ const HotStores = () => {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(200,255,0,0.15),transparent_45%)]" />
         </div>
 
-        <div className="content-container relative z-10">
+        <div className="content-container relative z-10 py-16 md:py-24">
           <div className="max-w-3xl">
             <div className="mb-10">
-              <img
-                src={activeBrand.logo}
-                alt={activeBrand.name}
-                className="h-10 sm:h-12 md:h-16 w-auto"
-                draggable="false"
-              />
-              <div className="mt-6 text-3xl md:text-4xl font-black tracking-tight">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-white flex items-center justify-center p-4 md:p-5 mb-6 shadow-xl">
+                <img
+                  src={activeBrand.logo}
+                  alt={activeBrand.name}
+                  className="w-full h-full object-contain"
+                  draggable="false"
+                />
+              </div>
+              <div className="mt-8 text-4xl md:text-5xl lg:text-6xl font-black tracking-tight">
                 {activeBrand.title}
               </div>
-              <div className="mt-8 text-white/70 text-sm md:text-base leading-relaxed max-w-2xl">
-                <div className="text-white/80">{activeBrand.subtitle}</div>
+              <div className="mt-8 text-white/70 text-base md:text-lg lg:text-xl leading-relaxed max-w-2xl">
+                <div className="text-white/80 font-medium mb-3 text-lg md:text-xl">{activeBrand.subtitle}</div>
                 <div className="mt-2">{activeBrand.description}</div>
               </div>
             </div>
@@ -2581,8 +2583,8 @@ const HotStores = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
               {stats.map((stat, index) => (
                 <div key={index} className="text-left">
-                  <div className="text-3xl md:text-4xl font-black text-[#c8ff00] mb-1">{stat.value}</div>
-                  <div className="text-white/60 text-sm tracking-wider">{stat.label}</div>
+                  <div className="text-4xl md:text-5xl lg:text-6xl font-black text-[#c8ff00] mb-2">{stat.value}</div>
+                  <div className="text-white/60 text-base md:text-lg tracking-wider">{stat.label}</div>
                 </div>
               ))}
             </div>
