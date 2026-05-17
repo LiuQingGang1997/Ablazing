@@ -369,7 +369,7 @@ const About = () => {
 
   return (
     <div className="bg-white min-h-screen animate-fade-in">
-      <section className="relative min-h-[100svh] flex flex-col justify-center pt-20 pb-20 md:pt-32 md:pb-32">
+      <section className="relative min-h-[100svh] pt-32 pb-20 md:pt-48 md:pb-32">
         <div className="absolute inset-0 overflow-hidden">
           {config.company.hero ? <img src={config.company.hero} alt="" className="w-full h-full object-cover object-center" draggable="false" /> : null}
           <div className="absolute inset-0 bg-black/60" />
