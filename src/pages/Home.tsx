@@ -70,7 +70,7 @@ const Home = () => {
         title: "深圳第13店| 星河中心店 正式启幕",
         location: "中国-深圳",
         date: "25th Oct",
-        image: "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case1.jpg",
+        image: "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/case1.jpg",
         accordions: [
           {
             id: 0,
@@ -512,11 +512,46 @@ const Home = () => {
               draggable="false"
             />
           ))}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(200,255,0,0.15),transparent_45%)]" />
           <div className="absolute inset-0 bg-black/35" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/60" />
         </div>
 
-        <div className="content-container relative z-10 py-12 md:py-20">
+        {/* Navigation Arrows */}
+        {heroBanners.length > 1 && (
+          <>
+            <button
+              onClick={() => setActiveHeroIndex((prev) => (prev - 1 + heroBanners.length) % heroBanners.length)}
+              className="absolute left-4 md:left-8 top-[calc(50svh)] -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm transition-all border border-white/10 hover:scale-105"
+              aria-label="Previous slide"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => setActiveHeroIndex((prev) => (prev + 1) % heroBanners.length)}
+              className="absolute right-4 md:right-8 top-[calc(50svh)] -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm transition-all border border-white/10 hover:scale-105"
+              aria-label="Next slide"
+            >
+              <ArrowRight className="w-6 h-6" />
+            </button>
+
+            {/* Centered Indicators */}
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+              {heroBanners.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveHeroIndex(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    idx === activeHeroIndex ? 'w-8 bg-[#c8ff00]' : 'w-2 bg-white/40 hover:bg-white/70'
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="content-container relative z-10 py-12 md:py-20 flex flex-col justify-center h-full min-h-[calc(100svh-160px)]">
          
          
 
@@ -534,33 +569,12 @@ const Home = () => {
 
           {/* CTA Button */}
           
-            <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+            <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform w-fit">
                     <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
                     </span>
                   </Link>
-
-          {/* Navigation Arrows */}
-          {heroBanners.length > 1 && (
-            <>
-              <button
-                onClick={() => setActiveHeroIndex((prev) => (prev - 1 + heroBanners.length) % heroBanners.length)}
-                className="absolute left-4 md:left-8 top-[calc(50svh)] -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm transition-all border border-white/10 hover:scale-105"
-                aria-label="Previous slide"
-              >
-                <ArrowLeft className="w-6 h-6" />
-              </button>
-              <button
-                onClick={() => setActiveHeroIndex((prev) => (prev + 1) % heroBanners.length)}
-                className="absolute right-4 md:right-8 top-[calc(50svh)] -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm transition-all border border-white/10 hover:scale-105"
-                aria-label="Next slide"
-              >
-                <ArrowRight className="w-6 h-6" />
-              </button>
-
-            </>
-          )}
            
         </div>
         {/* Venue Cards Slider Section */}
