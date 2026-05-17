@@ -75,22 +75,22 @@ const Home = () => {
           {
             id: 0,
             title: "Background",
-            content: "超级猩猩作为国内领先的团课健身品牌，其徐汇店作为标杆门店，面临着如何在有限空间内最大化会员体验和坪效的双重挑战。我们需要为其打造一个兼具科技感和运动氛围的专属空间。"
+            content: "🏠 FUSION FITNESS 星河中心店\n📍 福田区星河发展中心L3层\n🚇 1号线｜会展中心D出口"
           },
           {
             id: 1,
             title: "Particularity",
-            content: "该门店的最大特色在于其“按次付费”的商业模式，这意味着每一节课的体验都必须做到极致。从灯光、音响到空气净化系统，每一个细节都直接影响着用户的复购率。"
+            content: "该门店的最大特色在于其💰年卡4开头\n可按月支付中途\n🉑 灵活解约，年卡可停卡"
           },
           {
             id: 2,
             title: "Strategy",
-            content: "我们为其引入了全套智能灯光交互系统，能够根据不同的课程类型（如瑜伽、动感单车、战绳）自动切换场景模式。同时，优化了声学设计，确保教练的声音和背景音乐能够完美融合。"
+            content: "✅ HYROX赛事级配置\n12台CENTR-HYROX专业设备\n全域覆盖深蹲架/雪橇车/风阻划船机实时联动\n✅ 器械党的狂欢\n从力量举到功能性训练\n设备多到选择恐惧症发作"
           },
           {
             id: 3,
             title: "Conclusion",
-            content: "改造后，徐汇店的晚间高峰期满客率提升了15%，用户在社交媒体上的主动分享意愿显著增加，成功将其打造成为了上海健身圈的新晋网红打卡地。"
+            content: "🏋️ 门店环境1200㎡ 健身空间\n层高开阔多元化运动分区\n力量、有氧、拳击、HYROX、功能性训练\n私密性好，社恐也能自在运动"
           }
         ]
       }
@@ -933,7 +933,7 @@ const Home = () => {
                         <div 
                           className={`overflow-hidden transition-all duration-500 ease-in-out ${isActive ? 'max-h-[400px] mt-6 opacity-100' : 'max-h-0 opacity-0'}`}
                         >
-                          <p className="text-[#bfbfbf] text-base leading-[1.8] font-light">
+                          <p className="text-[#bfbfbf] text-base leading-[1.8] font-light whitespace-pre-line">
                             {item.content}
                           </p>
                         </div>
