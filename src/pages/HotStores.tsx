@@ -2621,7 +2621,7 @@ const HotStores = () => {
                       }}
                       onMouseEnter={() => setHoveredBrandIndex(realIndex)}
                       onMouseLeave={() => setHoveredBrandIndex(null)}
-                      className={`flex-none w-1/6 aspect-square rounded-full overflow-hidden border-2 transition-all duration-300 ${
+                      className={`flex-none w-[calc(25%-12px)] md:w-1/6 aspect-square rounded-full overflow-hidden border-2 transition-all duration-300 ${
                         isActive ? 'border-[#c8ff00] scale-105' : 'border-white/10 hover:border-white/30'
                       }`}
                     >
