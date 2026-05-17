@@ -6,7 +6,17 @@ import { useI18n } from '../i18n/I18nProvider';
 
 const Home = () => {
   const { config } = useImageConfig();
-  const heroBg = config.banners?.[0]?.image;
+  const heroBanners = config.banners || [];
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+
+  useEffect(() => {
+    if (!heroBanners.length) return;
+    const interval = setInterval(() => {
+      setActiveHeroIndex((prev) => (prev + 1) % heroBanners.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroBanners.length]);
+
   const caseStudyVideoUrl = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
   const { t, lang } = useI18n();
   // 分类卡片数据
@@ -487,14 +497,17 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative min-h-[100svh] pt-20 pb-0 md:pt-32 md:pb-0">
         <div className="absolute inset-0 overflow-hidden">
-          {heroBg ? (
+          {heroBanners.map((banner, idx) => (
             <img
-              src={heroBg}
+              key={banner.id || idx}
+              src={banner.image}
               alt=""
-              className="w-full h-full object-cover object-center"
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
+                idx === activeHeroIndex ? 'opacity-100' : 'opacity-0'
+              }`}
               draggable="false"
             />
-          ) : null}
+          ))}
           <div className="absolute inset-0 bg-black/35" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/60" />
         </div>
@@ -523,6 +536,22 @@ const Home = () => {
                       <ArrowRight className="w-3 h-3" />
                     </span>
                   </Link>
+
+          {/* Indicators */}
+          {heroBanners.length > 1 && (
+            <div className="mt-12 flex gap-2">
+              {heroBanners.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveHeroIndex(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    idx === activeHeroIndex ? 'w-8 bg-[#c8ff00]' : 'w-4 bg-white/30 hover:bg-white/50'
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
            
         </div>
         {/* Venue Cards Slider Section */}
