@@ -499,7 +499,7 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/60" />
         </div>
 
-        <div className="content-container relative z-10">
+        <div className="content-container relative z-10 py-12 md:py-20">
          
          
 
