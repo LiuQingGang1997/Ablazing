@@ -70,7 +70,7 @@ const Home = () => {
         title: "深圳第13店| 星河中心店 正式启幕",
         location: "中国-深圳",
         date: "25th Oct",
-        image: "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/case_01.jpg",
+       
         images: [
           "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case2.jpg",
           "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case1.jpg",
@@ -969,16 +969,16 @@ const Home = () => {
 
               {/* Right Column: Image */}
               <div
-                className="lg:col-span-7 relative aspect-[9/16] md:aspect-auto min-h-[400px] md:min-h-[600px]"
+                className="lg:col-span-7 relative aspect-[4/3] md:aspect-auto min-h-[400px] md:min-h-[600px]"
                 onMouseEnter={() => setIsCaseStudyHovered(true)}
                 onMouseLeave={() => setIsCaseStudyHovered(false)}
               >
-                <div className="absolute inset-0 rounded-[32px] overflow-hidden">
+                <div className="absolute inset-0 rounded-[32px] overflow-hidden bg-black/5">
                   <img
                     key={displayedCaseStudyImage}
                     src={displayedCaseStudyImage}
                     alt={`${currentCaseStudy.title} Gym Interior`}
-                    className={`w-full h-full object-cover object-center transition-all duration-700 animate-fade-in`}   /* 点击切换视频${isCaseStudyHovered ? 'opacity-0 scale-105' : 'opacity-100'}*/
+                    className={`w-full h-full object-contain object-center transition-all duration-700 animate-fade-in`}
                     draggable="false"
                   />
                   {/* {isCaseStudyHovered ? (
