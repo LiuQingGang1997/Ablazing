@@ -398,7 +398,7 @@ const ProductDetail = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      <section className="relative min-h-[25svh] pt-20 pb-0 md:pt-32 md:pb-0">
+      <section className="relative min-h-[25svh] flex flex-col justify-center pt-24 pb-16 md:pt-32 md:pb-24">
         <div className="absolute inset-0 overflow-hidden">
           {heroBg ? <img src={heroBg} alt="" className="w-full h-full object-cover object-center" draggable="false" /> : null}
           <div className="absolute inset-0 bg-black/60" />
