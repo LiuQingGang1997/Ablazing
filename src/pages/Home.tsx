@@ -62,15 +62,15 @@ const Home = () => {
   const venueCards = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
-      location: '上海市徐汇区',
-      name: '超级猩猩健身 (徐汇店)',
-      date: '2023-10-25',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/case1.jpg?w=400&h=300&fit=crop',
+      location: '深圳福田区',
+      name: 'FUSION FITNESS(星河湾店)',
+      date: '2025-08-25',
       caseStudy: {
-        title: "Case Study: 超级猩猩如何打造沉浸式团课体验？",
-        location: "中国-上海",
+        title: "深圳第13店| 星河中心店 正式启幕",
+        location: "中国-深圳",
         date: "25th Oct",
-        image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=900&fit=crop",
+        image: "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case1.jpg",
         accordions: [
           {
             id: 0,
@@ -526,7 +526,7 @@ const Home = () => {
           </h1>
 
           {/* Description */}
-          <p className="text-white/70 text-lg mb-12 max-w-2xl">
+          <p className="text-white/70 text-lg mb-12 max-w-2xl pr-2" style={{fontSize: '1rem'}}>
             {t('home.hero.descLine1')}
             <br />
             {t('home.hero.descLine2')}
@@ -956,10 +956,10 @@ const Home = () => {
                     key={displayedCaseStudyImage}
                     src={displayedCaseStudyImage}
                     alt={`${currentCaseStudy.title} Gym Interior`}
-                    className={`w-full h-full object-cover object-center transition-all duration-700 ${isCaseStudyHovered ? 'opacity-0 scale-105' : 'opacity-100'} animate-fade-in`}
+                    className={`w-full h-full object-contain object-center transition-all duration-700 animate-fade-in`}   /* 点击切换视频${isCaseStudyHovered ? 'opacity-0 scale-105' : 'opacity-100'}*/
                     draggable="false"
                   />
-                  {isCaseStudyHovered ? (
+                  {/* {isCaseStudyHovered ? (
                     <video
                       key={displayedCaseStudyVideo}
                       src={displayedCaseStudyVideo}
@@ -970,7 +970,7 @@ const Home = () => {
                       playsInline
                       preload="metadata"
                     />
-                  ) : null}
+                  ) : null} */}
 
                   <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
                     <button
