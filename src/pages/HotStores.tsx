@@ -2545,7 +2545,7 @@ const HotStores = () => {
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-[100svh] pt-20 pb-0 md:pt-32 md:pb-0">
+      <section className="relative min-h-[100svh] pt-32 pb-16 md:pt-40 md:pb-24">
         <div className="absolute inset-0 overflow-hidden z-0">
           <video
             src={activeBrand.video}
