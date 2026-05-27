@@ -16,8 +16,8 @@ export const translations: Record<Language, Record<string, string>> = {
 
     'home.hero.titleLeft': '全球运动健身',
     'home.hero.titleRight': '专业选品服务商',
-    'home.hero.descLine1': '在运动的进化浪潮中，醒动是您的首席选品官。',
-    'home.hero.descLine2': '我们以全球视野甄选，以战略思维匹配，让每一次直指增长核心。',
+    'home.hero.descLine1': '醒动ABLAZING，做为专业高品质运动生活方式的先锋探索构建者。用专业的运动健身商业洞见与系统践行，为更多前沿的美学与专业运动场景打造，提供全方位的运动商业场景功能设计、咨询、与全球顶尖运动设备产品的定制化选品供应服务。',
+    'home.hero.descLine2': '',
     'home.venues.title': '热门运动场所',
 
     'home.section.curated.badge': '醒动严选',

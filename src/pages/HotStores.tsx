@@ -109,8 +109,8 @@ const HotStores = () => {
   };
 
   const brandCatalogMap: Record<string, BrandCatalog> = {
-    ntena: {
-      title: '提供多元、个性、潮流的训练方式',
+    TRUE: {
+      title: '诚信至关重要',
       description: '专业器械覆盖多场景训练需求，支持更高效的空间配置与运营。',
       filtersByCategoryId: {
         all: [
@@ -242,7 +242,7 @@ const HotStores = () => {
         ],
       },
       products: buildProducts(
-        'ntena',
+        'TRUE',
         ['stairclimber', 'treadmill', 'elliptical', 'bike'],
         (categoryId, i) => {
           const map: Record<string, string> = {
@@ -1379,15 +1379,15 @@ const HotStores = () => {
 
   const brands = [
     {
-      id: 'ntena',
-      name: 'ntena',
-      title: '全球新锐健身设备品牌引领者',
-      subtitle: 'INTENZA 聚焦专业健身运动领域',
-      description: '围绕有氧 · 力量 · 功能性训练构建三大前沿训练产品体系',
-      logo: makeLogoDataUri('ntena'),
-      foundedYear: 1998,
+      id: 'TRUE',
+      name: 'TRUE',
+      title: 'TRUE',
+      subtitle: 'TRUE Fitness 创立于 1981 年，总部位于美国密苏里州，长期专注于商用及家用健身器材研发与制造。',
+      description: '品牌以跑步机见长，强调耐用性、舒适性与性能表现，并以 “Integrity Matters” 为核心理念，致力于为健身房、酒店及高端用户提供可靠的有氧与力量训练解决方案。',
+      logo: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/True_logo.png',
+      foundedYear: 1981,
       overview:
-        'INTENZA 秉持专业与诚信的原则，发展成为一个以健康和可持续发展为驱动力的全球社区。我们因对提升健身体验的热忱而团结在一起，正在打造一份持久的遗产——赋能更健康的生活方式，共创美好未来。',
+        'TRUE作为我们的旗舰品牌，40 多年来，我们一直致力于生产优质健身器材。TRUE 的每一件产品都以最终用户为中心，不断开发出经得起时间考验的先进功能和设计。TRUE 提供适用于不同市场的设备，包括力量、有氧和柔韧性产品的完整组合。/n 我们致力于在流程的每个阶段制造最高质量的TRUE 设备。事实上，在制造和安装过程中，我们都有工程师在现场，以确保每台设备都符合他们的标准。TRUE 设备外观漂亮、手感极佳、经久耐用，这得益于数十年的经验积累和不断改进，因此深受人们的喜爱。',
       metrics: [
         { value: '4', label: '建立4家子公司' },
         { value: '75+', label: '覆盖75个国家' },
@@ -1445,11 +1445,14 @@ const HotStores = () => {
             'https://images.unsplash.com/photo-1599058917212-d750089bc07d?w=1200&h=900&fit=crop',
         },
       ],
-      heroImage:
-        'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1800&h=1000&fit=crop',
+     
       cardImage:
-        'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=600&h=400&fit=crop',
-      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+        'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true.png?w=600&h=400&fit=crop',
+      
+      videoPc: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true1.mp4',
+      videoMobile: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true2.mp4',
+      heroImagePc :'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true.png?w=600&h=400&fit=crop',
+      heroImageMobile:'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/trueMoble.png?w=600&h=400&fit=crop',
     },
     {
       id: 'torque',
@@ -1877,6 +1880,7 @@ const HotStores = () => {
       cardImage:
         'https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=600&h=400&fit=crop',
       video: 'https://www.w3schools.com/html/movie.mp4',
+    
     },
     {
       id: 'fila',
@@ -2061,10 +2065,17 @@ const HotStores = () => {
         'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&h=400&fit=crop',
       video: 'https://www.w3schools.com/html/movie.mp4',
     },
-  ];
+  ].map((brand) => ({
+    ...brand,
+    heroImagePc: (brand as any).heroImagePc ?? brand.heroImage,
+    heroImageMobile: (brand as any).heroImageMobile ?? brand.heroImage,
+    videoPc: (brand as any).videoPc ?? brand.video,
+    videoMobile: (brand as any).videoMobile ?? brand.video,
+  }));
 
   const [activeBrandIndex, setActiveBrandIndex] = useState(0);
   const activeBrand = brands[activeBrandIndex];
+  const [isMdUp, setIsMdUp] = useState(false);
   const brandPhilosophyRef = useRef<HTMLElement | null>(null);
   const [hoveredBrandIndex, setHoveredBrandIndex] = useState<number | null>(null);
   const [productFilters, setProductFilters] = useState<Record<string, string>>({ category: 'all' });
@@ -2079,6 +2090,21 @@ const HotStores = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const apply = () => setIsMdUp(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+
+  const activeBrandVideoSrc = isMdUp
+    ? (activeBrand.videoPc ?? activeBrand.video)
+    : (activeBrand.videoMobile ?? activeBrand.video);
+  const activeBrandHeroImageSrc = isMdUp
+    ? (activeBrand.heroImagePc ?? activeBrand.heroImage)
+    : (activeBrand.heroImageMobile ?? activeBrand.heroImage);
 
   useEffect(() => {
     setProductFilters({ category: 'all' });
@@ -2548,7 +2574,7 @@ const HotStores = () => {
       <section className="relative min-h-[100svh] pt-32 pb-16 md:pt-40 md:pb-24">
         <div className="absolute inset-0 overflow-hidden z-0">
           <video
-            src={activeBrand.video}
+            src={activeBrandVideoSrc}
             autoPlay
             muted
             loop
@@ -2628,7 +2654,7 @@ const HotStores = () => {
                       <div className="relative w-full h-full bg-[#111]">
                         {isHovered && brand.video ? (
                           <video
-                            src={brand.video}
+                            src={isMdUp ? (brand.videoPc ?? brand.video) : (brand.videoMobile ?? brand.video)}
                             autoPlay
                             muted
                             loop
@@ -2893,8 +2919,8 @@ const HotStores = () => {
                 <video
                   ref={brandInlineVideoRef}
                   key={activeBrand.id}
-                  src={activeBrand.video}
-                  poster={activeBrand.heroImage}
+                  src={activeBrandVideoSrc}
+                  poster={activeBrandHeroImageSrc}
                   className="absolute inset-0 w-full h-full object-cover"
                   controls
                   playsInline
@@ -3069,7 +3095,7 @@ const HotStores = () => {
                       selectedValue: p.attrs?.[d.key],
                     }))
                     .filter((g) => g.options.length > 0);
-                  const images = [p.image, activeBrand.heroImage, activeBrand.cardImage].filter(Boolean);
+                  const images = [p.image, activeBrandHeroImageSrc, activeBrand.cardImage].filter(Boolean);
                   const functionValue = p.attrs?.function ?? null;
                   const getCategoryLabel = (id: string) =>
                     categoryOptions.find((o) => o.value === id)?.label ?? '';

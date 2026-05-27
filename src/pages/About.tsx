@@ -55,28 +55,28 @@ const About = () => {
 
   const teamMembers = [
     {
-      name: 'Kevin Park',
-      title: 'Vice President',
-      desc: 'Chief Financial Officer',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop',
+      name: 'Star Liu',
+      title: 'Founder',
+      desc: 'ABLAZING Company Founder',
+      avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team1.jpg?w=600&h=600&fit=crop',
     },
     {
-      name: 'Johnny Srouji',
+      name: 'Alan',
       title: 'Senior Vice President',
       desc: 'Hardware Technologies',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop',
+      avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team2.jpg?w=600&h=600&fit=crop',
     },
     {
       name: 'John Ternus',
       title: 'Senior Vice President',
       desc: 'Hardware Engineering',
-      avatar: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=600&h=600&fit=crop',
+      avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team3.jpg?w=600&h=600&fit=crop',
     },
     {
       name: 'Lisa Maestri',
       title: 'Vice President',
       desc: 'Corporate Services',
-      avatar: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=600&h=600&fit=crop',
+      avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team4.png?w=600&h=600&fit=crop',
     },
     {
       name: 'Molly Anderson',
@@ -107,7 +107,7 @@ const About = () => {
   const teamPrinciples = [
     {
       ...teamMembers[0],
-      content: '用可验证的数据与成本模型做决策，把每一次选品都落到长期经营的确定性上。',
+      content: '深耕中国健身运动产业的优质化之路，坚守长期主义，让健康运动成为生活常态，让更多人拥有美好的运动生活——这是我们的使命。',
     },
     {
       ...teamMembers[1],

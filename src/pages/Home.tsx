@@ -17,7 +17,6 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [heroBanners.length]);
 
-  const caseStudyVideoUrl = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
   const { t, lang } = useI18n();
   // 分类卡片数据
   const categoryCards = [
@@ -25,35 +24,35 @@ const Home = () => {
       id: 1,
       title: '全球专业运动器材',
       subtitle: 'Global Professional Sports Equipment',
-      image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&h=600&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Care/care1.jpg?w=800&h=600&fit=crop',
       video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 2,
       title: '潮流与运动潮物',
       subtitle: 'Global Trendy And Sporty Items',
-      image: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800&h=600&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Care/care2.jpg?w=800&h=600&fit=crop',
       video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 3,
       title: '运动营养与心灵疗愈',
       subtitle: 'Sports Nutrition And Mental Healing',
-      image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&h=600&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Care/care3.jpg?w=1200&h=600&fit=crop',
       video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 4,
       title: '全球健康恢复科技',
       subtitle: 'Global Health Recovery Technology',
-      image: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?w=800&h=600&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Care/care4.jpg?w=800&h=600&fit=crop',
       video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
     {
       id: 5,
       title: '数字健身解决方案',
       subtitle: 'Global Digital Fitness Solutions',
-      image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&h=600&fit=crop',
+      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Care/care5.jpg?w=800&h=600&fit=crop',
       video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     },
   ];
@@ -75,7 +74,8 @@ const Home = () => {
           "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case2.jpg",
           "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case1.jpg",
           "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case3.jpg",
-          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case4.jpg"
+          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case4.jpg",
+          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/case_01.jpg"
         ],
         accordions: [
           {
@@ -353,12 +353,6 @@ const Home = () => {
         'https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=1400&h=1000&fit=crop',
       ];
   const displayedCaseStudyImage = caseStudyImages[caseStudyImageIndex] ?? currentCaseStudy.image;
-  const caseStudyVideos = [
-    caseStudyVideoUrl,
-    'https://www.w3schools.com/html/mov_bbb.mp4',
-    'https://www.w3schools.com/html/movie.mp4',
-  ];
-  const displayedCaseStudyVideo = caseStudyVideos[caseStudyImageIndex] ?? caseStudyVideoUrl;
 
   // 自动轮播 - 热点场所
   useEffect(() => {
@@ -498,12 +492,11 @@ const Home = () => {
   // 为了实现无缝轮播，复制一份数据
   const displayCards = [...venueCards, ...venueCards, ...venueCards];
   const [hoveredCategoryCardId, setHoveredCategoryCardId] = useState<number | null>(null);
-  const [isCaseStudyHovered, setIsCaseStudyHovered] = useState(false);
 
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-[100svh] pt-20 pb-0 md:pt-32 md:pb-0">
+      <section className="relative min-h-[calc(100svh-5rem)] pt-20 pb-0 md:min-h-[calc(100svh-8rem)] md:pt-32 md:pb-0">
         <div className="absolute inset-0 overflow-hidden">
           {heroBanners.map((banner, idx) => (
             <img
@@ -543,23 +536,10 @@ const Home = () => {
               <ArrowRight className="w-6 h-6" />
             </button>
 
-            {/* Centered Indicators */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-3">
-              {heroBanners.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveHeroIndex(idx)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    idx === activeHeroIndex ? 'w-8 bg-[#c8ff00]' : 'w-2 bg-white/40 hover:bg-white/70'
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
           </>
         )}
 
-        <div className="content-container relative z-10 py-12 md:py-20 flex flex-col justify-center h-full min-h-[calc(100svh-160px)]">
+        <div className="content-container relative z-10 py-10 md:py-16 flex flex-col justify-center">
          
          
 
@@ -970,8 +950,6 @@ const Home = () => {
               {/* Right Column: Image */}
               <div
                 className="lg:col-span-7 relative aspect-[9/16] md:aspect-auto min-h-[400px] md:min-h-[600px]"
-                onMouseEnter={() => setIsCaseStudyHovered(true)}
-                onMouseLeave={() => setIsCaseStudyHovered(false)}
               >
                 <div className="absolute inset-0 rounded-[32px] overflow-hidden">
                   <img

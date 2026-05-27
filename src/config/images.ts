@@ -27,7 +27,7 @@ export const imageConfig = {
       title: '品质保证，售后无忧',
       subtitle: '7天无理由退换，购物更放心',
       desktopPosition: 'center',
-      mobilePosition: '40% center'
+      mobilePosition: '80% center'
     },
     {
       id: 4,
