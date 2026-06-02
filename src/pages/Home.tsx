@@ -248,7 +248,7 @@ const Home = () => {
   // 自动轮播 - 热点场所
   useEffect(() => {
     const container = venueScrollRef.current;
-    if (!container) return;
+    if (!container || venueCards.length < 7) return;
 
     let animationId: number;
     let isPaused = false;
@@ -318,14 +318,14 @@ const Home = () => {
 
   // 拖拽事件处理 - 热点场所
   const handleVenueDragStart = (clientX: number) => {
-    if (!venueScrollRef.current) return;
+    if (!venueScrollRef.current || venueCards.length < 7) return;
     setIsVenueDragging(true);
     setVenueStartX(clientX - venueScrollRef.current.offsetLeft);
     setVenueScrollLeft(venueScrollRef.current.scrollLeft);
   };
 
   const handleVenueDragMove = (clientX: number) => {
-    if (!isVenueDragging || !venueScrollRef.current) return;
+    if (!isVenueDragging || !venueScrollRef.current || venueCards.length < 7) return;
     const x = clientX - venueScrollRef.current.offsetLeft;
     const walk = (x - venueStartX) * 2;
     venueScrollRef.current.scrollLeft = venueScrollLeft - walk;
@@ -380,8 +380,8 @@ const Home = () => {
   const handleBrandTouchStart = (e: React.TouchEvent<HTMLDivElement>) => handleBrandDragStart(e.touches[0].pageX);
   const handleBrandTouchMove = (e: React.TouchEvent<HTMLDivElement>) => handleBrandDragMove(e.touches[0].pageX);
 
-  // 为了实现无缝轮播，复制一份数据
-  const displayCards = [...venueCards, ...venueCards, ...venueCards];
+  // 为了实现无缝轮播，如果数量大于等于7，复制一份数据；否则使用原数据
+  const displayCards = venueCards.length >= 7 ? [...venueCards, ...venueCards, ...venueCards] : venueCards;
   const [hoveredCategoryCardId, setHoveredCategoryCardId] = useState<number | null>(null);
 
   return (
@@ -487,15 +487,15 @@ const Home = () => {
           <div className="relative">
             <div 
               ref={venueScrollRef}
-              onMouseDown={handleVenueMouseDown}
-              onMouseLeave={handleVenueDragEnd}
-              onMouseUp={handleVenueDragEnd}
-              onMouseMove={handleVenueMouseMove}
-              onTouchStart={handleVenueTouchStart}
-              onTouchEnd={handleVenueDragEnd}
-              onTouchCancel={handleVenueDragEnd}
-              onTouchMove={handleVenueTouchMove}
-              className={`flex overflow-x-hidden gap-4 pb-8 select-none ${isVenueDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+              onMouseDown={venueCards.length >= 7 ? handleVenueMouseDown : undefined}
+              onMouseLeave={venueCards.length >= 7 ? handleVenueDragEnd : undefined}
+              onMouseUp={venueCards.length >= 7 ? handleVenueDragEnd : undefined}
+              onMouseMove={venueCards.length >= 7 ? handleVenueMouseMove : undefined}
+              onTouchStart={venueCards.length >= 7 ? handleVenueTouchStart : undefined}
+              onTouchEnd={venueCards.length >= 7 ? handleVenueDragEnd : undefined}
+              onTouchCancel={venueCards.length >= 7 ? handleVenueDragEnd : undefined}
+              onTouchMove={venueCards.length >= 7 ? handleVenueTouchMove : undefined}
+              className={`flex overflow-x-hidden gap-4 pb-8 select-none ${venueCards.length >= 7 ? (isVenueDragging ? 'cursor-grabbing' : 'cursor-grab') : 'justify-center'}`}
               style={{ scrollBehavior: 'auto' }} // 拖拽和自动轮播时不需要 smooth 行为
             >
               {displayCards.map((venue, index) => (
@@ -537,8 +537,12 @@ const Home = () => {
             </div>
             
             {/* Edge Fade Effects for better visual when scrolling infinitely */}
-            <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-black to-transparent pointer-events-none" />
-            <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-black to-transparent pointer-events-none" />
+            {venueCards.length >= 7 && (
+              <>
+                <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-black to-transparent pointer-events-none" />
+                <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-black to-transparent pointer-events-none" />
+              </>
+            )}
           </div>
           </div>
         </section>
