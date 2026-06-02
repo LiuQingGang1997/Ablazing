@@ -198,8 +198,8 @@ const Home = () => {
         if (!data) return;
         const accordions = data.features ? Object.values(data.features).map((f: any, idx: number) => ({
           id: idx,
-          title: f.title,
-          content: f.desc
+          title: f.label,
+          content: f.value
         })) : [];
         
         setVenueCards(prev => {
