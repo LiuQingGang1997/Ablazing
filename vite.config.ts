@@ -121,7 +121,22 @@ export default defineConfig({
     },
   ],
   server: {
-    port: 3000,
-    host: true
+    port: 8901,
+    strictPort: true,
+    host: true,
+    proxy: {
+      '^/api/banners': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/banners/, '/api/banners') // Ensure the path is correctly passed
+      },
+      '^/api/cases': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/cases/, '/api/cases')
+      },
+    },
   }
 })

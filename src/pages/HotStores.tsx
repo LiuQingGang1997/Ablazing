@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowLeft, ArrowRight, Play, ChevronDown } from 'lucide-react';
+import gsap from 'gsap';
 import { useI18n } from '../i18n/I18nProvider';
 
 const HotStores = () => {
@@ -2123,14 +2124,14 @@ const HotStores = () => {
 
   const brandStripRef = useRef<HTMLDivElement>(null);
   const [isBrandStripDragging, setIsBrandStripDragging] = useState(false);
+  const [isBrandStripPointerDown, setIsBrandStripPointerDown] = useState(false);
+  const brandStripItemButtonRefs = useRef<HTMLButtonElement[]>([]);
+  const brandStripLogoOverlayRefs = useRef<HTMLDivElement[]>([]);
+  const isBrandStripDraggingRef = useRef(false);
   const [brandStripStartX, setBrandStripStartX] = useState(0);
   const [brandStripScrollLeft, setBrandStripScrollLeft] = useState(0);
 
   const brandStripItems = [...brands, ...brands, ...brands];
-
-  const scrollToBrandPhilosophy = () => {
-    brandPhilosophyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   const productsBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollToProducts = (nextCategoryId: string) => {
@@ -2421,17 +2422,33 @@ const HotStores = () => {
     const el = brandStripRef.current;
     if (!el) return;
 
-    const onMouseUp = () => setIsBrandStripDragging(false);
+    const onMouseUp = () => {
+      setIsBrandStripDragging(false);
+      setIsBrandStripPointerDown(false);
+    };
     window.addEventListener('mouseup', onMouseUp);
     return () => window.removeEventListener('mouseup', onMouseUp);
   }, []);
 
   useEffect(() => {
+    isBrandStripDraggingRef.current = isBrandStripDragging;
+  }, [isBrandStripDragging]);
+
+  useEffect(() => {
     const el = brandStripRef.current;
     if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    let rafId = 0;
     let paused = false;
+    let singleSetWidth = 0;
+    const pxPerSecond = 42;
+
+    const updateMetrics = () => {
+      singleSetWidth = el.scrollWidth / 3;
+      if (singleSetWidth <= 0) return;
+      if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+      if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
+    };
 
     const onEnter = () => {
       paused = true;
@@ -2443,48 +2460,79 @@ const HotStores = () => {
     el.addEventListener('mouseenter', onEnter);
     el.addEventListener('mouseleave', onLeave);
 
-    const tick = () => {
-      if (!paused && !isBrandStripDragging) {
-        el.scrollLeft += 0.6;
-        const singleSetWidth = el.scrollWidth / 3;
-        if (el.scrollLeft >= singleSetWidth) {
-          el.scrollLeft -= singleSetWidth;
-        }
+    updateMetrics();
+    const ro = new ResizeObserver(updateMetrics);
+    ro.observe(el);
+
+    const renderOverlays = () => {
+      const viewportCenter = el.scrollLeft + el.clientWidth / 2;
+      const maxDist = el.clientWidth * 0.6 || 1;
+
+      for (let i = 0; i < brandStripItemButtonRefs.current.length; i++) {
+        const btn = brandStripItemButtonRefs.current[i];
+        const overlay = brandStripLogoOverlayRefs.current[i];
+        if (!btn || !overlay) continue;
+
+        const itemCenter = btn.offsetLeft + btn.offsetWidth / 2;
+        const dist = Math.abs(itemCenter - viewportCenter);
+        const focus = Math.max(0, 1 - dist / maxDist);
+        const scale = 0.88 + focus * 0.14;
+        const opacity = 0.72 + focus * 0.28;
+
+        overlay.style.transform = `translateZ(0) scale(${scale})`;
+        overlay.style.opacity = `${opacity}`;
       }
-      rafId = requestAnimationFrame(tick);
     };
 
-    rafId = requestAnimationFrame(tick);
+    const tick = () => {
+      if (singleSetWidth > 0 && !paused && !isBrandStripDraggingRef.current) {
+        el.scrollLeft += (pxPerSecond / 60) * gsap.ticker.deltaRatio();
+        if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
+        if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+      } else if (singleSetWidth > 0) {
+        if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
+        if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+      }
+      renderOverlays();
+    };
+
+    gsap.ticker.add(tick);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      gsap.ticker.remove(tick);
+      ro.disconnect();
       el.removeEventListener('mouseenter', onEnter);
       el.removeEventListener('mouseleave', onLeave);
     };
-  }, [isBrandStripDragging]);
+  }, [brands.length]);
 
   const handleBrandStripStart = (clientX: number) => {
     const el = brandStripRef.current;
     if (!el) return;
-    setIsBrandStripDragging(true);
+    setIsBrandStripPointerDown(true);
+    setIsBrandStripDragging(false);
     setBrandStripStartX(clientX - el.offsetLeft);
     setBrandStripScrollLeft(el.scrollLeft);
   };
 
   const handleBrandStripMove = (clientX: number) => {
     const el = brandStripRef.current;
-    if (!el || !isBrandStripDragging) return;
+    if (!el || !isBrandStripPointerDown) return;
     const x = clientX - el.offsetLeft;
     const walk = (x - brandStripStartX) * 1.6;
+    if (!isBrandStripDragging && Math.abs(walk) > 6) setIsBrandStripDragging(true);
     el.scrollLeft = brandStripScrollLeft - walk;
   };
 
-  const handleBrandStripEnd = () => setIsBrandStripDragging(false);
+  const handleBrandStripEnd = () => {
+    setIsBrandStripDragging(false);
+    setIsBrandStripPointerDown(false);
+  };
 
   const onBrandStripMouseDown = (e: React.MouseEvent<HTMLDivElement>) => handleBrandStripStart(e.pageX);
   const onBrandStripMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isBrandStripDragging) return;
-    e.preventDefault();
+    if (!isBrandStripPointerDown) return;
+    if (isBrandStripDragging) e.preventDefault();
     handleBrandStripMove(e.pageX);
   };
   const onBrandStripTouchStart = (e: React.TouchEvent<HTMLDivElement>) => handleBrandStripStart(e.touches[0].pageX);
@@ -2640,18 +2688,31 @@ const HotStores = () => {
                   return (
                     <button
                       key={`${brand.id}-${i}`}
+                      ref={(el) => {
+                        if (el) brandStripItemButtonRefs.current[i] = el;
+                      }}
                       type="button"
                       onClick={() => {
-                        setActiveBrandIndex(realIndex);
-                        scrollToBrandPhilosophy();
+                        if (isBrandStripDragging) return;
+                        selectBrand(realIndex);
                       }}
                       onMouseEnter={() => setHoveredBrandIndex(realIndex)}
                       onMouseLeave={() => setHoveredBrandIndex(null)}
-                      className={`flex-none w-[calc(25%-12px)] md:w-28 lg:w-36 xl:w-40 aspect-square rounded-full overflow-hidden border-2 transition-all duration-300 ${
-                        isActive ? 'border-[#c8ff00] scale-105' : 'border-white/10 hover:border-white/30'
+                      className={`group relative flex-none w-[calc(25%-12px)] md:w-28 lg:w-36 xl:w-40 aspect-square rounded-full bg-[#111] transition-all duration-300 will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
+                        isActive
+                          ? ''
+                          : ''
                       }`}
                     >
-                      <div className="relative w-full h-full bg-[#111]">
+                      <span
+                        aria-hidden="true"
+                        className={`pointer-events-none absolute -inset-[2px] rounded-full ${
+                          isActive
+                            ? 'animate-breath-glow'
+                            : 'shadow-[0_0_0_1px_rgba(255,255,255,0.10),0_0_18px_rgba(255,255,255,0.10)] blur-[0.4px] group-hover:shadow-[0_0_0_1px_rgba(255,255,255,0.16),0_0_22px_rgba(255,255,255,0.14)]'
+                        }`}
+                      />
+                      <div className="relative w-full h-full rounded-full overflow-hidden">
                         {isHovered && brand.video ? (
                           <video
                             src={isMdUp ? (brand.videoPc ?? brand.video) : (brand.videoMobile ?? brand.video)}
@@ -2660,23 +2721,37 @@ const HotStores = () => {
                             loop
                             playsInline
                             preload="metadata"
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out ${
+                              isActive ? 'scale-150' : 'group-hover:scale-125'
+                            }`}
                           />
                         ) : (
                           <img
                             src={brand.cardImage}
                             alt={brand.name}
-                            className="absolute inset-0 w-full h-full object-cover opacity-90"
+                            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out ${
+                              isActive ? 'scale-150 opacity-100' : 'opacity-90 group-hover:scale-125'
+                            }`}
                             draggable="false"
                           />
                         )}
-                        <div className={`absolute inset-0 transition-colors ${isActive ? 'bg-black/25' : 'bg-black/45'}`} />
-                        <div className={`absolute inset-0 ring-1 transition-opacity ${isActive ? 'ring-[#c8ff00]/60 opacity-100' : 'ring-white/10 opacity-0'}`} />
-                        <div className="absolute inset-0 flex items-center justify-center px-2">
+                        <div
+                          className={`absolute inset-0 transition-all duration-300 ${
+                            isActive
+                              ? 'bg-black/10 backdrop-blur-[2px]'
+                              : 'bg-black/50 group-hover:bg-black/35 backdrop-blur-[1px]'
+                          }`}
+                        />
+                        <div
+                          ref={(el) => {
+                            if (el) brandStripLogoOverlayRefs.current[i] = el;
+                          }}
+                          className="absolute inset-0 flex items-center justify-center px-2 pointer-events-none will-change-transform transform-gpu"
+                        >
                           <img
                             src={brand.logo}
                             alt={brand.name}
-                            className="h-4 sm:h-5 md:h-6 w-auto opacity-95 pointer-events-none"
+                            className="h-4 sm:h-5 md:h-6 w-auto pointer-events-none opacity-95"
                             draggable="false"
                           />
                         </div>

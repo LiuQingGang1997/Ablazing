@@ -23,6 +23,7 @@ export default {
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.5s ease-out',
+        'breath-glow': 'breathGlow 2.2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -32,6 +33,20 @@ export default {
         slideUp: {
           '0%': { transform: 'translateY(20px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        breathGlow: {
+          '0%, 100%': {
+            opacity: '0.55',
+            filter: 'blur(0.6px)',
+            boxShadow:
+              '0 0 0 1px rgba(255,255,255,0.10), 0 0 18px rgba(255,255,255,0.10), 0 0 34px rgba(255,255,255,0.08)',
+          },
+          '50%': {
+            opacity: '1',
+            filter: 'blur(0.2px)',
+            boxShadow:
+              '0 0 0 1px rgba(255,255,255,0.18), 0 0 26px rgba(255,255,255,0.16), 0 0 50px rgba(255,255,255,0.12)',
+          },
         },
       },
     },

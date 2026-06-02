@@ -1,13 +1,80 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { ChevronUp, ChevronDown, ArrowRight, ArrowLeft, TrendingUp, Users, Target, Quote } from 'lucide-react';
-import useImageConfig from '../hooks/useImageConfig';
 import { useI18n } from '../i18n/I18nProvider';
 
 const Home = () => {
-  const { config } = useImageConfig();
-  const heroBanners = config.banners || [];
+  const [heroBanners, setHeroBanners] = useState<any[]>([]);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+  const [venueCards, setVenueCards] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch banners from API
+    axios.get('/api/banners?enabled=true', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: false 
+    })
+      .then((res) => {
+        const data = res.data?.data || res.data; 
+        if (data && Array.isArray(data) && data.length > 0) {
+          const formattedBanners = data.map((item: any) => ({
+            id: item.id,
+            image: item.imageUrl,
+            linkUrl: item.linkUrl,
+            mobilePosition: 'center',
+            desktopPosition: 'center',
+          }));
+          setHeroBanners(formattedBanners);
+        } else {
+          setHeroBanners([]);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch banners:', err);
+        setHeroBanners([]);
+      });
+  }, []);
+
+  useEffect(() => {
+    // Fetch cases from API
+    axios.get('/api/cases/home', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: false
+    })
+      .then((res) => {
+        const data = res.data?.data || res.data;
+        if (data && Array.isArray(data) && data.length > 0) {
+          const formattedCases = data.map((item: any) => ({
+            id: item.id,
+            image: item.coverImage,
+            location: item.address,
+            name: item.name,
+            date: item.completionTime,
+            caseStudy: {
+              title: item.name,
+              location: item.address,
+              date: item.completionTime,
+              images: [item.coverImage],
+              accordions: [] // Fallback since the home API only returns basic info
+            }
+          }));
+          setVenueCards(formattedCases);
+        } else {
+          setVenueCards([]);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch cases:', err);
+        setVenueCards([]);
+      });
+  }, []);
 
   useEffect(() => {
     if (!heroBanners.length) return;
@@ -57,226 +124,7 @@ const Home = () => {
     },
   ];
 
-  // 场所卡片数据，整合案例详情
-  const venueCards = [
-    {
-      id: 1,
-      image: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/case1.jpg?w=400&h=300&fit=crop',
-      location: '深圳福田区',
-      name: 'FUSION FITNESS(星河湾店)',
-      date: '2025-08-25',
-      caseStudy: {
-        title: "深圳第13店| 星河中心店 正式启幕",
-        location: "中国-深圳",
-        date: "25th Oct",
-       
-        images: [
-          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case2.jpg",
-          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case1.jpg",
-          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case3.jpg",
-          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/FUSION%20FITNESS%20case4.jpg",
-          "https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/case/case_01.jpg"
-        ],
-        accordions: [
-          {
-            id: 0,
-            title: "Background",
-            content: "🏠 FUSION FITNESS 星河中心店\n📍 福田区星河发展中心L3层\n🚇 1号线｜会展中心D出口"
-          },
-          {
-            id: 1,
-            title: "Particularity",
-            content: "该门店的最大特色在于其💰年卡4开头\n可按月支付中途\n🉑 灵活解约，年卡可停卡"
-          },
-          {
-            id: 2,
-            title: "Strategy",
-            content: "✅ HYROX赛事级配置\n12台CENTR-HYROX专业设备\n全域覆盖深蹲架/雪橇车/风阻划船机实时联动\n✅ 器械党的狂欢\n从力量举到功能性训练\n设备多到选择恐惧症发作"
-          },
-          {
-            id: 3,
-            title: "Conclusion",
-            content: "🏋️ 门店环境1200㎡ 健身空间\n层高开阔多元化运动分区\n力量、有氧、拳击、HYROX、功能性训练\n私密性好，社恐也能自在运动"
-          }
-        ]
-      }
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=400&h=300&fit=crop',
-      location: '北京市朝阳区',
-      name: 'SPACE 动感单车 (国贸店)',
-      date: '2023-10-26',
-      caseStudy: {
-        title: "Case Study: SPACE 动感单车的视听盛宴",
-        location: "中国-北京",
-        date: "26th Oct",
-        image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1200&h=900&fit=crop",
-        accordions: [
-          {
-            id: 0,
-            title: "Background",
-            content: "SPACE 位于北京繁华的国贸商圈，目标客群是高净值白领。他们需要一个能够在下班后迅速释放压力、享受纯粹运动乐趣的夜店风单车空间。"
-          },
-          {
-            id: 1,
-            title: "Particularity",
-            content: "有别于传统健身房，SPACE 将音乐、灯光与单车运动深度结合，打造出类似 Livehouse 的体验。这种独特的定位要求其硬件设施必须达到专业演出级别。"
-          },
-          {
-            id: 2,
-            title: "Strategy",
-            content: "我们为其定制了环绕式 LED 矩阵屏幕，并与骑行踏频数据进行实时联动。当全场学员的踩踏频率达到峰值时，灯光和视觉效果也会进入高潮，极大地增强了团队运动的凝聚力。"
-          },
-          {
-            id: 3,
-            title: "Conclusion",
-            content: "SPACE 国贸店开业即爆满，凭借其独特的视听体验，迅速在小红书等平台积累了大量口碑，成为都市白领下班后首选的运动社交场所。"
-          }
-        ]
-      }
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop',
-      location: '广州市天河区',
-      name: 'PURE Fitness (太古汇店)',
-      date: '2023-10-27',
-      caseStudy: {
-        title: "Case Study: PURE Fitness 顶奢健身空间的重塑",
-        location: "中国-广州",
-        date: "27th Oct",
-        image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=900&fit=crop",
-        accordions: [
-          {
-            id: 0,
-            title: "Background",
-            content: "作为亚洲顶级的健身品牌，PURE Fitness 在广州太古汇的旗舰店旨在为大湾区的高端客户提供世界一流的健身设施和私教服务。"
-          },
-          {
-            id: 1,
-            title: "Particularity",
-            content: "高端客群对器械的专业度、环境的私密性以及服务的个性化有着极高的要求。空间内不仅要有顶级的力量区，还需配备专业的瑜伽馆和恢复中心。"
-          },
-          {
-            id: 2,
-            title: "Strategy",
-            content: "我们协助 PURE 引入了全球最先进的生物力学健身器械，并对空间进行了科学动线规划，确保力量区、有氧区与休息区互不干扰。此外，还特别设计了具有高级质感的更衣及淋浴空间。"
-          },
-          {
-            id: 3,
-            title: "Conclusion",
-            content: "PURE 太古汇店成功树立了华南地区高端健身房的新标杆，不仅保持了极高的会员续费率，其私教课程的转化率也稳居品牌内前列。"
-          }
-        ]
-      }
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=400&h=300&fit=crop',
-      location: '深圳市南山区',
-      name: 'F45 Training (万象天地店)',
-      date: '2023-10-28',
-      caseStudy: {
-        title: "Case Study: F45 澳洲硬核训练的本土化落地",
-        location: "中国-深圳",
-        date: "28th Oct",
-        image: "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=1200&h=900&fit=crop",
-        accordions: [
-          {
-            id: 0,
-            title: "Background",
-            content: "来自澳洲的 F45 以其 45 分钟高强度间歇训练（HIIT）闻名全球。深圳万象天地店是其在华南地区的重要布局，面临着如何向本地市场普及这种高强度训练模式的任务。"
-          },
-          {
-            id: 1,
-            title: "Particularity",
-            content: "F45 的核心在于其每天不重样的全球统一课程和标志性的屏幕指导系统。场馆内不需要大型机械，而是以各类功能性训练小器械为主，对场地的灵活性要求极高。"
-          },
-          {
-            id: 2,
-            title: "Strategy",
-            content: "我们为其打造了极具工业风的开阔无柱空间，并完美集成了 F45 的专利多屏显示系统。为了适应深圳高强度的工作节奏，我们特别强化了课后恢复区域的设施配置。"
-          },
-          {
-            id: 3,
-            title: "Conclusion",
-            content: "该店迅速在深圳科技圈和海归群体中风靡，其“团队作战”的运动氛围极大地增强了会员黏性，成为了社区运动的新范本。"
-          }
-        ]
-      }
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop',
-      location: '杭州市上城区',
-      name: '乐刻运动 (湖滨银泰店)',
-      date: '2023-10-29',
-      caseStudy: {
-        title: "Case Study: 乐刻运动 24 小时智能健身房的进化",
-        location: "中国-杭州",
-        date: "29th Oct",
-        image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop",
-        accordions: [
-          {
-            id: 0,
-            title: "Background",
-            content: "乐刻运动作为国内最大的 24 小时智能健身连锁品牌，其湖滨银泰店需要打造成为一个展示其最新智能化成果的旗舰体验店。"
-          },
-          {
-            id: 1,
-            title: "Particularity",
-            content: "“无人值守”与“24 小时营业”是其核心标签。因此，门禁系统、智能储物柜、器械物联网以及安全监控系统必须做到无缝衔接且极度稳定。"
-          },
-          {
-            id: 2,
-            title: "Strategy",
-            content: "我们协助其部署了基于人脸识别和扫码的无感通行系统，并将所有有氧器械接入云端，用户可以通过 App 实时查看设备空闲状态和个人运动数据，实现了真正的数字化健身管理。"
-          },
-          {
-            id: 3,
-            title: "Conclusion",
-            content: "该门店实现了极低的人力运营成本，同时用户满意度大幅提升。其智能化的健身体验成为了乐刻向全国推广新门店的标准模板。"
-          }
-        ]
-      }
-    },
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=300&fit=crop',
-      location: '成都市锦江区',
-      name: '威尔仕健身 (太古里店)',
-      date: '2023-10-30',
-      caseStudy: {
-        title: "Case Study: 威尔仕 VIP 会所的奢华升级",
-        location: "中国-成都",
-        date: "30th Oct",
-        image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=900&fit=crop",
-        accordions: [
-          {
-            id: 0,
-            title: "Background",
-            content: "位于成都太古里商圈的威尔仕健身，定位为高端 VIP 会所。除了提供基础的健身服务，更注重为会员提供集休闲、社交、运动于一体的第三空间。"
-          },
-          {
-            id: 1,
-            title: "Particularity",
-            content: "项目不仅包含传统的器械区，还设有恒温泳池、高端 SPA、健康轻食吧等多元化业态。设计风格需与太古里的整体商业氛围相契合，体现出低调的奢华感。"
-          },
-          {
-            id: 2,
-            title: "Strategy",
-            content: "我们在空间设计中大量运用了木质、石材与金属的碰撞，营造出温暖而高级的氛围。特别定制的空气净化系统和水处理系统，确保了全天候的舒适体验。器械采购则全部选用国际一线品牌的旗舰型号。"
-          },
-          {
-            id: 3,
-            title: "Conclusion",
-            content: "威尔仕太古里店重塑了成都传统商业健身房的形象，成功吸引了大量高端客群，成为了成都商业健身领域标杆性的豪华会所。"
-          }
-        ]
-      }
-    }
-  ];
+  // 场所卡片数据不再使用静态配置，通过 API 获取
 
   // 轮播控制 - 热点场所
   const venueScrollRef = useRef<HTMLDivElement>(null);
@@ -334,6 +182,47 @@ const Home = () => {
     setCaseStudyImageIndex(0);
   }, [activeCaseIndex]);
 
+  useEffect(() => {
+    if (!venueCards.length) return;
+    const currentCase = venueCards[activeCaseIndex];
+    if (currentCase && !currentCase.detailsLoaded) {
+      axios.get(`/api/cases/${currentCase.id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        withCredentials: false
+      })
+      .then(res => {
+        const data = res.data?.data || res.data;
+        if (!data) return;
+        const accordions = data.features ? Object.values(data.features).map((f: any, idx: number) => ({
+          id: idx,
+          title: f.title,
+          content: f.desc
+        })) : [];
+        
+        setVenueCards(prev => {
+          const newCards = [...prev];
+          newCards[activeCaseIndex] = {
+            ...newCards[activeCaseIndex],
+            detailsLoaded: true,
+            caseStudy: {
+              ...newCards[activeCaseIndex].caseStudy,
+              images: data.detailImages && data.detailImages.length > 0 ? data.detailImages : [data.coverImage],
+              accordions: accordions,
+              description: data.titleDescription
+            }
+          };
+          return newCards;
+        });
+      })
+      .catch(err => {
+        console.error(`Failed to fetch case details for id ${currentCase.id}:`, err);
+      });
+    }
+  }, [activeCaseIndex, venueCards.length]);
+
   // 切换案例的函数
   const handleCaseChange = (direction: 'prev' | 'next') => {
     setActiveAccordion(0); // 切换案例时重置折叠面板
@@ -344,12 +233,14 @@ const Home = () => {
     }
   };
 
-  const currentCaseStudy = venueCards[activeCaseIndex].caseStudy;
+  const currentCaseStudy = venueCards[activeCaseIndex]?.caseStudy || {
+    title: '', location: '', date: '', images: [], accordions: [], image: '', description: ''
+  };
   const caseStudyImages = currentCaseStudy.images && currentCaseStudy.images.length > 0 
     ? currentCaseStudy.images 
     : [
-        currentCaseStudy.image,
-        venueCards[activeCaseIndex].image.replace(/w=\d+&h=\d+/, 'w=1400&h=1000'),
+        currentCaseStudy.image || '',
+        venueCards[activeCaseIndex]?.image?.replace(/w=\d+&h=\d+/, 'w=1400&h=1000') || '',
         'https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=1400&h=1000&fit=crop',
       ];
   const displayedCaseStudyImage = caseStudyImages[caseStudyImageIndex] ?? currentCaseStudy.image;
@@ -498,24 +389,40 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative min-h-[calc(100svh-5rem)] pt-20 pb-0 md:min-h-[calc(100svh-8rem)] md:pt-32 md:pb-0">
         <div className="absolute inset-0 overflow-hidden">
-          {heroBanners.map((banner, idx) => (
-            <img
-              key={banner.id || idx}
-              src={banner.image}
-              alt=""
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 [object-position:var(--m-pos)] md:[object-position:var(--pc-pos)] ${
-                idx === activeHeroIndex ? 'opacity-100' : 'opacity-0'
-              }`}
-              style={{
-                '--m-pos': banner.mobilePosition || 'center',
-                '--pc-pos': banner.desktopPosition || 'center',
-              } as React.CSSProperties}
-              draggable="false"
-            />
-          ))}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(200,255,0,0.15),transparent_45%)]" />
-          <div className="absolute inset-0 bg-black/35" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/60" />
+          {heroBanners.map((banner, idx) => {
+            const imgEl = (
+              <img
+                src={banner.image}
+                alt=""
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 [object-position:var(--m-pos)] md:[object-position:var(--pc-pos)] ${
+                  idx === activeHeroIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+                style={{
+                  '--m-pos': banner.mobilePosition || 'center',
+                  '--pc-pos': banner.desktopPosition || 'center',
+                } as React.CSSProperties}
+                draggable="false"
+              />
+            );
+            return banner.linkUrl ? (
+              <a
+                key={banner.id || idx}
+                href={banner.linkUrl}
+                target={banner.linkUrl.startsWith('http') ? '_blank' : '_self'}
+                rel="noreferrer"
+                className={`absolute inset-0 z-0 block ${idx === activeHeroIndex ? 'pointer-events-auto' : 'pointer-events-none'}`}
+              >
+                {imgEl}
+              </a>
+            ) : (
+              <div key={banner.id || idx} className="contents">
+                {imgEl}
+              </div>
+            );
+          })}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(200,255,0,0.15),transparent_45%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/60 pointer-events-none" />
         </div>
 
         {/* Navigation Arrows */}
@@ -539,17 +446,17 @@ const Home = () => {
           </>
         )}
 
-        <div className="content-container relative z-10 py-10 md:py-16 flex flex-col justify-center">
+        <div className="content-container relative z-10 py-10 md:py-16 flex flex-col justify-center pointer-events-none">
          
          
 
           {/* Main Title */}
-          <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight pointer-events-auto">
             {t('home.hero.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.hero.titleRight')}
           </h1>
 
           {/* Description */}
-          <p className="text-white/70 text-lg mb-12 max-w-2xl pr-2" style={{fontSize: '1rem'}}>
+          <p className="text-white/70 text-lg mb-12 max-w-2xl pr-2 pointer-events-auto" style={{fontSize: '1rem'}}>
             {t('home.hero.descLine1')}
             <br />
             {t('home.hero.descLine2')}
@@ -557,7 +464,7 @@ const Home = () => {
 
           {/* CTA Button */}
           
-            <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform w-fit">
+            <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform w-fit pointer-events-auto">
                     <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
@@ -566,6 +473,7 @@ const Home = () => {
            
         </div>
         {/* Venue Cards Slider Section */}
+        {venueCards.length > 0 && (
         <section className="mt-16 md:mt-24 pb-16 overflow-hidden relative group z-10">
           <div className="content-container">
           {/* Header & Controls */}
@@ -634,6 +542,7 @@ const Home = () => {
           </div>
           </div>
         </section>
+        )}
       </section>
 
       {/* Category Cards Section */}
@@ -858,6 +767,7 @@ const Home = () => {
 
      
       {/* Case Study Section */}
+      {venueCards.length > 0 && (
       <section id="case-study" className="py-16 md:py-24 bg-[#111]">
         <div className="content-container">
           {/* Main Card Container */}
@@ -885,6 +795,12 @@ const Home = () => {
                   <span>{t('home.caseStudy.locationPrefix')}{currentCaseStudy.location}</span>
                   <span>{currentCaseStudy.date}</span>
                 </div>
+                {currentCaseStudy.description && (
+                  <div 
+                    className="mt-6 text-[#a3a3a3] text-sm md:text-base leading-[1.8] font-light max-w-3xl prose prose-invert prose-p:mb-2 prose-a:text-[#c8ff00]" 
+                    dangerouslySetInnerHTML={{ __html: currentCaseStudy.description }} 
+                  />
+                )}
               </div>
               
               {/* Utility Link */}
@@ -898,7 +814,7 @@ const Home = () => {
               {/* Left Column: Accordion */}
               <div className="lg:col-span-5 flex flex-col justify-between">
                 <div className="space-y-2">
-                  {currentCaseStudy.accordions.map((item, index) => {
+                  {currentCaseStudy.accordions.map((item: any, index: number) => {
                     const isActive = activeAccordion === index;
                     return (
                       <div 
@@ -996,6 +912,7 @@ const Home = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Services Section / Brand Introduction */}
       <section className="py-20 md:py-32 bg-black">
