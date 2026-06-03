@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronUp, ChevronDown, ArrowRight, ArrowLeft, TrendingUp, Users, Target, Quote } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { useBrands } from '../hooks/useBrands';
+import { useReviews } from '../hooks/useReviews';
 
 const Home = () => {
   const [heroBanners, setHeroBanners] = useState<any[]>([]);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const [venueCards, setVenueCards] = useState<any[]>([]);
-  const [brandLogos, setBrandLogos] = useState<any[]>([]);
+  const { brands: brandLogos } = useBrands();
 
   useEffect(() => {
     // Fetch banners from API
@@ -78,29 +80,6 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch brand logos from API
-    axios.get('/api/brands', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      withCredentials: false
-    })
-      .then((res) => {
-        const data = res.data?.data || res.data;
-        if (data && Array.isArray(data) && data.length > 0) {
-          setBrandLogos(data);
-        } else {
-          setBrandLogos([]);
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to fetch brand logos:', err);
-        setBrandLogos([]);
-      });
-  }, []);
-
-  useEffect(() => {
     if (!heroBanners.length) return;
     const interval = setInterval(() => {
       setActiveHeroIndex((prev) => (prev + 1) % heroBanners.length);
@@ -109,6 +88,7 @@ const Home = () => {
   }, [heroBanners.length]);
 
   const { t, lang } = useI18n();
+  const { reviews: testimonials } = useReviews();
   // 分类卡片数据
   const categoryCards = [
     {
@@ -162,34 +142,10 @@ const Home = () => {
   const [brandStartX, setBrandStartX] = useState(0);
   const [brandScrollLeft, setBrandScrollLeft] = useState(0);
 
-  // 客户评价数据
-  const testimonials = [
-    {
-      id: 1,
-      content: "醒动团队为我们提供了极其专业的选品建议。他们不仅懂产品，更懂市场趋势。在他们的帮助下，我们的健身房器械采购成本降低了20%，但会员满意度却大幅提升。",
-      author: "张总",
-      role: "某高端连锁健身房 创始人",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop"
-    },
-    {
-      id: 2,
-      content: "作为一家初创的运动科技品牌，我们非常感谢醒动的供应链资源整合能力。他们帮助我们快速找到了符合严苛质量标准的代工厂，让我们的智能跳绳得以提前3个月量产上市。",
-      author: "李明",
-      role: "智能运动硬件公司 CEO",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop"
-    },
-    {
-      id: 3,
-      content: "与醒动的合作是一次非常愉快的体验。他们对于全球运动健身产业的洞察令人印象深刻。从最初的概念规划到最终的产品落地，他们始终是我们最可靠的战略伙伴。",
-      author: "Sarah",
-      role: "国际运动服饰品牌 亚太区总监",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop"
-    }
-  ];
-
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   const handleTestimonialChange = (direction: 'prev' | 'next') => {
+    if (!testimonials || testimonials.length === 0) return;
     if (direction === 'prev') {
       setActiveTestimonial((prev) => (prev > 0 ? prev - 1 : testimonials.length - 1));
     } else {
@@ -1018,6 +974,7 @@ const Home = () => {
       </section>
 
       {/* Brands Section / Testimonials */}
+      {testimonials.length > 0 && (
       <section className="py-16 md:py-24 bg-white overflow-hidden relative">
         <div className="content-container relative z-10">
           <div className="max-w-4xl mx-auto">
@@ -1066,6 +1023,7 @@ const Home = () => {
               </div>
 
               {/* Navigation Buttons (Absolute positioned on desktop, relative on mobile) */}
+              {testimonials.length > 1 && (
               <div className="flex justify-center items-center gap-4 mt-12 md:absolute md:top-1/2 md:-left-12 md:-right-12 md:-translate-y-1/2 md:mt-0 md:justify-between pointer-events-none">
                 <button 
                   onClick={() => handleTestimonialChange('prev')}
@@ -1080,10 +1038,12 @@ const Home = () => {
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
+              )}
             </div>
           </div>
         </div>
       </section>
+      )}
  {/* Brands Logo Wall Section */}
       {brandLogos.length > 0 && (
       <section className="py-16 md:py-24 bg-white overflow-hidden">

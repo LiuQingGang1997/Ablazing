@@ -2,10 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, AtSign, MapPin, Phone, Quote } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
+import { useReviews } from '../hooks/useReviews';
 
 const Contact = () => {
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
+  const { reviews: testimonials } = useReviews();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -57,45 +59,10 @@ const Contact = () => {
     [lang],
   );
 
-  const testimonials = useMemo(
-    () => [
-      {
-        id: 1,
-        content:
-          lang === 'zh'
-            ? '醒动团队为我们提供了极其专业的选品建议。他们不仅懂产品，更懂市场趋势。在他们的帮助下，我们的健身房器械采购成本降低了20%，但会员满意度却大幅提升。'
-            : 'Ablazing gave us highly professional product-selection advice. They understand products and market trends. With their help, our equipment costs dropped by 20% while member satisfaction increased significantly.',
-        author: lang === 'zh' ? '张总' : 'Mr. Zhang',
-        role: lang === 'zh' ? '某高端连锁健身房 创始人' : 'Founder, Premium Fitness Chain',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop',
-      },
-      {
-        id: 2,
-        content:
-          lang === 'zh'
-            ? '作为一家初创的运动科技品牌，我们非常感谢醒动的供应链资源整合能力。他们帮助我们快速找到了符合严苛质量标准的代工厂，让我们的智能跳绳得以提前3个月量产上市。'
-            : 'As a sports-tech startup, we truly appreciate Ablazing’s supply-chain integration. They helped us quickly find factories meeting strict quality standards, accelerating our product launch by three months.',
-        author: lang === 'zh' ? '李明' : 'Li Ming',
-        role: lang === 'zh' ? '智能运动硬件公司 CEO' : 'CEO, Smart Fitness Hardware',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
-      },
-      {
-        id: 3,
-        content:
-          lang === 'zh'
-            ? '与醒动的合作是一次非常愉快的体验。他们对于全球运动健身产业的洞察令人印象深刻。从最初的概念规划到最终的产品落地，他们始终是我们最可靠的战略伙伴。'
-            : "Working with Ablazing has been a great experience. Their insight into the global sports and fitness industry is impressive. From concept planning to product delivery, they've been our most reliable strategic partner.",
-        author: 'Sarah',
-        role: lang === 'zh' ? '国际运动服饰品牌 亚太区总监' : 'APAC Director, Global Sportswear Brand',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop',
-      },
-    ],
-    [lang],
-  );
-
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   const handleTestimonialChange = (direction: 'prev' | 'next') => {
+    if (!testimonials || testimonials.length === 0) return;
     if (direction === 'prev') {
       setActiveTestimonial((prev) => (prev > 0 ? prev - 1 : testimonials.length - 1));
     } else {
@@ -474,6 +441,7 @@ const Contact = () => {
         </div>
       </section>
 
+      {testimonials.length > 0 && (
       <section className="py-16 md:py-24 bg-white overflow-hidden relative">
         <div className="content-container relative z-10">
           <div className="max-w-4xl mx-auto">
@@ -492,7 +460,7 @@ const Contact = () => {
 
               <div className="relative z-10 min-h-[300px] flex flex-col justify-center">
                 <p
-                  key={activeTestimonial}
+                  key={`content-${activeTestimonial}`}
                   className="text-xl md:text-3xl text-gray-800 leading-[1.8] text-center font-medium mb-16 animate-fade-in"
                 >
                   "{testimonials[activeTestimonial].content}"
@@ -515,6 +483,7 @@ const Contact = () => {
                 </div>
               </div>
 
+              {testimonials.length > 1 && (
               <div className="flex justify-center items-center gap-4 mt-12 md:absolute md:top-1/2 md:-left-12 md:-right-12 md:-translate-y-1/2 md:mt-0 md:justify-between pointer-events-none">
                 <button
                   type="button"
@@ -531,10 +500,12 @@ const Contact = () => {
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
+              )}
             </div>
           </div>
         </div>
       </section>
+      )}
 
       {partnersLogos.length > 0 && (
       <section className="py-16 md:py-24 bg-white overflow-hidden">
