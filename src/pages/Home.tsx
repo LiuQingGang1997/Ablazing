@@ -8,6 +8,7 @@ const Home = () => {
   const [heroBanners, setHeroBanners] = useState<any[]>([]);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const [venueCards, setVenueCards] = useState<any[]>([]);
+  const [brandLogos, setBrandLogos] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch banners from API
@@ -73,6 +74,29 @@ const Home = () => {
       .catch((err) => {
         console.error('Failed to fetch cases:', err);
         setVenueCards([]);
+      });
+  }, []);
+
+  useEffect(() => {
+    // Fetch brand logos from API
+    axios.get('/api/brands', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: false
+    })
+      .then((res) => {
+        const data = res.data?.data || res.data;
+        if (data && Array.isArray(data) && data.length > 0) {
+          setBrandLogos(data);
+        } else {
+          setBrandLogos([]);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch brand logos:', err);
+        setBrandLogos([]);
       });
   }, []);
 
@@ -281,7 +305,7 @@ const Home = () => {
   // 自动轮播 - 品牌墙
   useEffect(() => {
     const container = brandScrollRef.current;
-    if (!container) return;
+    if (!container || brandLogos.length === 0) return;
 
     let animationId: number;
     let isPaused = false;
@@ -337,14 +361,14 @@ const Home = () => {
 
   // 拖拽事件处理 - 品牌墙
   const handleBrandDragStart = (clientX: number) => {
-    if (!brandScrollRef.current) return;
+    if (!brandScrollRef.current || brandLogos.length === 0) return;
     setIsBrandDragging(true);
     setBrandStartX(clientX - brandScrollRef.current.offsetLeft);
     setBrandScrollLeft(brandScrollRef.current.scrollLeft);
   };
 
   const handleBrandDragMove = (clientX: number) => {
-    if (!isBrandDragging || !brandScrollRef.current) return;
+    if (!isBrandDragging || !brandScrollRef.current || brandLogos.length === 0) return;
     const x = clientX - brandScrollRef.current.offsetLeft;
     const walk = (x - brandStartX) * 2;
     brandScrollRef.current.scrollLeft = brandScrollLeft - walk;
@@ -1061,6 +1085,7 @@ const Home = () => {
         </div>
       </section>
  {/* Brands Logo Wall Section */}
+      {brandLogos.length > 0 && (
       <section className="py-16 md:py-24 bg-white overflow-hidden">
         <div className="content-container">
           {/* Section Header */}
@@ -1088,78 +1113,16 @@ const Home = () => {
               {/* To make it infinite, we duplicate the logos list 3 times */}
               {[1, 2, 3].map((setIndex) => (
                 <div key={`brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
-                  {/* BORGWARNER */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg"
-                      alt="BORGWARNER"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* LENNAR */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/lennar.svg"
-                      alt="LENNAR"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* NORWEGIAN CRUISE LINE */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg"
-                      alt="NORWEGIAN CRUISE LINE"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* adidas */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/adidas-4.svg"
-                      alt="adidas"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* FILA */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/fila-9.svg"
-                      alt="FILA"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* Nike */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/nike-11.svg"
-                      alt="Nike"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* PUMA */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/puma-logo.svg"
-                      alt="PUMA"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* Reebok */}
-                  <div className="h-8 md:h-9 flex items-center justify-center shrink-0">
-                    <img
-                      src="https://cdn.worldvectorlogo.com/logos/reebok-1.svg"
-                      alt="Reebok"
-                      className="h-full w-auto object-contain opacity-80 pointer-events-none"
-                      draggable="false"
-                    />
-                  </div>
+                  {brandLogos.map((brand) => (
+                    <div key={`brand-${brand.id}`} className="h-8 md:h-9 flex items-center justify-center shrink-0">
+                      <img
+                        src={brand.logoUrl}
+                        alt={brand.name}
+                        className="h-full w-auto object-contain opacity-80 pointer-events-none"
+                        draggable="false"
+                      />
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
@@ -1170,6 +1133,7 @@ const Home = () => {
           </div>
         </div>
       </section>
+      )}
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-black">
         <div className="content-container">
