@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { useBrands } from '../hooks/useBrands';
 
 type VariantOption = { value: string; label: string };
 type VariantGroup = { key: string; label: string; options: VariantOption[]; selectedValue?: string };
@@ -39,6 +40,7 @@ const ProductDetail = () => {
   const { productId } = useParams();
   const location = useLocation();
   const { lang, t } = useI18n();
+  const { brands: partnersLogos } = useBrands();
 
   const payload = useMemo(() => {
     const fromState = (location.state as ProductDetailPayload | null) ?? null;
@@ -111,20 +113,6 @@ const ProductDetail = () => {
     }
   };
   const activeMainImage = activeImage ? withUnsplashSize(activeImage, 800, 800) : activeImage;
-
-  const partnersLogos = useMemo(
-    () => [
-      { src: 'https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg', alt: 'BORGWARNER' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/lennar.svg', alt: 'LENNAR' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg', alt: 'NORWEGIAN CRUISE LINE' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/adidas-4.svg', alt: 'adidas' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/fila-9.svg', alt: 'FILA' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/nike-11.svg', alt: 'Nike' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/puma-logo.svg', alt: 'PUMA' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/reebok-1.svg', alt: 'Reebok' },
-    ],
-    []
-  );
 
   const normalizePartnersLogoWallScroll = () => {
     const el = partnersLogoWallRef.current;
@@ -713,6 +701,7 @@ const ProductDetail = () => {
         </div>
       </section>
 
+      {partnersLogos.length > 0 && (
       <section className="py-16 md:py-24 bg-white overflow-hidden">
         <div className="content-container">
           <div className="flex items-center justify-center">
@@ -741,12 +730,12 @@ const ProductDetail = () => {
                 <div key={`partners-brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
                   {partnersLogos.map((l) => (
                     <div
-                      key={`${setIndex}-${l.alt}`}
+                      key={`${setIndex}-${l.id}`}
                       className="h-8 md:h-9 flex items-center justify-center shrink-0"
                     >
                       <img
-                        src={l.src}
-                        alt={l.alt}
+                        src={l.logoUrl}
+                        alt={l.name}
                         className="h-full w-auto object-contain opacity-80 pointer-events-none"
                         draggable="false"
                       />
@@ -761,6 +750,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </section>
+      )}
 
       <section className="py-16 md:py-24 bg-black">
         <div className="content-container">

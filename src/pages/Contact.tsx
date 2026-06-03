@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, AtSign, MapPin, Phone, Quote } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { useBrands } from '../hooks/useBrands';
 
 const Contact = () => {
   const { lang, t } = useI18n();
+  const { brands: partnersLogos } = useBrands();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -106,20 +108,6 @@ const Contact = () => {
   const [partnersLogoWallStartX, setPartnersLogoWallStartX] = useState(0);
   const [partnersLogoWallScrollLeft, setPartnersLogoWallScrollLeft] = useState(0);
   const [isPartnersLogoWallHovered, setIsPartnersLogoWallHovered] = useState(false);
-
-  const partnersLogos = useMemo(
-    () => [
-      { src: 'https://cdn.worldvectorlogo.com/logos/borgwarner-1.svg', alt: 'BORGWARNER' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/lennar.svg', alt: 'LENNAR' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/norwegian-cruise-line.svg', alt: 'NORWEGIAN CRUISE LINE' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/adidas-4.svg', alt: 'adidas' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/fila-9.svg', alt: 'FILA' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/nike-11.svg', alt: 'Nike' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/puma-logo.svg', alt: 'PUMA' },
-      { src: 'https://cdn.worldvectorlogo.com/logos/reebok-1.svg', alt: 'Reebok' },
-    ],
-    []
-  );
 
   const normalizePartnersLogoWallScroll = () => {
     const el = partnersLogoWallRef.current;
@@ -548,6 +536,7 @@ const Contact = () => {
         </div>
       </section>
 
+      {partnersLogos.length > 0 && (
       <section className="py-16 md:py-24 bg-white overflow-hidden">
         <div className="content-container">
           <div className="text-center mb-16">
@@ -576,12 +565,12 @@ const Contact = () => {
                 <div key={`partners-brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
                   {partnersLogos.map((l) => (
                     <div
-                      key={`${setIndex}-${l.alt}`}
+                      key={`${setIndex}-${l.id}`}
                       className="h-8 md:h-9 flex items-center justify-center shrink-0"
                     >
                       <img
-                        src={l.src}
-                        alt={l.alt}
+                        src={l.logoUrl}
+                        alt={l.name}
                         className="h-full w-auto object-contain opacity-80"
                         draggable="false"
                       />
@@ -596,6 +585,7 @@ const Contact = () => {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 };
