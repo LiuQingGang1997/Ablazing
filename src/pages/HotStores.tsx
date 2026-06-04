@@ -36,11 +36,10 @@ const HotStores = () => {
     promoVideoUrl: b.promoVideoUrl || '',
     mobilePromoVideoUrl: b.mobilePromoVideoUrl || '',
     detailDescription: b.detailDescription || '',
-    subtitle: (b as any).subtitle || '',
-    video: (b as any).videoUrl || b.promoVideoUrl || '',
-    videoPc: (b as any).videoUrl || b.promoVideoUrl || '',
-    videoMobile: (b as any).videoUrl || b.mobilePromoVideoUrl || '',
-    cardImage: (b as any).coverImageUrl || b.promoImageUrl || ''
+    video: b.promoVideoUrl || '',
+    videoPc: b.promoVideoUrl || '',
+    videoMobile: b.mobilePromoVideoUrl || '',
+    cardImage: b.promoImageUrl || ''
   }));
 
   // Active brand mapping
@@ -49,12 +48,12 @@ const HotStores = () => {
   const activeBrand = {
     id: currentBrandData.id,
     name: currentBrandData.name || '',
-    title: currentBrandData.slogan || currentBrandData.title || currentBrandData.name || '',
-    subtitle: currentBrandData.introduction || currentBrandData.subtitle || '',
-    description: currentBrandData.detailDescription || currentBrandData.description || '',
+    title: currentBrandData.slogan || currentBrandData.name || '',
+    subtitle: currentBrandData.introduction || '',
+    description: currentBrandData.detailDescription || '',
     logo: currentBrandData.logoUrl || '',
     foundedYear: currentBrandData.foundedYear || 2000,
-    overview: currentBrandData.overview || currentBrandData.detailDescription || '',
+    overview: currentBrandData.detailDescription || '',
     metrics: currentBrandData.metrics || [],
     highlights: currentBrandData.highlights || [],
     productTypes: (apiProductTypes.length > 0 ? apiProductTypes : mockProductTypes).map(t => ({
@@ -66,13 +65,13 @@ const HotStores = () => {
       focusSubtitle: t.focusSubtitle || '',
       focusDesc: t.focusDesc || ''
     })),
-    heroImagePc: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || '',
-    heroImageMobile: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || '',
-    videoPc: currentBrandData.promoVideoUrl || (currentBrandData as any).videoUrl || '',
-    videoMobile: currentBrandData.mobilePromoVideoUrl || (currentBrandData as any).videoUrl || '',
-    video: currentBrandData.promoVideoUrl || (currentBrandData as any).videoUrl || '',
-    heroImage: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || '',
-    cardImage: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || ''
+    heroImagePc: currentBrandData.promoImageUrl || '',
+    heroImageMobile: currentBrandData.promoImageUrl || '',
+    videoPc: currentBrandData.promoVideoUrl || '',
+    videoMobile: currentBrandData.mobilePromoVideoUrl || '',
+    video: currentBrandData.promoVideoUrl || '',
+    heroImage: currentBrandData.promoImageUrl || '',
+    cardImage: currentBrandData.promoImageUrl || ''
   };
 
   const [isMdUp, setIsMdUp] = useState(false);
@@ -680,10 +679,7 @@ const HotStores = () => {
               </div>
               <div className="mt-8 text-white/70 text-base md:text-base leading-relaxed max-w-2xl">
                 <div className="text-white/80 font-medium mb-3 md:mb-0 md:font-normal text-lg md:text-base">{activeBrand.subtitle || '根据不同品牌与品类展示对应的产品清单'}</div>
-                <div 
-                  className="mt-2"
-                  dangerouslySetInnerHTML={{ __html: activeBrand.description || '为您的健身事业提供动力。' }}
-                />
+                
               </div>
             </div>
 
@@ -1107,7 +1103,7 @@ const HotStores = () => {
                                   <img src={b.logo} alt={b.name} className="h-5 w-auto" draggable="false" />
                                   <div className="min-w-0">
                                     <div className="text-sm font-bold text-black truncate">{b.name}</div>
-                                    <div className="text-xs text-black/50 truncate">{b.subtitle}</div>
+                                    <div className="text-xs text-black/50 truncate">{b.slogan}</div>
                                   </div>
                                 </button>
                               );
@@ -1136,7 +1132,7 @@ const HotStores = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mt-2">{activeBrand.description || '根据不同品牌与品类展示对应的产品清单。'}</div>
+                <div className="mt-2">{activeBrand.title || '根据不同品牌与品类展示对应的产品清单。'}</div>
               </div>
             </div>
 
