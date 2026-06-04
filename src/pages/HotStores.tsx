@@ -30,11 +30,17 @@ const HotStores = () => {
     id: b.id,
     name: b.name,
     logo: b.logoUrl || '',
+    slogan: b.slogan || '',
+    introduction: b.introduction || '',
+    promoImageUrl: b.promoImageUrl || '',
+    promoVideoUrl: b.promoVideoUrl || '',
+    mobilePromoVideoUrl: b.mobilePromoVideoUrl || '',
+    detailDescription: b.detailDescription || '',
     subtitle: (b as any).subtitle || '',
-    video: (b as any).videoUrl || '',
-    videoPc: (b as any).videoUrl || '',
-    videoMobile: (b as any).videoUrl || '',
-    cardImage: (b as any).coverImageUrl || ''
+    video: (b as any).videoUrl || b.promoVideoUrl || '',
+    videoPc: (b as any).videoUrl || b.promoVideoUrl || '',
+    videoMobile: (b as any).videoUrl || b.mobilePromoVideoUrl || '',
+    cardImage: (b as any).coverImageUrl || b.promoImageUrl || ''
   }));
 
   // Active brand mapping
@@ -43,12 +49,12 @@ const HotStores = () => {
   const activeBrand = {
     id: currentBrandData.id,
     name: currentBrandData.name || '',
-    title: currentBrandData.title || currentBrandData.name || '',
-    subtitle: currentBrandData.subtitle || '',
-    description: currentBrandData.description || '',
+    title: currentBrandData.slogan || currentBrandData.title || currentBrandData.name || '',
+    subtitle: currentBrandData.introduction || currentBrandData.subtitle || '',
+    description: currentBrandData.detailDescription || currentBrandData.description || '',
     logo: currentBrandData.logoUrl || '',
     foundedYear: currentBrandData.foundedYear || 2000,
-    overview: currentBrandData.overview || '',
+    overview: currentBrandData.overview || currentBrandData.detailDescription || '',
     metrics: currentBrandData.metrics || [],
     highlights: currentBrandData.highlights || [],
     productTypes: (apiProductTypes.length > 0 ? apiProductTypes : mockProductTypes).map(t => ({
@@ -60,13 +66,13 @@ const HotStores = () => {
       focusSubtitle: t.focusSubtitle || '',
       focusDesc: t.focusDesc || ''
     })),
-    heroImagePc: (currentBrandData as any).coverImageUrl || '',
-    heroImageMobile: (currentBrandData as any).coverImageUrl || '',
-    videoPc: (currentBrandData as any).videoUrl || '',
-    videoMobile: (currentBrandData as any).videoUrl || '',
-    video: (currentBrandData as any).videoUrl || '',
-    heroImage: (currentBrandData as any).coverImageUrl || '',
-    cardImage: (currentBrandData as any).coverImageUrl || ''
+    heroImagePc: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || '',
+    heroImageMobile: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || '',
+    videoPc: currentBrandData.promoVideoUrl || (currentBrandData as any).videoUrl || '',
+    videoMobile: currentBrandData.mobilePromoVideoUrl || (currentBrandData as any).videoUrl || '',
+    video: currentBrandData.promoVideoUrl || (currentBrandData as any).videoUrl || '',
+    heroImage: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || '',
+    cardImage: currentBrandData.promoImageUrl || (currentBrandData as any).coverImageUrl || ''
   };
 
   const [isMdUp, setIsMdUp] = useState(false);
@@ -674,7 +680,10 @@ const HotStores = () => {
               </div>
               <div className="mt-8 text-white/70 text-base md:text-base leading-relaxed max-w-2xl">
                 <div className="text-white/80 font-medium mb-3 md:mb-0 md:font-normal text-lg md:text-base">{activeBrand.subtitle || '根据不同品牌与品类展示对应的产品清单'}</div>
-                <div className="mt-2">{activeBrand.description || '为您的健身事业提供动力。'}</div>
+                <div 
+                  className="mt-2"
+                  dangerouslySetInnerHTML={{ __html: activeBrand.description || '为您的健身事业提供动力。' }}
+                />
               </div>
             </div>
 
@@ -849,9 +858,10 @@ const HotStores = () => {
                   ? `自${activeBrand.foundedYear}年，一直致力于为健身事业提供动力。`
                   : `Since ${activeBrand.foundedYear}, empowering fitness with products and innovation.`}
               </h2>
-              <p className="mt-6 md:mt-8 text-sm md:text-base text-black/60 leading-relaxed max-w-4xl mx-auto text-center">
-                {activeBrand.overview}
-              </p>
+              <div 
+                className="mt-6 md:mt-8 text-sm md:text-base text-black/60 leading-relaxed max-w-4xl mx-auto text-center"
+                dangerouslySetInnerHTML={{ __html: activeBrand.overview }}
+              />
             </div>
 
             <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
