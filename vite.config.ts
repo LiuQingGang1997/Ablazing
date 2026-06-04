@@ -149,6 +149,18 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api\/customer-reviews/, '/api/customer-reviews')
       },
+      '^/api/mall-brands': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/mall-brands/, '/api/mall-brands')
+      },
+      '^/api/products': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/products/, '/api/products')
+      },
     },
   }
 })

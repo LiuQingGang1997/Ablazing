@@ -4,6 +4,7 @@ import { CheckCircle, ArrowLeft, ArrowRight, Play, ChevronDown } from 'lucide-re
 import gsap from 'gsap';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
+import { useMallBrands, useProductsSearch } from '../hooks/useMall';
 
 const HotStores = () => {
   const { lang, t } = useI18n();
@@ -49,6 +50,7 @@ const HotStores = () => {
     weightLb?: number;
     priceUsd: number;
     attrs: Record<string, string>;
+    sceneId?: string;
   };
   type BrandCatalog = {
     title: string;
@@ -1380,7 +1382,7 @@ const HotStores = () => {
     },
   };
 
-  const brands = [
+  const staticBrands = [
     {
       id: 'TRUE',
       name: 'TRUE',
@@ -2076,8 +2078,50 @@ const HotStores = () => {
     videoMobile: (brand as any).videoMobile ?? brand.video,
   }));
 
-  const [activeBrandIndex, setActiveBrandIndex] = useState(0);
-  const activeBrand = brands[activeBrandIndex];
+  const [activeBrandId, setActiveBrandId] = useState<string | number | undefined>(undefined);
+  const { brands: apiBrands, currentBrand: apiCurrentBrand, productTypes: apiProductTypes } = useMallBrands(activeBrandId ? Number(activeBrandId) : undefined);
+  const displayBrands = apiBrands.length > 0 ? apiBrands.map(b => ({
+    id: b.id,
+    name: b.name,
+    logo: b.logoUrl || '',
+    subtitle: b.subtitle || '',
+    video: b.videoUrl || '',
+    videoPc: b.videoUrl || '',
+    videoMobile: b.videoUrl || '',
+    cardImage: b.coverImageUrl || ''
+  })) : staticBrands;
+
+  // Active brand mapping
+  const staticFallbackBrand = staticBrands[0];
+  const activeBrand = apiCurrentBrand ? {
+    id: apiCurrentBrand.id,
+    name: apiCurrentBrand.name || '',
+    title: apiCurrentBrand.title || apiCurrentBrand.name || '',
+    subtitle: apiCurrentBrand.subtitle || '',
+    description: apiCurrentBrand.description || '',
+    logo: apiCurrentBrand.logoUrl || '',
+    foundedYear: apiCurrentBrand.foundedYear || 2000,
+    overview: apiCurrentBrand.overview || '',
+    metrics: apiCurrentBrand.metrics || [],
+    highlights: apiCurrentBrand.highlights || [],
+    productTypes: apiProductTypes.map(t => ({
+      id: String(t.id),
+      zh: t.name || t.typeName || '',
+      en: t.enName || '',
+      image: t.image || t.imageUrl || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop',
+      focusTitle: t.focusTitle || '',
+      focusSubtitle: t.focusSubtitle || '',
+      focusDesc: t.focusDesc || ''
+    })),
+    heroImagePc: apiCurrentBrand.coverImageUrl || '',
+    heroImageMobile: apiCurrentBrand.coverImageUrl || '',
+    videoPc: apiCurrentBrand.videoUrl || '',
+    videoMobile: apiCurrentBrand.videoUrl || '',
+    video: apiCurrentBrand.videoUrl || '',
+    heroImage: apiCurrentBrand.coverImageUrl || '',
+    cardImage: apiCurrentBrand.coverImageUrl || ''
+  } : (staticBrands.find(b => b.id === activeBrandId) || staticFallbackBrand);
+
   const [isMdUp, setIsMdUp] = useState(false);
   const brandPhilosophyRef = useRef<HTMLElement | null>(null);
   const [hoveredBrandIndex, setHoveredBrandIndex] = useState<number | null>(null);
@@ -2114,7 +2158,7 @@ const HotStores = () => {
     setProductFilterOpenKey(null);
     setProductPage(1);
     setIsBrandListOpen(false);
-  }, [activeBrandIndex]);
+  }, [activeBrandId]);
 
   useEffect(() => {
     setIsBrandInlineVideoPlaying(false);
@@ -2122,7 +2166,7 @@ const HotStores = () => {
     if (!v) return;
     v.pause();
     v.currentTime = 0;
-  }, [activeBrandIndex]);
+  }, [activeBrandId]);
 
   const brandStripRef = useRef<HTMLDivElement>(null);
   const [isBrandStripDragging, setIsBrandStripDragging] = useState(false);
@@ -2133,7 +2177,7 @@ const HotStores = () => {
   const [brandStripStartX, setBrandStripStartX] = useState(0);
   const [brandStripScrollLeft, setBrandStripScrollLeft] = useState(0);
 
-  const brandStripItems = [...brands, ...brands, ...brands];
+  const brandStripItems = [...displayBrands, ...displayBrands, ...displayBrands];
 
   const productsBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollToProducts = (nextCategoryId: string) => {
@@ -2146,20 +2190,18 @@ const HotStores = () => {
   const switchBrand = (dir: -1 | 1) => {
     setHoveredBrandIndex(null);
     setIsBrandListOpen(false);
-    setActiveBrandIndex((prev) => {
-      const total = brands.length || 1;
-      return (prev + dir + total) % total;
-    });
+    const currentIndex = displayBrands.findIndex(b => b.id === activeBrand.id);
+    const total = displayBrands.length || 1;
+    const nextIndex = (currentIndex + dir + total) % total;
+    setActiveBrandId(displayBrands[nextIndex].id as number);
   };
 
   const selectBrand = (nextIndex: number) => {
     setHoveredBrandIndex(null);
     setIsBrandListOpen(false);
-    setActiveBrandIndex(() => {
-      const total = brands.length || 1;
-      const normalized = ((nextIndex % total) + total) % total;
-      return normalized;
-    });
+    const total = displayBrands.length || 1;
+    const normalized = ((nextIndex % total) + total) % total;
+    setActiveBrandId(displayBrands[normalized].id as number);
   };
 
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
@@ -2303,7 +2345,7 @@ const HotStores = () => {
       const singleSetWidth = el.scrollWidth / 3;
       el.scrollLeft = singleSetWidth;
     });
-  }, [activeBrandIndex]);
+  }, [activeBrandId]);
 
   useEffect(() => {
     const el = productTypesStripRef.current;
@@ -2343,7 +2385,7 @@ const HotStores = () => {
       el.removeEventListener('mouseenter', onEnter);
       el.removeEventListener('mouseleave', onLeave);
     };
-  }, [activeBrandIndex, isProductTypesDragging, productTypes.length]);
+  }, [activeBrandId, isProductTypesDragging, productTypes.length]);
 
   useEffect(() => {
     const el = productTypesStripRef.current;
@@ -2354,7 +2396,7 @@ const HotStores = () => {
     if (!target) return;
     const left = Math.max(0, target.offsetLeft - 8);
     el.scrollTo({ left, behavior: 'smooth' });
-  }, [activeBrandIndex, activeProductTypeVirtualIndex, productTypes.length]);
+  }, [activeBrandId, activeProductTypeVirtualIndex, productTypes.length]);
 
   const setProductTypeVirtualIndex = (nextVirtualIndex: number, pauseMs: number) => {
     const el = productTypesStripRef.current;
@@ -2506,7 +2548,7 @@ const HotStores = () => {
       el.removeEventListener('mouseenter', onEnter);
       el.removeEventListener('mouseleave', onLeave);
     };
-  }, [brands.length]);
+  }, [displayBrands.length]);
 
   const handleBrandStripStart = (clientX: number) => {
     const el = brandStripRef.current;
@@ -2549,18 +2591,65 @@ const HotStores = () => {
       products: [],
     } as BrandCatalog);
 
-  const categoryOptions: Option[] = [
+  const { products: apiProducts } = useProductsSearch({
+    brandId: activeBrandId ? Number(activeBrandId) : undefined,
+  });
+
+  const displayProducts = apiProducts.length > 0 ? apiProducts.map(p => ({
+    id: String(p.id),
+    name: p.name || '',
+    subtitle: p.subtitle || '',
+    image: p.coverImageUrl || p.image || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop',
+    categoryId: String(p.typeId),
+    tag: p.tag || undefined,
+    weightKg: p.weightKg || undefined,
+    weightLb: p.weightLb || undefined,
+    priceUsd: p.price || 0,
+    attrs: p.parameters || {},
+    sceneId: String(p.sceneId)
+  })) : activeCatalog.products;
+
+  // Extract filters dynamically from displayProducts
+  const typeOptions: Option[] = [{ value: 'all', label: '全部产品' }];
+  const sceneOptions: Option[] = [{ value: 'all', label: '全部场景' }];
+  const paramOptionsMap: Record<string, Option[]> = {};
+
+  if (apiProducts.length > 0) {
+    apiProducts.forEach(p => {
+      if (p.typeId && !typeOptions.some(o => o.value === String(p.typeId))) {
+        typeOptions.push({ value: String(p.typeId), label: p.typeName || String(p.typeId) });
+      }
+      if (p.sceneId && !sceneOptions.some(o => o.value === String(p.sceneId))) {
+        sceneOptions.push({ value: String(p.sceneId), label: p.sceneName || String(p.sceneId) });
+      }
+      if (p.parameters) {
+        Object.entries(p.parameters).forEach(([k, v]) => {
+          if (!paramOptionsMap[k]) paramOptionsMap[k] = [{ value: 'all', label: k }];
+          if (!paramOptionsMap[k].some(o => o.value === String(v))) {
+            paramOptionsMap[k].push({ value: String(v), label: String(v) });
+          }
+        });
+      }
+    });
+  }
+
+  const categoryOptions: Option[] = apiProducts.length > 0 ? typeOptions : [
     { value: 'all', label: '全部产品' },
-    ...productTypes.map((t) => ({ value: t.id, label: t.zh })),
+    ...activeBrand.productTypes.map((t: any) => ({ value: t.id, label: t.zh })),
   ];
 
   const activeCategoryId = productFilters.category ?? 'all';
-  const dynamicFilters =
+  const dynamicFilters = apiProducts.length > 0 ? [] : (
     activeCatalog.filtersByCategoryId[activeCategoryId] ??
     activeCatalog.filtersByCategoryId.all ??
-    [];
+    []
+  );
 
-  const filterDefs: FilterDef[] = [
+  const filterDefs: FilterDef[] = apiProducts.length > 0 ? [
+    { key: 'category', label: '产品类型', options: typeOptions },
+    ...(sceneOptions.length > 1 ? [{ key: 'scene', label: '场景', options: sceneOptions }] : []),
+    ...Object.entries(paramOptionsMap).map(([k, opts]) => ({ key: `param_${k}`, label: k, options: opts }))
+  ] : [
     { key: 'category', label: '全部产品', options: categoryOptions },
     ...dynamicFilters,
   ];
@@ -2573,7 +2662,7 @@ const HotStores = () => {
     setProductFilters(next);
     setProductFilterOpenKey(null);
     setProductPage(1);
-  }, [activeCategoryId]);
+  }, [activeCategoryId, activeBrandId]);
 
   useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
@@ -2589,12 +2678,22 @@ const HotStores = () => {
     return () => window.removeEventListener('mousedown', onMouseDown);
   }, []);
 
-  const filteredProducts = activeCatalog.products.filter((p) => {
+  const filteredProducts = displayProducts.filter((p) => {
     if (activeCategoryId !== 'all' && p.categoryId !== activeCategoryId) return false;
-    for (const def of dynamicFilters) {
-      const sel = productFilters[def.key] ?? 'all';
-      if (sel === 'all') continue;
-      if ((p.attrs?.[def.key] ?? '') !== sel) return false;
+    
+    if (apiProducts.length > 0) {
+      if (productFilters.scene && productFilters.scene !== 'all' && p.sceneId !== productFilters.scene) return false;
+      for (const k of Object.keys(paramOptionsMap)) {
+        const sel = productFilters[`param_${k}`] ?? 'all';
+        if (sel === 'all') continue;
+        if ((p.attrs?.[k] ?? '') !== sel) return false;
+      }
+    } else {
+      for (const def of dynamicFilters) {
+        const sel = productFilters[def.key] ?? 'all';
+        if (sel === 'all') continue;
+        if ((p.attrs?.[def.key] ?? '') !== sel) return false;
+      }
     }
     return true;
   });
@@ -2684,9 +2783,8 @@ const HotStores = () => {
                 className={`flex gap-4 md:gap-6 overflow-x-auto pb-2 select-none [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isBrandStripDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
               >
                 {brandStripItems.map((brand, i) => {
-                  const realIndex = i % brands.length;
-                  const isActive = realIndex === activeBrandIndex;
-                  const isHovered = hoveredBrandIndex === realIndex;
+                  const isActive = brand.id === activeBrand.id;
+                  const isHovered = hoveredBrandIndex === i;
                   return (
                     <button
                       key={`${brand.id}-${i}`}
@@ -2696,9 +2794,9 @@ const HotStores = () => {
                       type="button"
                       onClick={() => {
                         if (isBrandStripDragging) return;
-                        selectBrand(realIndex);
+                        selectBrand(i);
                       }}
-                      onMouseEnter={() => setHoveredBrandIndex(realIndex)}
+                      onMouseEnter={() => setHoveredBrandIndex(i)}
                       onMouseLeave={() => setHoveredBrandIndex(null)}
                       className={`group relative flex-none w-[calc(25%-12px)] md:w-28 lg:w-36 xl:w-40 aspect-square rounded-full bg-[#111] transition-all duration-300 will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                         isActive
@@ -2786,7 +2884,7 @@ const HotStores = () => {
 
               <div className="lg:col-span-7">
                 <div className="grid grid-cols-2 gap-y-10 gap-x-8 md:gap-x-16 max-w-xl">
-                  {activeBrand.metrics.map((m) => (
+                  {activeBrand.metrics.map((m: any) => (
                     <div key={m.label}>
                       <div className="text-4xl md:text-5xl font-black text-black leading-none">
                         {m.value}
@@ -2834,7 +2932,7 @@ const HotStores = () => {
             </div>
 
             <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-              {activeBrand.highlights.map((h) => (
+              {activeBrand.highlights.map((h: any) => (
                 <div key={h.title} className="flex flex-col items-center text-center">
                   <div className="w-12 h-12 rounded-2xl bg-[#c8ff00] flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-black" />
@@ -3062,8 +3160,8 @@ const HotStores = () => {
                       {isBrandListOpen ? (
                         <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white border border-black/10 shadow-[0_24px_60px_rgba(0,0,0,0.18)] p-1 z-30">
                           <div className="max-h-80 overflow-auto">
-                            {brands.map((b, idx) => {
-                              const active = idx === activeBrandIndex;
+                            {displayBrands.map((b, idx) => {
+                              const active = b.id === activeBrand.id;
                               return (
                                 <button
                                   key={b.id}
