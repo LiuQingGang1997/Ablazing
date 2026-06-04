@@ -94,11 +94,11 @@ const HotStores = () => {
   }, []);
 
   const activeBrandVideoSrc = isMdUp
-    ? (activeBrand.videoPc || activeBrand.video)
-    : (activeBrand.videoMobile || activeBrand.video);
+    ? (activeBrand.videoPc || activeBrand.video || 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true1.mp4')
+    : (activeBrand.videoMobile || activeBrand.video || 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true1.mp4');
   const activeBrandHeroImageSrc = isMdUp
-    ? (activeBrand.heroImagePc || activeBrand.heroImage)
-    : (activeBrand.heroImageMobile || activeBrand.heroImage);
+    ? (activeBrand.heroImagePc || activeBrand.heroImage || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop')
+    : (activeBrand.heroImageMobile || activeBrand.heroImage || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop');
 
   useEffect(() => {
     setProductFilters({ category: 'all' });
