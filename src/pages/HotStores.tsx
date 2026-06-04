@@ -670,7 +670,7 @@ const HotStores = () => {
                 />
               </div>
               <div className="mt-8 md:mt-6 text-4xl md:text-4xl font-black tracking-tight">
-                {activeBrand.title}
+                {activeBrand.title || '提供多元、个性、潮流的训练方式'}
               </div>
               <div className="mt-8 text-white/70 text-base md:text-base leading-relaxed max-w-2xl">
                 <div className="text-white/80 font-medium mb-3 md:mb-0 md:font-normal text-lg md:text-base">{activeBrand.subtitle || '根据不同品牌与品类展示对应的产品清单'}</div>
