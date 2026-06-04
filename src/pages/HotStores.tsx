@@ -60,13 +60,13 @@ const HotStores = () => {
       focusSubtitle: t.focusSubtitle || '',
       focusDesc: t.focusDesc || ''
     })),
-    heroImagePc: currentBrandData.coverImageUrl || '',
-    heroImageMobile: currentBrandData.coverImageUrl || '',
-    videoPc: currentBrandData.videoUrl || '',
-    videoMobile: currentBrandData.videoUrl || '',
-    video: currentBrandData.videoUrl || '',
-    heroImage: currentBrandData.coverImageUrl || '',
-    cardImage: currentBrandData.coverImageUrl || ''
+    heroImagePc: (currentBrandData as any).coverImageUrl || '',
+    heroImageMobile: (currentBrandData as any).coverImageUrl || '',
+    videoPc: (currentBrandData as any).videoUrl || '',
+    videoMobile: (currentBrandData as any).videoUrl || '',
+    video: (currentBrandData as any).videoUrl || '',
+    heroImage: (currentBrandData as any).coverImageUrl || '',
+    cardImage: (currentBrandData as any).coverImageUrl || ''
   };
 
   const [isMdUp, setIsMdUp] = useState(false);
@@ -94,11 +94,11 @@ const HotStores = () => {
   }, []);
 
   const activeBrandVideoSrc = isMdUp
-    ? (activeBrand.videoPc ?? activeBrand.video)
-    : (activeBrand.videoMobile ?? activeBrand.video);
+    ? (activeBrand.videoPc || activeBrand.video)
+    : (activeBrand.videoMobile || activeBrand.video);
   const activeBrandHeroImageSrc = isMdUp
-    ? (activeBrand.heroImagePc ?? activeBrand.heroImage)
-    : (activeBrand.heroImageMobile ?? activeBrand.heroImage);
+    ? (activeBrand.heroImagePc || activeBrand.heroImage)
+    : (activeBrand.heroImageMobile || activeBrand.heroImage);
 
   useEffect(() => {
     setProductFilters({ category: 'all' });
@@ -673,8 +673,8 @@ const HotStores = () => {
                 {activeBrand.title}
               </div>
               <div className="mt-8 text-white/70 text-base md:text-base leading-relaxed max-w-2xl">
-                <div className="text-white/80 font-medium mb-3 md:mb-0 md:font-normal text-lg md:text-base">{activeBrand.subtitle}</div>
-                <div className="mt-2">{activeBrand.description}</div>
+                <div className="text-white/80 font-medium mb-3 md:mb-0 md:font-normal text-lg md:text-base">{activeBrand.subtitle || '根据不同品牌与品类展示对应的产品清单'}</div>
+                <div className="mt-2">{activeBrand.description || '为您的健身事业提供动力。'}</div>
               </div>
             </div>
 
@@ -738,7 +738,7 @@ const HotStores = () => {
                       <div className="relative w-full h-full rounded-full overflow-hidden">
                         {isHovered && brand.video ? (
                           <video
-                            src={isMdUp ? (brand.videoPc ?? brand.video) : (brand.videoMobile ?? brand.video)}
+                            src={isMdUp ? (brand.videoPc || brand.video) : (brand.videoMobile || brand.video)}
                             autoPlay
                             muted
                             loop
@@ -1007,7 +1007,7 @@ const HotStores = () => {
               <div className="font-semibold text-black/70">
                 {lang === 'zh' ? `“${activeBrand.name}”品牌介绍` : `${activeBrand.name} introduction`}
               </div>
-              <div className="mt-2">{activeBrand.subtitle}</div>
+              <div className="mt-2">{activeBrand.subtitle || '探索我们如何帮助您建立长远的健身生态。'}</div>
             </div>
           </div>
 
