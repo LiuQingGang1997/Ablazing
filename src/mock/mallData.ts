@@ -19,11 +19,11 @@ export const makeLogoDataUri = (text: string) =>
   )}`;
 
 export const mockBrands = [
-  { id: 1, name: 'TRUE', logoUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/True_logo.png' },
-  { id: 2, name: 'TORQUE', logoUrl: makeLogoDataUri('TORQUE') },
-  { id: 3, name: 'gym80', logoUrl: makeLogoDataUri('gym80') },
-  { id: 4, name: 'TOTAL GYM', logoUrl: makeLogoDataUri('TOTAL GYM') },
-  { id: 5, name: 'Life Fitness', logoUrl: makeLogoDataUri('Life Fitness') }
+  { id: 1, name: 'TRUE', logoUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/True_logo.png', promoImageUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true.png?w=600&h=400&fit=crop', mobilePromoImageUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true.png?w=400&h=600&fit=crop' },
+  { id: 2, name: 'TORQUE', logoUrl: makeLogoDataUri('TORQUE'), promoImageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&h=400&fit=crop', mobilePromoImageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=600&fit=crop' },
+  { id: 3, name: 'gym80', logoUrl: makeLogoDataUri('gym80'), promoImageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop', mobilePromoImageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=600&fit=crop' },
+  { id: 4, name: 'TOTAL GYM', logoUrl: makeLogoDataUri('TOTAL GYM'), promoImageUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=400&fit=crop', mobilePromoImageUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=600&fit=crop' },
+  { id: 5, name: 'Life Fitness', logoUrl: makeLogoDataUri('Life Fitness'), promoImageUrl: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=600&h=400&fit=crop', mobilePromoImageUrl: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=600&fit=crop' }
 ];
 
 export const mockCurrentBrand = {
@@ -31,7 +31,7 @@ export const mockCurrentBrand = {
   name: 'TRUE',
   title: '诚信至关重要',
   subtitle: 'TRUE Fitness 创立于 1981 年，总部位于美国密苏里州，长期专注于商用及家用健身器材研发与制造。',
-  description: '品牌以跑步机见长，强调耐用性、舒适性与性能表现，并以 “Integrity Matters” 为核心理念，致力于为健身房、酒店及高端用户提供可靠的有氧与力量训练解决方案。',
+  description: '品牌以跑步机见长，强调耐用性、舒适性与性能表现，并以 "Integrity Matters" 为核心理念，致力于为健身房、酒店及高端用户提供可靠的有氧与力量训练解决方案。',
   logoUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/True_logo.png',
   foundedYear: 1981,
   overview: 'TRUE 致力于为健身设施与个人用户提供专业可靠的器械设备。多年来始终坚持品质至上，以出色的耐用性与顺滑体验，满足高频使用的商业需求与高要求的家庭训练。',
@@ -48,6 +48,8 @@ export const mockCurrentBrand = {
     { title: '可持续未来', description: '用更高标准的产品与流程，降低环境影响并提升长期价值。' }
   ],
   coverImageUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true.png?w=600&h=400&fit=crop',
+  promoImageUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true.png?w=600&h=400&fit=crop',
+  mobilePromoImageUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true.png?w=400&h=600&fit=crop',
   videoUrl: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/Brand/true1.mp4'
 };
 
@@ -56,6 +58,13 @@ export const mockProductTypes = [
   { id: 102, name: '跑步机', typeName: '跑步机', enName: 'Treadmill', image: 'https://images.unsplash.com/photo-1528701800489-20be3c7f80f6?w=1200&h=900&fit=crop' },
   { id: 103, name: '椭圆机', typeName: '椭圆机', enName: 'Elliptical Trainer', image: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=1200&h=900&fit=crop' },
   { id: 104, name: '卧式自行车', typeName: '卧式自行车', enName: 'Recumbent Bike', image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07d?w=1200&h=900&fit=crop' }
+];
+
+export const mockScenes = [
+  { id: 501, name: '商业健身房', englishName: 'Commercial Gym', enabled: true, sortOrder: 0 },
+  { id: 502, name: '工作室', englishName: 'Studio', enabled: true, sortOrder: 1 },
+  { id: 503, name: '家庭健身', englishName: 'Home Gym', enabled: true, sortOrder: 2 },
+  { id: 504, name: '酒店健身', englishName: 'Hotel Gym', enabled: true, sortOrder: 3 }
 ];
 
 export const mockProducts = [

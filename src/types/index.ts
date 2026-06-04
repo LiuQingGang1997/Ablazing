@@ -3,6 +3,22 @@ export interface NavItem {
   path: string;
 }
 
+export interface Brand {
+  id: number;
+  name: string;
+  logoUrl?: string;
+  slogan?: string;
+  introduction?: string;
+  promoImageUrl?: string;
+  mobilePromoImageUrl?: string;
+  promoVideoUrl?: string;
+  mobilePromoVideoUrl?: string;
+  detailDescription?: string;
+  foundedYear?: number;
+  metrics?: { value: string; label: string }[];
+  highlights?: { title: string; description: string }[];
+}
+
 export interface Banner {
   id: number;
   image: string;

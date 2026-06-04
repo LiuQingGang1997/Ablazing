@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const useMallBrands = (brandId?: number) => {
-  const [data, setData] = useState<{ brands: any[]; currentBrand: any; productTypes: any[] }>({
+  const [data, setData] = useState<{ brands: any[]; currentBrand: any; productTypes: any[]; scenes: any[] }>({
     brands: [],
     currentBrand: null,
     productTypes: [],
+    scenes: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -25,11 +26,12 @@ export const useMallBrands = (brandId?: number) => {
           brands: responseData.brands || [],
           currentBrand: responseData.currentBrand || null,
           productTypes: responseData.productTypes || [],
+          scenes: responseData.scenes || [],
         });
       })
       .catch((err) => {
         console.error('Failed to fetch mall brands:', err);
-        setData({ brands: [], currentBrand: null, productTypes: [] });
+        setData({ brands: [], currentBrand: null, productTypes: [], scenes: [] });
       })
       .finally(() => {
         setLoading(false);
@@ -37,6 +39,83 @@ export const useMallBrands = (brandId?: number) => {
   }, [brandId]);
 
   return { ...data, loading };
+};
+
+export const useProductScenes = () => {
+  const [scenes, setScenes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    axios.get('/api/product-scenes/frontend/list', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: false
+    })
+      .then((res) => {
+        const responseData = res.data?.data || res.data;
+        setScenes(Array.isArray(responseData) ? responseData : []);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch product scenes:', err);
+        setScenes([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  return { scenes, loading };
+};
+
+export const useProductDetail = (productId: string | undefined) => {
+  const [product, setProduct] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!productId) {
+      setProduct(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    axios.get(`/api/products/frontend/detail?id=${productId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: false
+    })
+      .then((res) => {
+        const responseData = res.data?.data || res.data;
+        if (responseData && responseData.id) {
+          setProduct(responseData);
+        } else {
+          setError('Product not found');
+          setProduct(null);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch product detail:', err);
+        if (err.response?.status === 404) {
+          setError('Product not found');
+        } else {
+          setError('Failed to load product');
+        }
+        setProduct(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [productId]);
+
+  return { product, loading, error };
 };
 
 export const useProductsSearch = (params: { brandId?: number; typeId?: number; sceneId?: number; parameterKey?: string; parameterValue?: string }) => {

@@ -269,9 +269,13 @@ const Home = () => {
     // 为了实现无缝循环，我们需要知道单组 Logo 的实际宽度
     // container.scrollWidth / 3 是因为我们渲染了 3 组完全一样的 Logo
     const autoScroll = () => {
+      if (brandLogos.length <= 5) {
+        animationId = requestAnimationFrame(autoScroll);
+        return;
+      }
       if (!isPaused && !isBrandDragging) {
         container.scrollLeft += 1; // 调整速度
-        
+
         // 当滚动超过了"第一组Logo的完整宽度"时，瞬间跳回到 0，实现无缝循环
         const singleSetWidth = container.scrollWidth / 3;
         if (container.scrollLeft >= singleSetWidth) {
@@ -1071,7 +1075,7 @@ const Home = () => {
               style={{ scrollBehavior: 'auto' }}
             >
               {/* To make it infinite, we duplicate the logos list 3 times */}
-              {[1, 2, 3].map((setIndex) => (
+              {(brandLogos.length > 5 ? [1, 2, 3] : [1]).map((setIndex) => (
                 <div key={`brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
                   {brandLogos.map((brand) => (
                     <div key={`brand-${brand.id}`} className="h-8 md:h-9 flex items-center justify-center shrink-0">

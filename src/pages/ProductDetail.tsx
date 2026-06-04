@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
+import { useProductDetail, useProductsSearch } from '../hooks/useMall';
 
 type VariantOption = { value: string; label: string };
 type VariantGroup = { key: string; label: string; options: VariantOption[]; selectedValue?: string };
@@ -24,7 +25,9 @@ type ProductDetailPayload = {
   brandId?: string;
   brandName?: string;
   title: string;
+  summary?: string;
   description?: string;
+  detailDescription?: string;
   images: string[];
   tag?: string;
   weightKg?: number;
@@ -34,6 +37,8 @@ type ProductDetailPayload = {
   categoryLabel?: string;
   variantGroups?: VariantGroup[];
   recommendedProducts?: RecommendedProduct[];
+  model?: string;
+  parameters?: Record<string, string>;
 };
 
 const ProductDetail = () => {
@@ -41,19 +46,90 @@ const ProductDetail = () => {
   const location = useLocation();
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
+  const { product: apiProduct, loading: apiLoading, error: apiError } = useProductDetail(productId);
 
-  const payload = useMemo(() => {
+  const brandIdForSearch = useMemo(() => {
+    if (apiProduct && apiProduct.brandId != null) return Number(apiProduct.brandId);
+    return undefined;
+  }, [apiProduct]);
+
+  const { products: brandProducts } = useProductsSearch({ brandId: brandIdForSearch });
+
+  const { product: locationProduct } = useMemo(() => {
     const fromState = (location.state as ProductDetailPayload | null) ?? null;
-    if (fromState?.productId) return fromState;
-    if (!productId) return null;
+    if (fromState?.productId) return { product: fromState };
+    if (!productId) return { product: null };
     try {
       const raw = sessionStorage.getItem(`product-detail:${productId}`);
-      if (!raw) return null;
-      return JSON.parse(raw) as ProductDetailPayload;
+      if (!raw) return { product: null };
+      return { product: JSON.parse(raw) as ProductDetailPayload };
     } catch {
-      return null;
+      return { product: null };
     }
   }, [location.state, productId]);
+
+  const recommendedProducts = useMemo<RecommendedProduct[]>(() => {
+    if (!apiProduct || !brandProducts || brandProducts.length === 0) return [];
+    const currentId = String(apiProduct.id);
+    const seen = new Set<string>();
+    const result: RecommendedProduct[] = [];
+    for (const p of brandProducts) {
+      const pid = String(p.id);
+      if (pid === currentId) continue;
+      if (seen.has(pid)) continue;
+      seen.add(pid);
+      result.push({
+        id: pid,
+        name: p.name || '',
+        image: p.coverImageUrl || p.image || '',
+        tag: p.tag || undefined,
+        weightKg: p.weightKg || undefined,
+        weightLb: p.weightLb || undefined,
+        priceUsd: p.price || 0,
+        categoryId: String(p.typeId),
+        categoryLabel: p.typeName || ''
+      });
+    }
+    return result;
+  }, [apiProduct, brandProducts]);
+
+  const payload = useMemo<{ productId: string; brandId?: string; brandName?: string; title: string; summary?: string; description?: string; images: string[]; tag?: string; weightKg?: number; weightLb?: number; priceUsd?: number; categoryId?: string; categoryLabel?: string; variantGroups?: VariantGroup[]; recommendedProducts?: RecommendedProduct[]; model?: string; detailDescription?: string; detailImages?: string[]; parameters?: Record<string, string> } | null>(() => {
+    if (apiProduct && !apiError) {
+      const params = apiProduct.parameters || {};
+      const variantGroups: VariantGroup[] = Object.entries(params).map(([key, value]) => ({
+        key,
+        label: key,
+        options: [{ value: String(value), label: String(value) }],
+        selectedValue: String(value)
+      }));
+
+      const detailImages = apiProduct.detailImages || [];
+      const images = [apiProduct.coverImageUrl, ...detailImages].filter(Boolean);
+
+      return {
+        productId: String(apiProduct.id),
+        brandId: String(apiProduct.brandId),
+        brandName: apiProduct.brandName || '',
+        title: apiProduct.name || '',
+        summary: apiProduct.summary || '',
+        description: apiProduct.detailDescription || apiProduct.description || '',
+        images,
+        tag: apiProduct.tag,
+        weightKg: apiProduct.weightKg,
+        weightLb: apiProduct.weightLb,
+        priceUsd: apiProduct.price,
+        categoryId: String(apiProduct.typeId),
+        categoryLabel: apiProduct.typeName || '',
+        variantGroups,
+        recommendedProducts,
+        model: apiProduct.model,
+        detailDescription: apiProduct.detailDescription,
+        detailImages,
+        parameters: apiProduct.parameters
+      };
+    }
+    return locationProduct;
+  }, [apiProduct, apiError, locationProduct, recommendedProducts]);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [detailTab, setDetailTab] = useState<'overview' | 'specs'>('overview');
@@ -89,7 +165,6 @@ const ProductDetail = () => {
   const images = payload?.images ?? [];
   const activeImage = images[activeImageIndex] ?? images[0];
   const heroBg = images[1] ?? images[0] ?? '';
-  const overviewImage = images[0] ?? heroBg;
   const usdToCnyRate = 7.2;
   const displayedPriceText = useMemo(() => {
     const usd = payload?.priceUsd;
@@ -207,9 +282,12 @@ const ProductDetail = () => {
     return () => window.removeEventListener('mouseup', onUp);
   }, []);
 
+  const productsStripShouldLoop = (payload?.recommendedProducts?.length ?? 0) >= 5;
+
   const productsStripItems = useMemo(() => {
     const rec = payload?.recommendedProducts ?? [];
-    if (rec.length > 0) return [...rec, ...rec, ...rec];
+    if (rec.length >= 5) return [...rec, ...rec, ...rec];
+    if (rec.length > 0) return rec;
     const base = (images.length ? images : [heroBg]).filter(Boolean);
     const fill = [
       ...base,
@@ -252,6 +330,7 @@ const ProductDetail = () => {
   };
 
   const normalizeProductsStripScroll = () => {
+    if (!productsStripShouldLoop) return;
     const el = productsStripRef.current;
     if (!el) return;
     const singleSetWidth = el.scrollWidth / 3;
@@ -261,6 +340,7 @@ const ProductDetail = () => {
   };
 
   useEffect(() => {
+    if (!productsStripShouldLoop) return;
     const el = productsStripRef.current;
     if (!el) return;
     const ensureMiddle = () => {
@@ -278,9 +358,10 @@ const ProductDetail = () => {
       if (tries >= 30 || (singleSetWidth > 0 && el.scrollLeft !== 0)) window.clearInterval(intervalId);
     }, 100);
     return () => window.clearInterval(intervalId);
-  }, [productsStripItems]);
+  }, [productsStripItems, productsStripShouldLoop]);
 
   useEffect(() => {
+    if (!productsStripShouldLoop) return;
     const el = productsStripRef.current;
     if (!el) return;
     let rafId = 0;
@@ -293,7 +374,7 @@ const ProductDetail = () => {
     };
     rafId = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(rafId);
-  }, [isProductsStripDragging, isProductsStripHovered]);
+  }, [isProductsStripDragging, isProductsStripHovered, productsStripShouldLoop]);
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
@@ -307,10 +388,12 @@ const ProductDetail = () => {
       const x = e.clientX - rect.left;
       const walk = (x - productsStripStartXRef.current) * 1.6;
       el.scrollLeft = productsStripScrollLeftRef.current - walk;
-      const singleSetWidth = el.scrollWidth / 3;
-      if (singleSetWidth > 0) {
-        if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
-        if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+      if (productsStripShouldLoop) {
+        const singleSetWidth = el.scrollWidth / 3;
+        if (singleSetWidth > 0) {
+          if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
+          if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+        }
       }
     };
     const onUp = () => {
@@ -360,14 +443,25 @@ const ProductDetail = () => {
     el.scrollBy({ left: step * dir, behavior: 'smooth' });
   };
 
-  if (!payload || !productId) {
+  if (apiLoading) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="mt-4 text-sm text-black/60">{t('productDetail.loading') || '加载中...'}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (apiError || (!payload && !locationProduct)) {
     return (
       <div className="bg-white min-h-screen">
         <section className="py-16 md:py-24">
           <div className="content-container">
             <div className="max-w-2xl">
               <div className="text-sm text-black/60">{t('productDetail.title')}</div>
-              <h1 className="mt-4 text-2xl md:text-3xl font-black text-black">{t('productDetail.notFound')}</h1>
+              <h1 className="mt-4 text-2xl md:text-3xl font-black text-black">{apiError ? apiError : t('productDetail.notFound')}</h1>
               <div className="mt-6">
                 <Link
                   to="/hot-stores"
@@ -384,6 +478,8 @@ const ProductDetail = () => {
     );
   }
 
+  const safePayload = (payload ?? locationProduct)!;
+
   return (
     <div className="bg-white min-h-screen">
       <section className="relative min-h-[25svh] pt-32 pb-16 md:pt-40 md:pb-24">
@@ -398,12 +494,12 @@ const ProductDetail = () => {
               {t('productDetail.title')}
             </div>
             <div className="mt-6 text-4xl md:text-6xl font-black tracking-tight text-white">
-              {payload.title}
+              {safePayload.title}
             </div>
             <div className="mt-4 text-white/70 text-sm md:text-base">
-              {payload.brandName
-                ? `${payload.brandName} · ${payload.categoryLabel ?? t('productDetail.categoryFallback')}`
-                : payload.categoryLabel ?? t('productDetail.categoryFallback')}
+              {safePayload.brandName
+                ? `${safePayload.brandName} · ${safePayload.categoryLabel ?? t('productDetail.categoryFallback')}`
+                : safePayload.categoryLabel ?? t('productDetail.categoryFallback')}
             </div>
           </div>
         </div>
@@ -416,7 +512,7 @@ const ProductDetail = () => {
               <span className="font-semibold text-black/70">{t('productDetail.breadcrumb.curated')}</span>
               <span className="opacity-50">•</span>
               <Link to="/hot-stores" className="hover:text-black transition-colors">
-                {payload.brandName ?? t('productDetail.brandFallback')}
+                {safePayload.brandName ?? t('productDetail.brandFallback')}
               </Link>
               <span className="opacity-50">•</span>
               <span className="text-black/60">{t('productDetail.breadcrumb.productDetail')}</span>
@@ -427,7 +523,7 @@ const ProductDetail = () => {
                 <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
                   <div className="aspect-square">
                     {activeImage ? (
-                      <img src={activeMainImage} alt={payload.title} className="w-full h-full object-cover" draggable="false" />
+                      <img src={activeMainImage} alt={safePayload.title} className="w-full h-full object-cover" draggable="false" />
                     ) : (
                       <div className="w-full h-full" />
                     )}
@@ -448,7 +544,7 @@ const ProductDetail = () => {
                           }`}
                         >
                           <div className="aspect-[4/3]">
-                            <img src={img} alt={`${payload.title} ${idx + 1}`} className="w-full h-full object-cover" draggable="false" />
+                            <img src={img} alt={`${safePayload.title} ${idx + 1}`} className="w-full h-full object-cover" draggable="false" />
                           </div>
                         </button>
                       );
@@ -459,7 +555,7 @@ const ProductDetail = () => {
 
               <div className="lg:col-span-4">
                 <div className="text-3xl md:text-4xl font-black tracking-tight text-black">
-                  {payload.title}
+                  {safePayload.title}
                 </div>
 
               {displayedPriceText ? (
@@ -493,29 +589,29 @@ const ProductDetail = () => {
                 </div>
               ) : null}
 
-                {payload.description ? (
+                {(safePayload.summary || safePayload.description) ? (
                   <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed whitespace-pre-line">
-                    {payload.description}
+                    {safePayload.summary || safePayload.description}
                   </div>
                 ) : (
                   <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed">
-                    {payload.categoryLabel
+                    {safePayload.categoryLabel
                       ? lang === 'zh'
-                        ? `${payload.categoryLabel}产品，${t('productDetail.overview.fallbackShort')}`
-                        : `${payload.categoryLabel} product. ${t('productDetail.overview.fallbackShort')}`
+                        ? `${safePayload.categoryLabel}产品，${t('productDetail.overview.fallbackShort')}`
+                        : `${safePayload.categoryLabel} product. ${t('productDetail.overview.fallbackShort')}`
                       : t('productDetail.overview.fallbackShort')}
                   </div>
                 )}
 
-                {typeof payload.weightKg === 'number' && typeof payload.weightLb === 'number' ? (
+                {typeof safePayload.weightKg === 'number' && typeof safePayload.weightLb === 'number' ? (
                   <div className="mt-6 text-sm text-black/50 font-semibold">
-                    {payload.weightKg}kg / {payload.weightLb}lbs
+                    {safePayload.weightKg}kg / {safePayload.weightLb}lbs
                   </div>
                 ) : null}
 
-                {payload.variantGroups?.length ? (
+                {safePayload.variantGroups?.length ? (
                   <div className="mt-10 space-y-6">
-                    {payload.variantGroups.slice(0, 2).map((g) => (
+                    {safePayload.variantGroups.slice(0, 2).map((g) => (
                       <div key={g.key} className="flex flex-wrap items-center gap-3">
                         <div className="text-sm font-semibold text-black/70 w-14">{g.label}：</div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -589,55 +685,18 @@ const ProductDetail = () => {
 
           {detailTab === 'overview' ? (
             <div className="pt-10">
-              <div className="text-sm md:text-base text-black/70 leading-relaxed">
-                {payload.description ??
-                  (lang === 'zh'
-                    ? `${payload.title} ${t('productDetail.overview.fallbackLong')}`
-                    : `${payload.title} — ${t('productDetail.overview.fallbackLong')}`)}
-              </div>
-
-              <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-                <div className="lg:col-span-7">
-                  <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
-                    <div className="aspect-square">
-                      {overviewImage ? (
-                        <img src={overviewImage} alt={`${payload.title} overview`} className="w-full h-full object-cover" draggable="false" />
-                      ) : (
-                        <div className="w-full h-full" />
-                      )}
-                    </div>
-                  </div>
+              {(safePayload.detailDescription || safePayload.description) ? (
+                <div 
+                  className="text-sm md:text-base text-black/70 leading-relaxed rich-text-content"
+                  dangerouslySetInnerHTML={{ __html: safePayload.detailDescription || safePayload.description || '' }}
+                />
+              ) : (
+                <div className="text-sm md:text-base text-black/70 leading-relaxed">
+                  {lang === 'zh'
+                    ? `${safePayload.title} ${t('productDetail.overview.fallbackLong')}`
+                    : `${safePayload.title} — ${t('productDetail.overview.fallbackLong')}`}
                 </div>
-
-                <div className="lg:col-span-5 space-y-10">
-                  <div>
-                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.overview.feature1.title')}</div>
-                    <div className="mt-3 text-sm md:text-base text-black/70 leading-relaxed">
-                      {t('productDetail.overview.feature1.desc')}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.overview.feature2.title')}</div>
-                    <div className="mt-3 text-sm md:text-base text-black/70 leading-relaxed">
-                      {t('productDetail.overview.feature2.desc')}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.overview.feature3.title')}</div>
-                    <div className="mt-3 text-sm md:text-base text-black/70 leading-relaxed">
-                      {t('productDetail.overview.feature3.desc')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-10 text-sm md:text-base text-black/70 leading-relaxed">
-                {payload.categoryLabel
-                  ? `${t('productDetail.overview.coverPrefix')}${payload.categoryLabel}${t('productDetail.overview.coverSuffix')}`
-                  : t('productDetail.overview.coverFallback')}
-              </div>
+              )}
             </div>
           ) : (
             <div className="pt-10">
@@ -645,8 +704,8 @@ const ProductDetail = () => {
                 <div className="lg:col-span-7">
                   <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
                     <div className="aspect-square">
-                      {overviewImage ? (
-                        <img src={overviewImage} alt={`${payload.title} specs`} className="w-full h-full object-cover" draggable="false" />
+                      {safePayload.images?.[0] ? (
+                        <img src={safePayload.images[0]} alt={`${safePayload.title} cover`} className="w-full h-full object-cover" draggable="false" />
                       ) : (
                         <div className="w-full h-full" />
                       )}
@@ -658,41 +717,19 @@ const ProductDetail = () => {
                   <div className="text-xl md:text-2xl font-black text-black tracking-tight">{t('productDetail.specs.title')}</div>
                   <div className="mt-6 space-y-3">
                     {[
-                      { k: t('productDetail.specs.brand'), v: payload.brandName ?? '-' },
-                      { k: t('productDetail.specs.category'), v: payload.categoryLabel ?? '-' },
-                      { k: t('productDetail.specs.model'), v: payload.title },
-                      {
-                        k: t('productDetail.specs.weight'),
-                        v:
-                          typeof payload.weightKg === 'number' && typeof payload.weightLb === 'number'
-                            ? `${payload.weightKg} kg / ${payload.weightLb} lbs`
-                            : '-',
-                      },
-                      {
-                        k: t('productDetail.specs.version'),
-                        v:
-                          payload.variantGroups?.[0]?.options?.find((o) => o.value === payload.variantGroups?.[0]?.selectedValue)?.label ??
-                          t('productDetail.specs.standard'),
-                      },
-                      {
-                        k: t('productDetail.specs.color'),
-                        v:
-                          payload.variantGroups?.[1]?.options?.find((o) => o.value === payload.variantGroups?.[1]?.selectedValue)?.label ??
-                          t('productDetail.specs.default'),
-                      },
+                      { k: t('productDetail.specs.brand'), v: safePayload.brandName ?? '-' },
+                      { k: t('productDetail.specs.category'), v: safePayload.categoryLabel ?? '-' },
+                      { k: t('productDetail.specs.model'), v: safePayload.model || safePayload.title },
+                      ...(safePayload.parameters ? Object.entries(safePayload.parameters).map(([key, value]) => ({
+                        k: key,
+                        v: String(value)
+                      })) : []),
                     ].map((row) => (
                       <div key={row.k} className="flex items-center justify-between gap-6 border-b border-gray-100 pb-3">
                         <div className="text-sm text-black/60 font-semibold">{row.k}</div>
                         <div className="text-sm text-black font-semibold text-right">{row.v}</div>
                       </div>
                     ))}
-                  </div>
-
-                  <div className="mt-8 rounded-2xl bg-black/5 border border-black/10 p-5">
-                    <div className="text-sm font-bold text-black">{t('productDetail.specs.sizeNoteTitle')}</div>
-                    <div className="mt-2 text-xs md:text-sm text-black/60 leading-relaxed">
-                      {t('productDetail.specs.sizeNoteBody')}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -760,8 +797,8 @@ const ProductDetail = () => {
                 {t('productDetail.recommended.badge')}
               </div>
               <h2 className="mt-6 text-3xl md:text-5xl font-black text-white tracking-tight">
-                {payload.brandName ? `${payload.brandName} · ` : ''}
-                {payload.categoryLabel ? `${payload.categoryLabel} · ` : ''}
+                {safePayload.brandName ? `${safePayload.brandName} · ` : ''}
+                {safePayload.categoryLabel ? `${safePayload.categoryLabel} · ` : ''}
                 {t('productDetail.recommended.more')}
               </h2>
             </div>
@@ -832,7 +869,7 @@ const ProductDetail = () => {
                           {item.weightKg}kg / {item.weightLb}lbs
                         </div>
                       ) : (
-                        <div className="mt-1 text-white/60 text-xs">{payload.categoryLabel ?? t('productDetail.recommended.sameCategory')}</div>
+                        <div className="mt-1 text-white/60 text-xs">{safePayload.categoryLabel ?? t('productDetail.recommended.sameCategory')}</div>
                       )}
                     </div>
                   </div>
