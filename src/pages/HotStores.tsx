@@ -1,11 +1,11 @@
-import { mockBrands, mockCurrentBrand, mockProductTypes, mockProducts, mockScenes } from '../mock/mallData';
+import { mockBrands, mockCurrentBrand, mockProductTypes, mockProducts } from '../mock/mallData';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowLeft, ArrowRight, Play, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
-import { useMallBrands, useProductsSearch, useProductScenes } from '../hooks/useMall';
+import { useMallBrands, useProductsSearch } from '../hooks/useMall';
 
 const HotStores = () => {
   const { lang, t } = useI18n();
@@ -25,7 +25,6 @@ const HotStores = () => {
 
   const [activeBrandId, setActiveBrandId] = useState<string | number | undefined>(undefined);
   const { brands: apiBrands, currentBrand: apiCurrentBrand, productTypes: apiProductTypes } = useMallBrands(activeBrandId ? Number(activeBrandId) : undefined);
-  const { scenes: apiScenes } = useProductScenes();
   const sourceBrands = apiBrands.length > 0 ? apiBrands : mockBrands;
   const displayBrands = sourceBrands.map(b => ({
     id: b.id,
@@ -34,15 +33,13 @@ const HotStores = () => {
     slogan: b.slogan || '',
     introduction: b.introduction || '',
     promoImageUrl: b.promoImageUrl || '',
-    mobilePromoImageUrl: b.mobilePromoImageUrl || '',
     promoVideoUrl: b.promoVideoUrl || '',
     mobilePromoVideoUrl: b.mobilePromoVideoUrl || '',
     detailDescription: b.detailDescription || '',
     video: b.promoVideoUrl || '',
     videoPc: b.promoVideoUrl || '',
     videoMobile: b.mobilePromoVideoUrl || '',
-    cardImage: b.promoImageUrl || '',
-    cardImageMobile: b.mobilePromoImageUrl || b.promoImageUrl || ''
+    cardImage: b.promoImageUrl || ''
   }));
 
   // Active brand mapping
@@ -69,21 +66,12 @@ const HotStores = () => {
       focusDesc: t.focusDesc || ''
     })),
     heroImagePc: currentBrandData.promoImageUrl || '',
-    heroImageMobile: currentBrandData.mobilePromoImageUrl || currentBrandData.promoImageUrl || '',
+    heroImageMobile: currentBrandData.promoImageUrl || '',
     videoPc: currentBrandData.promoVideoUrl || '',
     videoMobile: currentBrandData.mobilePromoVideoUrl || '',
     video: currentBrandData.promoVideoUrl || '',
     heroImage: currentBrandData.promoImageUrl || '',
-    cardImage: currentBrandData.promoImageUrl || '',
-    cardImageMobile: currentBrandData.mobilePromoImageUrl || currentBrandData.promoImageUrl || '',
-    scenes: (apiScenes.length > 0 ? apiScenes : mockScenes).map(s => ({
-      id: String(s.id),
-      zh: s.name || s.sceneName || '',
-      en: s.englishName || s.enName || '',
-      label: s.name || s.sceneName || String(s.id),
-      imageUrl: s.imageUrl || '',
-      videoUrl: s.videoUrl || ''
-    }))
+    cardImage: currentBrandData.promoImageUrl || ''
   };
 
   const [isMdUp, setIsMdUp] = useState(false);
@@ -141,7 +129,7 @@ const HotStores = () => {
   const [brandStripStartX, setBrandStripStartX] = useState(0);
   const [brandStripScrollLeft, setBrandStripScrollLeft] = useState(0);
 
-  const brandStripItems = displayBrands.length > 5 ? [...displayBrands, ...displayBrands, ...displayBrands] : displayBrands;
+  const brandStripItems = [...displayBrands, ...displayBrands, ...displayBrands];
 
   const productsBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollToProducts = (nextCategoryId: string) => {
@@ -243,10 +231,6 @@ const HotStores = () => {
     el.addEventListener('mouseleave', onLeave);
 
     const tick = () => {
-      if (partnersLogos.length <= 5) {
-        rafId = requestAnimationFrame(tick);
-        return;
-      }
       if (!paused && !isPartnersLogoWallDragging) {
         el.scrollLeft += 0.6;
         const singleSetWidth = el.scrollWidth / 3;
@@ -302,7 +286,7 @@ const HotStores = () => {
   const [productTypesScrollLeft, setProductTypesScrollLeft] = useState(0);
   const productTypesPauseUntilRef = useRef(0);
 
-  const productTypeItems = productTypes.length > 5 ? [...productTypes, ...productTypes, ...productTypes] : productTypes;
+  const productTypeItems = [...productTypes, ...productTypes, ...productTypes];
 
   useEffect(() => {
     setActiveProductTypeIndex(0);
@@ -333,10 +317,6 @@ const HotStores = () => {
     el.addEventListener('mouseleave', onLeave);
 
     const tick = () => {
-      if (productTypes.length <= 5) {
-        rafId = requestAnimationFrame(tick);
-        return;
-      }
       if (!paused && !isProductTypesDragging && Date.now() >= productTypesPauseUntilRef.current) {
         el.scrollLeft += 0.3;
         const singleSetWidth = el.scrollWidth / 3;
@@ -376,12 +356,6 @@ const HotStores = () => {
 
     productTypesPauseUntilRef.current = Date.now() + pauseMs;
 
-    if (productTypes.length <= 5) {
-      setActiveProductTypeVirtualIndex(nextVirtualIndex);
-      setActiveProductTypeIndex(nextVirtualIndex % productTypes.length);
-      return;
-    }
-
     const singleSetWidth = el.scrollWidth / 3;
     let normalized = nextVirtualIndex;
 
@@ -404,12 +378,10 @@ const HotStores = () => {
     if (!el) return;
     productTypesPauseUntilRef.current = Date.now() + 1200;
     setIsProductTypesDragging(true);
-    if (productTypes.length > 5) {
-      const singleSetWidth = el.scrollWidth / 3;
-      if (singleSetWidth > 0) {
-        if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
-        if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
-      }
+    const singleSetWidth = el.scrollWidth / 3;
+    if (singleSetWidth > 0) {
+      if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
+      if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
     }
     setProductTypesStartX(clientX - el.offsetLeft);
     setProductTypesScrollLeft(el.scrollLeft);
@@ -421,17 +393,15 @@ const HotStores = () => {
     const x = clientX - el.offsetLeft;
     const walk = (x - productTypesStartX) * 1.6;
     el.scrollLeft = productTypesScrollLeft - walk;
-    if (productTypes.length > 5) {
-      const singleSetWidth = el.scrollWidth / 3;
-      if (singleSetWidth > 0) {
-        if (el.scrollLeft >= singleSetWidth * 2) {
-          el.scrollLeft -= singleSetWidth;
-          setProductTypesScrollLeft((prev) => prev - singleSetWidth);
-        }
-        if (el.scrollLeft < singleSetWidth) {
-          el.scrollLeft += singleSetWidth;
-          setProductTypesScrollLeft((prev) => prev + singleSetWidth);
-        }
+    const singleSetWidth = el.scrollWidth / 3;
+    if (singleSetWidth > 0) {
+      if (el.scrollLeft >= singleSetWidth * 2) {
+        el.scrollLeft -= singleSetWidth;
+        setProductTypesScrollLeft((prev) => prev - singleSetWidth);
+      }
+      if (el.scrollLeft < singleSetWidth) {
+        el.scrollLeft += singleSetWidth;
+        setProductTypesScrollLeft((prev) => prev + singleSetWidth);
       }
     }
   };
@@ -470,7 +440,6 @@ const HotStores = () => {
     const pxPerSecond = 42;
 
     const updateMetrics = () => {
-      if (displayBrands.length <= 5) return;
       singleSetWidth = el.scrollWidth / 3;
       if (singleSetWidth <= 0) return;
       if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
@@ -512,10 +481,6 @@ const HotStores = () => {
     };
 
     const tick = () => {
-      if (displayBrands.length <= 5) {
-        renderOverlays();
-        return;
-      }
       if (singleSetWidth > 0 && !paused && !isBrandStripDraggingRef.current) {
         el.scrollLeft += (pxPerSecond / 60) * gsap.ticker.deltaRatio();
         if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
@@ -571,66 +536,48 @@ const HotStores = () => {
 
   
 
-  // 计算筛选参数
-  const activeTypeId = productFilters.category === 'all' ? undefined : Number(productFilters.category);
-  const activeSceneId = productFilters.scene === 'all' ? undefined : Number(productFilters.scene);
-
   const { products: apiProducts } = useProductsSearch({
     brandId: activeBrandId ? Number(activeBrandId) : undefined,
-    typeId: activeTypeId,
-    sceneId: activeSceneId,
   });
 
-  const sourceProducts = apiProducts.length > 0 ? apiProducts : mockProducts.filter(
-    p => (!activeBrandId || p.brandId === Number(activeBrandId))
-      && (!activeTypeId || p.typeId === activeTypeId)
-      && (!activeSceneId || p.sceneId === activeSceneId)
-  );
-  const displayProducts = sourceProducts.map(p => {
-    const sceneIdStr = String(p.sceneId);
-    const matchedScene = activeBrand.scenes.find(s => s.id === sceneIdStr);
-    const sceneLabel = matchedScene
-      ? (lang === 'zh' ? matchedScene.zh || matchedScene.label : matchedScene.en || matchedScene.label)
-      : (p.sceneName || '');
-    return {
-      id: String(p.id),
-      name: p.name || '',
-      subtitle: p.subtitle || '',
-      image: p.coverImageUrl || p.image || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop',
-      categoryId: String(p.typeId),
-      tag: p.tag || undefined,
-      weightKg: p.weightKg || undefined,
-      weightLb: p.weightLb || undefined,
-      priceUsd: p.price || 0,
-      attrs: p.parameters || {},
-      sceneId: sceneIdStr,
-      sceneName: sceneLabel
-    };
-  });
+  const sourceProducts = apiProducts.length > 0 ? apiProducts : mockProducts;
+  const displayProducts = sourceProducts.map(p => ({
+    id: String(p.id),
+    name: p.name || '',
+    subtitle: p.subtitle || '',
+    image: p.coverImageUrl || p.image || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop',
+    categoryId: String(p.typeId),
+    tag: p.tag || undefined,
+    weightKg: p.weightKg || undefined,
+    weightLb: p.weightLb || undefined,
+    priceUsd: p.price || 0,
+    attrs: p.parameters || {},
+    sceneId: String(p.sceneId)
+  }));
 
-  // 从当前品牌维度构建筛选选项
-  const typeOptions: Option[] = [
-    { value: 'all', label: lang === 'zh' ? '全部产品' : 'All' },
-    ...activeBrand.productTypes.map(t => ({ value: t.id, label: lang === 'zh' ? t.zh || t.id : t.en || t.id }))
-  ];
-
-  const sceneOptions: Option[] = [
-    { value: 'all', label: lang === 'zh' ? '全部场景' : 'All Scenes' },
-    ...activeBrand.scenes.map(s => ({ value: s.id, label: lang === 'zh' ? s.zh || s.label : s.en || s.label }))
-  ];
-
-  // 参数筛选依然动态从当前产品数据获取
+  // Extract filters dynamically from displayProducts
+  const typeOptions: Option[] = [{ value: 'all', label: '全部产品' }];
+  const sceneOptions: Option[] = [{ value: 'all', label: '全部场景' }];
   const paramOptionsMap: Record<string, Option[]> = {};
-  sourceProducts.forEach(p => {
-    if (p.parameters) {
-      Object.entries(p.parameters).forEach(([k, v]) => {
-        if (!paramOptionsMap[k]) paramOptionsMap[k] = [{ value: 'all', label: k }];
-        if (!paramOptionsMap[k].some(o => o.value === String(v))) {
-          paramOptionsMap[k].push({ value: String(v), label: String(v) });
-        }
-      });
-    }
-  });
+
+  if (sourceProducts.length > 0) {
+    sourceProducts.forEach(p => {
+      if (p.typeId && !typeOptions.some(o => o.value === String(p.typeId))) {
+        typeOptions.push({ value: String(p.typeId), label: p.typeName || String(p.typeId) });
+      }
+      if (p.sceneId && !sceneOptions.some(o => o.value === String(p.sceneId))) {
+        sceneOptions.push({ value: String(p.sceneId), label: p.sceneName || String(p.sceneId) });
+      }
+      if (p.parameters) {
+        Object.entries(p.parameters).forEach(([k, v]) => {
+          if (!paramOptionsMap[k]) paramOptionsMap[k] = [{ value: 'all', label: k }];
+          if (!paramOptionsMap[k].some(o => o.value === String(v))) {
+            paramOptionsMap[k].push({ value: String(v), label: String(v) });
+          }
+        });
+      }
+    });
+  }
 
   const categoryOptions: Option[] = typeOptions;
 
@@ -638,8 +585,8 @@ const HotStores = () => {
   
 
   const filterDefs: FilterDef[] = [
-    { key: 'category', label: lang === 'zh' ? '产品类型' : 'Type', options: typeOptions },
-    ...(activeBrand.scenes.length > 0 ? [{ key: 'scene', label: lang === 'zh' ? '运动场景' : 'Scene', options: sceneOptions }] : []),
+    { key: 'category', label: '产品类型', options: typeOptions },
+    ...(sceneOptions.length > 1 ? [{ key: 'scene', label: '场景', options: sceneOptions }] : []),
     ...Object.entries(paramOptionsMap).map(([k, opts]) => ({ key: `param_${k}`, label: k, options: opts }))
   ];
 
@@ -668,7 +615,9 @@ const HotStores = () => {
   }, []);
 
   const filteredProducts = displayProducts.filter((p) => {
-    // 类型、场景筛选已在接口层完成，这里只做参数筛选
+    if (activeCategoryId !== 'all' && p.categoryId !== activeCategoryId) return false;
+    
+    if (productFilters.scene && productFilters.scene !== 'all' && p.sceneId !== productFilters.scene) return false;
     for (const k of Object.keys(paramOptionsMap)) {
       const sel = productFilters[`param_${k}`] ?? 'all';
       if (sel === 'all') continue;
@@ -806,7 +755,7 @@ const HotStores = () => {
                           />
                         ) : (
                           <img
-                            src={isMdUp ? brand.cardImage : (brand.cardImageMobile || brand.cardImage)}
+                            src={brand.cardImage}
                             alt={brand.name}
                             className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out ${
                               isActive ? 'scale-150 opacity-100' : 'opacity-90 group-hover:scale-125'
@@ -1407,7 +1356,7 @@ const HotStores = () => {
               className={`flex items-center gap-16 md:gap-24 overflow-x-auto select-none px-4 [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isPartnersLogoWallDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
               style={{ scrollBehavior: 'auto', touchAction: 'pan-y' }}
             >
-              {(partnersLogos.length > 5 ? [1, 2, 3] : [1]).map((setIndex) => (
+              {[1, 2, 3].map((setIndex) => (
                 <div key={`partners-brand-set-${setIndex}`} className="flex items-center gap-16 md:gap-24 shrink-0">
                   {partnersLogos.map((l) => (
                     <div

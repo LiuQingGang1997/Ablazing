@@ -80,30 +80,6 @@ const About = () => {
       desc: 'Corporate Services',
       avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team4.png?w=600&h=600&fit=crop',
     },
-    {
-      name: 'Molly Anderson',
-      title: 'Vice President',
-      desc: 'Industrial Design',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=600&fit=crop',
-    },
-    {
-      name: 'Mike Fenger',
-      title: 'Vice President',
-      desc: 'Worldwide Sales',
-      avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=600&h=600&fit=crop',
-    },
-    {
-      name: 'Steve Lemay',
-      title: 'Vice President',
-      desc: 'Human Interface Design',
-      avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=600&fit=crop',
-    },
-    {
-      name: 'Tor Myhren',
-      title: 'Vice President',
-      desc: 'Marketing Communications',
-      avatar: 'https://images.unsplash.com/photo-1525134479668-1bee5c7c6845?w=600&h=600&fit=crop',
-    },
   ];
 
   const teamPrinciples = [

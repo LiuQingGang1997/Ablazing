@@ -8,6 +8,13 @@ const Contact = () => {
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
   const { reviews: testimonials } = useReviews();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#top' || hash === '') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -221,7 +228,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className="bg-black text-white min-h-screen" id="top">
       {/* Hero Section */}
       <section className="relative min-h-[100svh] flex flex-col justify-center pt-20 pb-20 md:pt-32 md:pb-32">
         <div className="absolute inset-0 overflow-hidden">
@@ -328,6 +335,7 @@ const Contact = () => {
                     name="email"
                     type="email"
                     required
+                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Email"

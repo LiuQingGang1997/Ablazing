@@ -448,7 +448,7 @@ const Home = () => {
 
           {/* CTA Button */}
           
-            <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform w-fit pointer-events-auto">
+            <Link to="/hot-stores" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform w-fit pointer-events-auto">
                     <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
@@ -593,7 +593,7 @@ const Home = () => {
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[0].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[0].subtitle}</p>
-                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                  <Link to="/hot-stores" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
                     <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
@@ -629,7 +629,7 @@ const Home = () => {
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[1].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[1].subtitle}</p>
-                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                  <Link to="/hot-stores" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
                     <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
@@ -666,7 +666,7 @@ const Home = () => {
                 <div className="absolute top-1/2 left-0 right-0 h-32 bg-black/30 -translate-y-1/2 blur-2xl pointer-events-none" />
                 <h3 className="text-2xl md:text-5xl font-bold text-white mb-3 relative z-10">{categoryCards[2].title}</h3>
                 <p className="text-white/80 text-xs md:text-base font-light mb-10 relative z-10">{categoryCards[2].subtitle}</p>
-                <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-6 pr-2 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform">
+                <Link to="/hot-stores" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-6 pr-2 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform">
                   <span>{t('cta.getStarted')}</span>
                   <span className="bg-white rounded-full p-2 flex items-center justify-center">
                     <ArrowRight className="w-4 h-4" />
@@ -704,7 +704,7 @@ const Home = () => {
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[3].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[3].subtitle}</p>
-                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                  <Link to="/hot-stores" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
                     <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
@@ -740,7 +740,7 @@ const Home = () => {
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[4].title}</h3>
                   <p className="text-white/80 text-xs md:text-sm font-light mb-8 relative z-10">{categoryCards[4].subtitle}</p>
-                  <Link to="/contact" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
+                  <Link to="/hot-stores" className="relative z-10 inline-flex items-center gap-3 bg-[#c8ff00] text-black pl-5 pr-1.5 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-transform">
                     <span>{t('cta.getStarted')}</span>
                     <span className="bg-white rounded-full p-1.5 flex items-center justify-center">
                       <ArrowRight className="w-3 h-3" />
@@ -1105,7 +1105,7 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
               {t('home.cta.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.cta.titleRight')}
             </h2>
-            <Link to="/contact" className="inline-flex bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
+            <Link to="/hot-stores" className="inline-flex bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
               {t('cta.learnMore')}
             </Link>
           </div>
