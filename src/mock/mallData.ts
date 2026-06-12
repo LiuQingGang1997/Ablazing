@@ -67,6 +67,21 @@ export const mockScenes = [
   { id: 504, name: '酒店健身', englishName: 'Hotel Gym', enabled: true, sortOrder: 3 }
 ];
 
+export const mockCategories = [
+  { id: 1, name: '有氧器械', parentId: null, level: 1 },
+  { id: 101, name: '跑步机', parentId: 1, level: 2 },
+  { id: 102, name: '椭圆机', parentId: 1, level: 2 },
+  { id: 103, name: '爬楼机', parentId: 1, level: 2 },
+  { id: 104, name: '动感单车', parentId: 1, level: 2 },
+  { id: 2, name: '力量器械', parentId: null, level: 1 },
+  { id: 201, name: '自由重量', parentId: 2, level: 2 },
+  { id: 202, name: '固定器械', parentId: 2, level: 2 },
+  { id: 203, name: '功能性训练', parentId: 2, level: 2 },
+  { id: 3, name: '综合训练', parentId: null, level: 1 },
+  { id: 301, name: '综合训练架', parentId: 3, level: 2 },
+  { id: 302, name: '悬挂训练', parentId: 3, level: 2 },
+];
+
 export const mockProducts = [
   {
     id: 1001,
@@ -77,6 +92,10 @@ export const mockProducts = [
     brandName: 'TRUE',
     typeId: 102,
     typeName: '跑步机',
+    categoryId: 101,
+    categoryName: '跑步机',
+    seriesId: 1,
+    seriesName: 'PRO 系列',
     sceneId: 501,
     sceneName: '商业健身房',
     parameters: { '颜色': '黑色', '系列': 'PRO 系列', '控制台': '触控屏' }
@@ -90,6 +109,10 @@ export const mockProducts = [
     brandName: 'TRUE',
     typeId: 101,
     typeName: '爬楼机',
+    categoryId: 103,
+    categoryName: '爬楼机',
+    seriesId: 2,
+    seriesName: '450 系列',
     sceneId: 501,
     sceneName: '商业健身房',
     parameters: { '颜色': '银色', '系列': '450 系列', '阻力等级': 'L11+' }
@@ -103,6 +126,10 @@ export const mockProducts = [
     brandName: 'TRUE',
     typeId: 103,
     typeName: '椭圆机',
+    categoryId: 102,
+    categoryName: '椭圆机',
+    seriesId: 3,
+    seriesName: '550 系列',
     sceneId: 502,
     sceneName: '工作室',
     parameters: { '颜色': '白色', '系列': '550 系列', '级别': '工作室' }
@@ -116,6 +143,10 @@ export const mockProducts = [
     brandName: 'TRUE',
     typeId: 104,
     typeName: '卧式自行车',
+    categoryId: 104,
+    categoryName: '动感单车',
+    seriesId: 4,
+    seriesName: '家用系列',
     sceneId: 503,
     sceneName: '家庭健身',
     parameters: { '颜色': '黑色', '级别': '家用' }

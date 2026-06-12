@@ -1,4 +1,4 @@
-import { mockBrands, mockCurrentBrand, mockProductTypes, mockProducts } from '../mock/mallData';
+import { mockBrands, mockCurrentBrand, mockProductTypes, mockProducts, mockCategories } from '../mock/mallData';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowLeft, ArrowRight, Play, ChevronDown } from 'lucide-react';
@@ -546,7 +546,12 @@ const HotStores = () => {
     name: p.name || '',
     subtitle: p.subtitle || '',
     image: p.coverImageUrl || p.image || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop',
-    categoryId: String(p.typeId),
+    categoryId: String(p.categoryId || p.typeId),
+    categoryName: p.categoryName || p.typeName || '',
+    seriesId: String(p.seriesId),
+    seriesName: p.seriesName || '',
+    typeId: String(p.typeId),
+    typeName: p.typeName || '',
     tag: p.tag || undefined,
     weightKg: p.weightKg || undefined,
     weightLb: p.weightLb || undefined,
@@ -555,10 +560,53 @@ const HotStores = () => {
     sceneId: String(p.sceneId)
   }));
 
-  // Extract filters dynamically from displayProducts
   const typeOptions: Option[] = [{ value: 'all', label: '全部产品' }];
   const sceneOptions: Option[] = [{ value: 'all', label: '全部场景' }];
+  const seriesOptions: Option[] = [{ value: 'all', label: '全部系列' }];
   const paramOptionsMap: Record<string, Option[]> = {};
+
+  const categoriesData = apiProducts.length > 0 
+    ? [] 
+    : mockCategories;
+
+  const categoryOptions: { value: string; label: string; level: number; parentId: number | null }[] = [
+    { value: 'all', label: '全部分类', level: 0, parentId: null }
+  ];
+
+  if (categoriesData.length > 0) {
+    const level1Categories = categoriesData.filter(c => c.level === 1);
+    level1Categories.forEach(parent => {
+      categoryOptions.push({
+        value: String(parent.id),
+        label: parent.name,
+        level: parent.level,
+        parentId: parent.parentId
+      });
+      
+      const children = categoriesData.filter(c => c.parentId === parent.id);
+      children.forEach(child => {
+        categoryOptions.push({
+          value: String(child.id),
+          label: child.name,
+          level: child.level,
+          parentId: child.parentId
+        });
+      });
+    });
+  } else {
+    const seenCategoryIds = new Set<string>();
+    sourceProducts.forEach(p => {
+      if (p.categoryId && !seenCategoryIds.has(String(p.categoryId))) {
+        seenCategoryIds.add(String(p.categoryId));
+        categoryOptions.push({
+          value: String(p.categoryId),
+          label: p.categoryName || String(p.categoryId),
+          level: 1,
+          parentId: null
+        });
+      }
+    });
+  }
 
   if (sourceProducts.length > 0) {
     sourceProducts.forEach(p => {
@@ -567,6 +615,9 @@ const HotStores = () => {
       }
       if (p.sceneId && !sceneOptions.some(o => o.value === String(p.sceneId))) {
         sceneOptions.push({ value: String(p.sceneId), label: p.sceneName || String(p.sceneId) });
+      }
+      if (p.seriesId && !seriesOptions.some(o => o.value === String(p.seriesId))) {
+        seriesOptions.push({ value: String(p.seriesId), label: p.seriesName || String(p.seriesId) });
       }
       if (p.parameters) {
         Object.entries(p.parameters).forEach(([k, v]) => {
@@ -579,13 +630,12 @@ const HotStores = () => {
     });
   }
 
-  const categoryOptions: Option[] = typeOptions;
-
   const activeCategoryId = productFilters.category ?? 'all';
   
-
   const filterDefs: FilterDef[] = [
     { key: 'category', label: '产品类型', options: typeOptions },
+    ...(categoryOptions.length > 1 ? [{ key: 'productCategory', label: '分类', options: categoryOptions }] : []),
+    ...(seriesOptions.length > 1 ? [{ key: 'series', label: '系列', options: seriesOptions }] : []),
     ...(sceneOptions.length > 1 ? [{ key: 'scene', label: '场景', options: sceneOptions }] : []),
     ...Object.entries(paramOptionsMap).map(([k, opts]) => ({ key: `param_${k}`, label: k, options: opts }))
   ];
@@ -615,7 +665,11 @@ const HotStores = () => {
   }, []);
 
   const filteredProducts = displayProducts.filter((p) => {
-    if (activeCategoryId !== 'all' && p.categoryId !== activeCategoryId) return false;
+    if (activeCategoryId !== 'all' && p.typeId !== activeCategoryId) return false;
+    
+    if (productFilters.productCategory && productFilters.productCategory !== 'all' && p.categoryId !== productFilters.productCategory) return false;
+    
+    if (productFilters.series && productFilters.series !== 'all' && p.seriesId !== productFilters.series) return false;
     
     if (productFilters.scene && productFilters.scene !== 'all' && p.sceneId !== productFilters.scene) return false;
     for (const k of Object.keys(paramOptionsMap)) {
@@ -1156,6 +1210,10 @@ const HotStores = () => {
                       <div className="absolute left-0 top-full mt-2 w-52 rounded-2xl bg-white border border-black/10 shadow-[0_24px_60px_rgba(0,0,0,0.18)] p-1 z-30">
                         {def.options.map((opt) => {
                           const active = opt.value === selectedValue;
+                          const level = (opt as { level?: number }).level ?? 0;
+                          const paddingLeft = level > 1 ? `${(level - 1) * 16}px` : '0';
+                          const fontWeight = level === 1 ? 'font-bold' : 'font-normal';
+                          const color = level === 1 ? 'text-black' : 'text-black/70';
                           return (
                             <button
                               key={opt.value}
@@ -1166,8 +1224,9 @@ const HotStores = () => {
                                 setProductPage(1);
                               }}
                               className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-colors ${
-                                active ? 'bg-[#c8ff00] text-black font-bold' : 'text-black/80 hover:bg-black/5'
+                                active ? 'bg-[#c8ff00] text-black font-bold' : `${color} ${fontWeight} hover:bg-black/5`
                               }`}
+                              style={{ paddingLeft }}
                             >
                               {opt.label}
                             </button>

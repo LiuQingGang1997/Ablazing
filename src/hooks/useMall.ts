@@ -70,8 +70,8 @@ export const useProductScenes = () => {
   return { scenes, loading };
 };
 
-export const useProductDetail = (productId: string | undefined) => {
-  const [product, setProduct] = useState<any | null>(null);
+export const useProductDetail = (productId: string | number | null) => {
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,7 +85,7 @@ export const useProductDetail = (productId: string | undefined) => {
     setLoading(true);
     setError(null);
 
-    axios.get(`/api/products/frontend/detail?id=${productId}`, {
+    axios.get(`/api/products/${productId}`, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -118,7 +118,7 @@ export const useProductDetail = (productId: string | undefined) => {
   return { product, loading, error };
 };
 
-export const useProductsSearch = (params: { brandId?: number; typeId?: number; sceneId?: number; parameterKey?: string; parameterValue?: string }) => {
+export const useProductsSearch = (params: { brandId?: number; categoryId?: number; seriesId?: number; sceneId?: number; typeId?: number; keyword?: string; page?: number; size?: number }) => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -126,12 +126,15 @@ export const useProductsSearch = (params: { brandId?: number; typeId?: number; s
     setLoading(true);
     const query = new URLSearchParams();
     if (params.brandId) query.append('brandId', params.brandId.toString());
-    if (params.typeId) query.append('typeId', params.typeId.toString());
+    if (params.categoryId) query.append('categoryId', params.categoryId.toString());
+    if (params.seriesId) query.append('seriesId', params.seriesId.toString());
     if (params.sceneId) query.append('sceneId', params.sceneId.toString());
-    if (params.parameterKey) query.append('parameterKey', params.parameterKey);
-    if (params.parameterValue) query.append('parameterValue', params.parameterValue);
+    if (params.typeId) query.append('typeId', params.typeId.toString());
+    if (params.keyword) query.append('keyword', params.keyword);
+    if (params.page !== undefined) query.append('page', params.page.toString());
+    if (params.size !== undefined) query.append('size', params.size.toString());
 
-    axios.get(`/api/products/frontend/search?${query.toString()}`, {
+    axios.get(`/api/products?${query.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -149,7 +152,7 @@ export const useProductsSearch = (params: { brandId?: number; typeId?: number; s
       .finally(() => {
         setLoading(false);
       });
-  }, [params.brandId, params.typeId, params.sceneId, params.parameterKey, params.parameterValue]);
+  }, [params.brandId, params.categoryId, params.seriesId, params.sceneId, params.typeId, params.keyword, params.page, params.size]);
 
   return { products, loading };
 };

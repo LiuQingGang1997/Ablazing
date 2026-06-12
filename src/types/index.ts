@@ -37,6 +37,25 @@ export interface Product {
   image: string;
   description?: string;
   category?: string;
+  coverImageUrl?: string;
+  brandId?: number;
+  brandName?: string;
+  typeId?: number;
+  typeName?: string;
+  categoryId?: number;
+  categoryName?: string;
+  seriesId?: number;
+  seriesName?: string;
+  sceneId?: number;
+  sceneName?: string;
+  parameters?: Record<string, string>;
+  summary?: string;
+  detailDescription?: string;
+  detailImages?: string[];
+  model?: string;
+  tag?: string;
+  weightKg?: number;
+  weightLb?: number;
 }
 
 export interface Store {

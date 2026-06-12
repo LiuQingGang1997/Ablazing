@@ -18,6 +18,9 @@ type RecommendedProduct = {
   priceUsd?: number;
   categoryId?: string;
   categoryLabel?: string;
+  categoryName?: string;
+  seriesId?: string;
+  seriesName?: string;
 };
 
 type ProductDetailPayload = {
@@ -35,6 +38,9 @@ type ProductDetailPayload = {
   priceUsd?: number;
   categoryId?: string;
   categoryLabel?: string;
+  categoryName?: string;
+  seriesId?: string;
+  seriesName?: string;
   variantGroups?: VariantGroup[];
   recommendedProducts?: RecommendedProduct[];
   model?: string;
@@ -46,7 +52,7 @@ const ProductDetail = () => {
   const location = useLocation();
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
-  const { product: apiProduct, loading: apiLoading, error: apiError } = useProductDetail(productId);
+  const { product: apiProduct, loading: apiLoading, error: apiError } = useProductDetail(productId || null);
 
   const brandIdForSearch = useMemo(() => {
     if (apiProduct && apiProduct.brandId != null) return Number(apiProduct.brandId);
@@ -86,14 +92,17 @@ const ProductDetail = () => {
         weightKg: p.weightKg || undefined,
         weightLb: p.weightLb || undefined,
         priceUsd: p.price || 0,
-        categoryId: String(p.typeId),
-        categoryLabel: p.typeName || ''
+        categoryId: String(p.categoryId || p.typeId),
+        categoryLabel: p.typeName || '',
+        categoryName: p.categoryName || p.typeName || '',
+        seriesId: String(p.seriesId),
+        seriesName: p.seriesName || ''
       });
     }
     return result;
   }, [apiProduct, brandProducts]);
 
-  const payload = useMemo<{ productId: string; brandId?: string; brandName?: string; title: string; summary?: string; description?: string; images: string[]; tag?: string; weightKg?: number; weightLb?: number; priceUsd?: number; categoryId?: string; categoryLabel?: string; variantGroups?: VariantGroup[]; recommendedProducts?: RecommendedProduct[]; model?: string; detailDescription?: string; detailImages?: string[]; parameters?: Record<string, string> } | null>(() => {
+  const payload = useMemo<{ productId: string; brandId?: string; brandName?: string; title: string; summary?: string; description?: string; images: string[]; tag?: string; weightKg?: number; weightLb?: number; priceUsd?: number; categoryId?: string; categoryLabel?: string; categoryName?: string; seriesId?: string; seriesName?: string; variantGroups?: VariantGroup[]; recommendedProducts?: RecommendedProduct[]; model?: string; detailDescription?: string; detailImages?: string[]; parameters?: Record<string, string> } | null>(() => {
     if (apiProduct && !apiError) {
       const params = apiProduct.parameters || {};
       const variantGroups: VariantGroup[] = Object.entries(params).map(([key, value]) => ({
@@ -118,8 +127,11 @@ const ProductDetail = () => {
         weightKg: apiProduct.weightKg,
         weightLb: apiProduct.weightLb,
         priceUsd: apiProduct.price,
-        categoryId: String(apiProduct.typeId),
+        categoryId: String(apiProduct.categoryId || apiProduct.typeId),
         categoryLabel: apiProduct.typeName || '',
+        categoryName: apiProduct.categoryName || apiProduct.typeName || '',
+        seriesId: String(apiProduct.seriesId),
+        seriesName: apiProduct.seriesName || '',
         variantGroups,
         recommendedProducts,
         model: apiProduct.model,
@@ -857,8 +869,8 @@ const ProductDetail = () => {
                       isActive ? 'border-[#c8ff00] shadow-[0_0_0_1px_rgba(200,255,0,0.35)]' : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <div className="aspect-[4/3]">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" draggable="false" />
+                    <div className="aspect-square">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-contain" draggable="false" />
                     </div>
                     <div className="p-4">
                       <div className="text-white text-sm font-bold line-clamp-1">{item.name}</div>
