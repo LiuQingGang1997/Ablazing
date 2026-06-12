@@ -523,7 +523,7 @@ const ProductDetail = () => {
                 <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
                   <div className="aspect-square">
                     {activeImage ? (
-                      <img src={activeMainImage} alt={safePayload.title} className="w-full h-full object-cover" draggable="false" />
+                      <img src={activeMainImage} alt={safePayload.title} className="w-full h-full object-contain" draggable="false" />
                     ) : (
                       <div className="w-full h-full" />
                     )}
@@ -539,13 +539,11 @@ const ProductDetail = () => {
                           key={`${img}-${idx}`}
                           type="button"
                           onClick={() => setActiveImageIndex(idx)}
-                          className={`rounded-2xl overflow-hidden border bg-black/5 transition-colors ${
+                          className={`w-full aspect-square rounded-2xl overflow-hidden border transition-colors ${
                             isActive ? 'border-[#c8ff00]' : 'border-black/10 hover:border-black/20'
                           }`}
                         >
-                          <div className="aspect-[4/3]">
-                            <img src={img} alt={`${safePayload.title} ${idx + 1}`} className="w-full h-full object-cover" draggable="false" />
-                          </div>
+                          <img src={img} alt={`${safePayload.title} ${idx + 1}`} className="w-full h-full object-contain" draggable="false" />
                         </button>
                       );
                     })}

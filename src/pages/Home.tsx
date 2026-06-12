@@ -366,7 +366,7 @@ const Home = () => {
 
   // 为了实现无缝轮播，如果数量大于等于7，复制一份数据；否则使用原数据
   const displayCards = venueCards.length >= 7 ? [...venueCards, ...venueCards, ...venueCards] : venueCards;
-  const [hoveredCategoryCardId, setHoveredCategoryCardId] = useState<number | null>(null);
+  
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -569,25 +569,12 @@ const Home = () => {
               {/* Card 1 */}
               <div
                 className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
-                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[0].id)}
-                onMouseLeave={() => setHoveredCategoryCardId(null)}
               >
                 <img
                   src={categoryCards[0].image}
                   alt={categoryCards[0].title}
-                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[0].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
                 />
-                {hoveredCategoryCardId === categoryCards[0].id ? (
-                  <video
-                    src={categoryCards[0].video}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : null}
                 <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
@@ -605,25 +592,12 @@ const Home = () => {
               {/* Card 2 */}
               <div
                 className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
-                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[1].id)}
-                onMouseLeave={() => setHoveredCategoryCardId(null)}
               >
                 <img
                   src={categoryCards[1].image}
                   alt={categoryCards[1].title}
-                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[1].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
                 />
-                {hoveredCategoryCardId === categoryCards[1].id ? (
-                  <video
-                    src={categoryCards[1].video}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : null}
                 <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
@@ -642,25 +616,12 @@ const Home = () => {
             {/* Row 2: Full Width Card */}
             <div
               className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-[16/9] border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
-              onMouseEnter={() => setHoveredCategoryCardId(categoryCards[2].id)}
-              onMouseLeave={() => setHoveredCategoryCardId(null)}
             >
               <img
                 src={categoryCards[2].image}
                 alt={categoryCards[2].title}
-                className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[2].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
               />
-              {hoveredCategoryCardId === categoryCards[2].id ? (
-                <video
-                  src={categoryCards[2].video}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                />
-              ) : null}
               <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                 <div className="absolute top-1/2 left-0 right-0 h-32 bg-black/30 -translate-y-1/2 blur-2xl pointer-events-none" />
@@ -679,27 +640,14 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Card 4 */}
               <div
-                className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
-                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[3].id)}
-                onMouseLeave={() => setHoveredCategoryCardId(null)}
-              >
-                <img
-                  src={categoryCards[3].image}
-                  alt={categoryCards[3].title}
-                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[3].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
-                />
-                {hoveredCategoryCardId === categoryCards[3].id ? (
-                  <video
-                    src={categoryCards[3].video}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : null}
-                <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
+              className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
+            >
+              <img
+                src={categoryCards[3].image}
+                alt={categoryCards[3].title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
+              />
+              <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />
                   <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 relative z-10">{categoryCards[3].title}</h3>
@@ -716,25 +664,12 @@ const Home = () => {
               {/* Card 5 */}
               <div
                 className="group relative overflow-hidden rounded-3xl aspect-square md:aspect-square border border-black/10 hover:border-[#c8ff00]/40 hover:shadow-[0_24px_80px_rgba(200,255,0,0.18)] transition-all duration-500"
-                onMouseEnter={() => setHoveredCategoryCardId(categoryCards[4].id)}
-                onMouseLeave={() => setHoveredCategoryCardId(null)}
               >
                 <img
                   src={categoryCards[4].image}
                   alt={categoryCards[4].title}
-                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredCategoryCardId === categoryCards[4].id ? 'opacity-0 scale-105' : 'opacity-100'} group-hover:scale-110`}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
                 />
-                {hoveredCategoryCardId === categoryCards[4].id ? (
-                  <video
-                    src={categoryCards[4].video}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : null}
                 <div className="absolute inset-0 bg-black/55 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                   <div className="absolute top-1/2 left-0 right-0 h-24 bg-black/20 -translate-y-1/2 blur-xl pointer-events-none" />

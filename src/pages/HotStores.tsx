@@ -1256,12 +1256,12 @@ const HotStores = () => {
                       }}
                       className="group block"
                     >
-                      <div className="relative rounded-2xl bg-[#f3f4f6] overflow-hidden">
-                        <div className="aspect-[4/3] p-6 flex items-center justify-center">
+                      <div className="relative rounded-2xl overflow-hidden">
+                        <div className="aspect-square">
                           <img
                             src={p.image}
                             alt={p.name}
-                            className="w-full h-full object-cover rounded-xl group-hover:scale-[1.02] transition-transform duration-500"
+                            className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-500"
                             draggable="false"
                           />
                         </div>
