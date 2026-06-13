@@ -140,20 +140,24 @@ const HotStores = () => {
   };
 
   const switchBrand = (dir: -1 | 1) => {
+    if (displayBrands.length === 0) return;
     setHoveredBrandIndex(null);
     setIsBrandListOpen(false);
     const currentIndex = displayBrands.findIndex(b => b.id === activeBrand.id);
     const total = displayBrands.length || 1;
     const nextIndex = (currentIndex + dir + total) % total;
-    setActiveBrandId(displayBrands[nextIndex].id as number);
+    const newBrandId = displayBrands[nextIndex].id as number;
+    setActiveBrandId(newBrandId);
   };
 
   const selectBrand = (nextIndex: number) => {
+    if (displayBrands.length === 0) return;
     setHoveredBrandIndex(null);
     setIsBrandListOpen(false);
     const total = displayBrands.length || 1;
     const normalized = ((nextIndex % total) + total) % total;
-    setActiveBrandId(displayBrands[normalized].id as number);
+    const newBrandId = displayBrands[normalized].id as number;
+    setActiveBrandId(newBrandId);
   };
 
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
