@@ -540,11 +540,13 @@ const HotStores = () => {
 
   
 
+  const brandIdForSearch = activeBrandId ? Number(activeBrandId) : Number(activeBrand.id);
+  
   const { products: apiProducts } = useProductsSearch({
-    brandId: activeBrandId ? Number(activeBrandId) : Number(activeBrand.id),
+    brandId: brandIdForSearch,
   });
 
-  const currentBrandIdForFilter = activeBrandId ? Number(activeBrandId) : Number(activeBrand.id);
+  const currentBrandIdForFilter = brandIdForSearch;
   const sourceProducts = apiProducts.length > 0 
     ? apiProducts 
     : mockProducts.filter(p => p.brandId === currentBrandIdForFilter);
