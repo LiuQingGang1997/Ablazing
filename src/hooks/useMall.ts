@@ -118,21 +118,21 @@ export const useProductDetail = (productId: string | number | null) => {
   return { product, loading, error };
 };
 
-export const useProductsSearch = (params: { brandId?: number; categoryId?: number; seriesId?: number; sceneId?: number; typeId?: number; keyword?: string; page?: number; size?: number }) => {
+export const useProductsSearch = ({ brandId, categoryId, seriesId, sceneId, typeId, keyword, page, size }: { brandId?: number; categoryId?: number; seriesId?: number; sceneId?: number; typeId?: number; keyword?: string; page?: number; size?: number }) => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     const query = new URLSearchParams();
-    if (params.brandId) query.append('brandId', params.brandId.toString());
-    if (params.categoryId) query.append('categoryId', params.categoryId.toString());
-    if (params.seriesId) query.append('seriesId', params.seriesId.toString());
-    if (params.sceneId) query.append('sceneId', params.sceneId.toString());
-    if (params.typeId) query.append('typeId', params.typeId.toString());
-    if (params.keyword) query.append('keyword', params.keyword);
-    if (params.page !== undefined) query.append('page', params.page.toString());
-    if (params.size !== undefined) query.append('size', params.size.toString());
+    if (brandId) query.append('brandId', brandId.toString());
+    if (categoryId) query.append('categoryId', categoryId.toString());
+    if (seriesId) query.append('seriesId', seriesId.toString());
+    if (sceneId) query.append('sceneId', sceneId.toString());
+    if (typeId) query.append('typeId', typeId.toString());
+    if (keyword) query.append('keyword', keyword);
+    if (page !== undefined) query.append('page', page.toString());
+    if (size !== undefined) query.append('size', size.toString());
 
     axios.get(`/api/products?${query.toString()}`, {
       headers: {
@@ -152,7 +152,7 @@ export const useProductsSearch = (params: { brandId?: number; categoryId?: numbe
       .finally(() => {
         setLoading(false);
       });
-  }, [params.brandId, params.categoryId, params.seriesId, params.sceneId, params.typeId, params.keyword, params.page, params.size]);
+  }, [brandId, categoryId, seriesId, sceneId, typeId, keyword, page, size]);
 
   return { products, loading };
 };
