@@ -541,10 +541,13 @@ const HotStores = () => {
   
 
   const { products: apiProducts } = useProductsSearch({
-    brandId: activeBrandId ? Number(activeBrandId) : undefined,
+    brandId: activeBrandId ? Number(activeBrandId) : Number(activeBrand.id),
   });
 
-  const sourceProducts = apiProducts.length > 0 ? apiProducts : mockProducts;
+  const currentBrandIdForFilter = activeBrandId ? Number(activeBrandId) : Number(activeBrand.id);
+  const sourceProducts = apiProducts.length > 0 
+    ? apiProducts 
+    : mockProducts.filter(p => p.brandId === currentBrandIdForFilter);
   const displayProducts = sourceProducts.map(p => ({
     id: String(p.id),
     name: p.name || '',
