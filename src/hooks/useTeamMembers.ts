@@ -6,7 +6,7 @@ export const useTeamMembers = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/api/team-members/frontend/list', {
+    axios.get('/api/team-members', {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -15,8 +15,10 @@ export const useTeamMembers = () => {
     })
       .then((res) => {
         const data = res.data?.data || res.data;
-        if (Array.isArray(data)) {
-          setMembers(data);
+        // 支持分页格式 { content: [...] } 或直接数组 [...]
+        const memberList = data?.content || data;
+        if (Array.isArray(memberList)) {
+          setMembers(memberList);
         } else {
           setMembers([]);
         }

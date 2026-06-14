@@ -88,10 +88,10 @@ const About = () => {
   const teamMembers = apiMembers.length > 0
     ? apiMembers.map((m: any) => ({
         name: m.name || '',
-        title: m.title || '',
+        title: m.position || '', // 使用position作为职称
         position: m.position || '',
-        desc: m.description || '',
-        avatar: m.photoUrl ? `${m.photoUrl}${m.photoUrl.includes('?') ? '&' : '?'}w=600&h=600&fit=crop` : '',
+        desc: m.introduction || '',
+        avatar: m.avatar ? `${m.avatar}${m.avatar.includes('?') ? '&' : '?'}w=600&h=600&fit=crop` : '',
       }))
     : mockTeamMembers;
 
