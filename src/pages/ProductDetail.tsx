@@ -146,8 +146,6 @@ const ProductDetail = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [detailTab, setDetailTab] = useState<'overview' | 'specs'>('overview');
   const [priceCurrency, setPriceCurrency] = useState<'USD' | 'CNY'>('USD');
-  const [imagePageIndex, setImagePageIndex] = useState(0);
-  const imagesPerPage = 3;
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
   const [isPartnersLogoWallDragging, setIsPartnersLogoWallDragging] = useState(false);
   const [partnersLogoWallStartX, setPartnersLogoWallStartX] = useState(0);
@@ -155,7 +153,6 @@ const ProductDetail = () => {
 
   useEffect(() => {
     setActiveImageIndex(0);
-    setImagePageIndex(0);
   }, [payload?.productId]);
   const [isPartnersLogoWallHovered, setIsPartnersLogoWallHovered] = useState(false);
 
@@ -551,56 +548,23 @@ const ProductDetail = () => {
 
                 {images.length > 1 ? (
                   <div className="mt-6">
-                    <div className="grid grid-cols-3 gap-4">
-                      {images.slice(imagePageIndex * imagesPerPage, imagePageIndex * imagesPerPage + imagesPerPage).map((img, idx) => {
-                        const actualIndex = imagePageIndex * imagesPerPage + idx;
-                        const isActive = actualIndex === activeImageIndex;
+                    <div className="flex gap-4 overflow-x-auto pb-2 [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                      {images.map((img, idx) => {
+                        const isActive = idx === activeImageIndex;
                         return (
                           <button
-                            key={`${img}-${actualIndex}`}
+                            key={`${img}-${idx}`}
                             type="button"
-                            onClick={() => setActiveImageIndex(actualIndex)}
-                            className={`w-full aspect-square rounded-2xl overflow-hidden border transition-colors ${
+                            onClick={() => setActiveImageIndex(idx)}
+                            className={`flex-none w-24 h-24 rounded-2xl overflow-hidden border transition-colors ${
                               isActive ? 'border-[#c8ff00]' : 'border-black/10 hover:border-black/20'
                             }`}
                           >
-                            <img src={img} alt={`${safePayload.title} ${actualIndex + 1}`} className="w-full h-full object-contain" draggable="false" />
+                            <img src={img} alt={`${safePayload.title} ${idx + 1}`} className="w-full h-full object-contain" draggable="false" />
                           </button>
                         );
                       })}
                     </div>
-                    {images.length > imagesPerPage && (
-                      <div className="mt-4 flex items-center justify-center gap-4">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newPage = Math.max(0, imagePageIndex - 1);
-                            setImagePageIndex(newPage);
-                            setActiveImageIndex(newPage * imagesPerPage);
-                          }}
-                          disabled={imagePageIndex === 0}
-                          className="w-10 h-10 rounded-full bg-gray-50 border border-gray-200 text-black/70 hover:bg-[#c8ff00] hover:text-black disabled:opacity-30 disabled:hover:bg-gray-50 disabled:hover:text-black/70 transition-colors flex items-center justify-center"
-                        >
-                          <ArrowLeft className="w-5 h-5" />
-                        </button>
-                        <span className="text-sm text-black/60 font-medium">
-                          {imagePageIndex * imagesPerPage + 1} - {Math.min((imagePageIndex + 1) * imagesPerPage, images.length)} / {images.length}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const totalPages = Math.ceil(images.length / imagesPerPage);
-                            const newPage = Math.min(totalPages - 1, imagePageIndex + 1);
-                            setImagePageIndex(newPage);
-                            setActiveImageIndex(newPage * imagesPerPage);
-                          }}
-                          disabled={imagePageIndex >= Math.ceil(images.length / imagesPerPage) - 1}
-                          className="w-10 h-10 rounded-full bg-gray-50 border border-gray-200 text-black/70 hover:bg-[#c8ff00] hover:text-black disabled:opacity-30 disabled:hover:bg-gray-50 disabled:hover:text-black/70 transition-colors flex items-center justify-center"
-                        >
-                          <ArrowRight className="w-5 h-5" />
-                        </button>
-                      </div>
-                    )}
                   </div>
                 ) : null}
               </div>
