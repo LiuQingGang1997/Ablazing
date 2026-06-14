@@ -167,6 +167,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api\/product-scenes/, '/api/product-scenes')
       },
+      '^/api/team-members': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/team-members/, '/api/team-members')
+      },
     },
   }
 })
