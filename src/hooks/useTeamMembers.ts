@@ -6,7 +6,7 @@ export const useTeamMembers = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/api/team-members', {
+    axios.get('/api/team-members/frontend/list', {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
