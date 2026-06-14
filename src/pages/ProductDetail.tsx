@@ -183,14 +183,14 @@ const ProductDetail = () => {
   const heroBg = images[1] ?? images[0] ?? '';
   const usdToCnyRate = 7.2;
   const displayedPriceText = useMemo(() => {
-    const usd = payload?.priceUsd;
-    if (typeof usd !== 'number' || Number.isNaN(usd)) return null;
+    const cny = payload?.priceUsd;
+    if (typeof cny !== 'number' || Number.isNaN(cny)) return null;
     const locale = lang === 'zh' ? 'zh-CN' : 'en-US';
-    if (priceCurrency === 'USD') {
-      return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(usd);
+    if (priceCurrency === 'CNY') {
+      return new Intl.NumberFormat(locale, { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 }).format(cny);
     }
-    const cny = usd * usdToCnyRate;
-    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 }).format(cny);
+    const usd = cny / usdToCnyRate;
+    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(usd);
   }, [lang, payload?.priceUsd, priceCurrency]);
   const withUnsplashSize = (url: string, w: number, h: number) => {
     if (!url || !url.includes('images.unsplash.com')) return url;
@@ -627,7 +627,7 @@ const ProductDetail = () => {
 
                 {safePayload.variantGroups?.length ? (
                   <div className="mt-10 space-y-6">
-                    {safePayload.variantGroups.slice(0, 2).map((g) => (
+                    {safePayload.variantGroups.map((g) => (
                       <div key={g.key} className="flex flex-wrap items-center gap-3">
                         <div className="text-sm font-semibold text-black/70 w-14">{g.label}：</div>
                         <div className="flex flex-wrap items-center gap-2">
