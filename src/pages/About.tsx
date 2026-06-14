@@ -61,24 +61,28 @@ const About = () => {
     {
       name: 'Star Liu',
       title: 'Founder',
+      position: '创始人',
       desc: 'ABLAZING Company Founder',
       avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team1.jpg?w=600&h=600&fit=crop',
     },
     {
       name: 'Alan',
       title: 'Senior Vice President',
+      position: '高级副总裁',
       desc: 'Hardware Technologies',
       avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team2.jpg?w=600&h=600&fit=crop',
     },
     {
       name: 'John Ternus',
       title: 'Senior Vice President',
+      position: '高级副总裁',
       desc: 'Hardware Engineering',
       avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team3.jpg?w=600&h=600&fit=crop',
     },
     {
       name: 'Lisa Maestri',
       title: 'Vice President',
+      position: '副总裁',
       desc: 'Corporate Services',
       avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team4.png?w=600&h=600&fit=crop',
     },
@@ -88,9 +92,9 @@ const About = () => {
   const teamMembers = apiMembers.length > 0
     ? apiMembers.map((m: any) => ({
         name: m.name || '',
-        title: m.title || '', // 使用position作为职称
+        title: m.position || '', // 使用position作为职称
         position: m.position || '',
-        desc: m.position || '',
+        desc: m.description || '',
         avatar: m.photoUrl ? `${m.photoUrl}${m.photoUrl.includes('?') ? '&' : '?'}w=600&h=600&fit=crop` : '',
       }))
     : mockTeamMembers;
@@ -466,7 +470,7 @@ const About = () => {
                 <div className="p-5">
                   <div className="text-sm font-black text-black">{m.name}</div>
                   <div className="mt-1 text-xs text-black/60 font-semibold">{m.title}</div>
-                  <div className="mt-2 text-xs text-black/50 leading-relaxed">{m.desc}</div>
+                  <div className="mt-2 text-xs text-black/50 leading-relaxed">{m.position}</div>
                 </div>
               </div>
             ))}
@@ -520,7 +524,7 @@ const About = () => {
                       <div className="text-center">
                         <h4 className="text-black font-bold text-xl mb-1">{teamPrinciples[activePrinciple].name}</h4>
                         <p className="text-gray-500 text-sm tracking-wide font-medium">
-                          {teamPrinciples[activePrinciple].title} · {teamPrinciples[activePrinciple].desc}
+                          {teamPrinciples[activePrinciple].title} · {teamPrinciples[activePrinciple].position}
                         </p>
                       </div>
                     </div>
