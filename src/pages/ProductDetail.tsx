@@ -145,7 +145,8 @@ const ProductDetail = () => {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [detailTab, setDetailTab] = useState<'overview' | 'specs'>('overview');
-  const [priceCurrency, setPriceCurrency] = useState<'USD' | 'CNY'>('USD');
+  const [priceCurrency, setPriceCurrency] = useState<'USD' | 'CNY'>('CNY');
+  const [exchangeRate, setExchangeRate] = useState<number>(7.2);
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
   const [isPartnersLogoWallDragging, setIsPartnersLogoWallDragging] = useState(false);
   const [partnersLogoWallStartX, setPartnersLogoWallStartX] = useState(0);
@@ -153,6 +154,17 @@ const ProductDetail = () => {
 
   useEffect(() => {
     setActiveImageIndex(0);
+    // 获取实时汇率
+    fetch('https://api.exchangerate-api.com/v4/latest/CNY')
+      .then(res => res.json())
+      .then(data => {
+        if (data.rates?.USD) {
+          setExchangeRate(data.rates.USD);
+        }
+      })
+      .catch(() => {
+        // 使用默认汇率7.2
+      });
   }, [payload?.productId]);
   const [isPartnersLogoWallHovered, setIsPartnersLogoWallHovered] = useState(false);
 
@@ -181,7 +193,6 @@ const ProductDetail = () => {
   const images = payload?.images ?? [];
   const activeImage = images[activeImageIndex] ?? images[0];
   const heroBg = images[1] ?? images[0] ?? '';
-  const usdToCnyRate = 7.2;
   const displayedPriceText = useMemo(() => {
     const cny = payload?.priceUsd;
     if (typeof cny !== 'number' || Number.isNaN(cny)) return null;
@@ -189,9 +200,9 @@ const ProductDetail = () => {
     if (priceCurrency === 'CNY') {
       return new Intl.NumberFormat(locale, { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 }).format(cny);
     }
-    const usd = cny / usdToCnyRate;
+    const usd = cny / exchangeRate;
     return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(usd);
-  }, [lang, payload?.priceUsd, priceCurrency]);
+  }, [lang, payload?.priceUsd, priceCurrency, exchangeRate]);
   const withUnsplashSize = (url: string, w: number, h: number) => {
     if (!url || !url.includes('images.unsplash.com')) return url;
     try {
