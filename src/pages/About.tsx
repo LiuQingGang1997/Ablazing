@@ -92,8 +92,8 @@ const About = () => {
   const teamMembers = apiMembers.length > 0
     ? apiMembers.map((m: any) => ({
         name: m.name || '',
-        title: m.position || '', // 使用position作为职称
-        position: m.position || '',
+        title: m.title || '', // 使用接口返回的title字段
+        position: m.position || '', // 使用接口返回的position字段
         desc: m.description || '',
         avatar: m.photoUrl ? `${m.photoUrl}${m.photoUrl.includes('?') ? '&' : '?'}w=600&h=600&fit=crop` : '',
       }))
