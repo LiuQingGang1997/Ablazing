@@ -4,12 +4,14 @@ import { useImageConfig } from '../hooks/useImageConfig';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
 import { useTeamMembers } from '../hooks/useTeamMembers';
+import { useDynamicNews } from '../hooks/useDynamicNews';
 
 const About = () => {
   const { config, loading } = useImageConfig();
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
   const { members: apiMembers } = useTeamMembers();
+  const { news: apiNews } = useDynamicNews(8);
 
   const businessTypes = useMemo(
     () => [
@@ -117,7 +119,7 @@ const About = () => {
     }
   };
 
-  const updates = [
+  const mockUpdates = [
     {
       id: 1,
       date: '2026-05-08',
@@ -136,14 +138,6 @@ const About = () => {
     },
     {
       id: 3,
-      date: '2026-04-24',
-      tag: '服务升级',
-      title: '交付验收标准与备件体系更新',
-      excerpt: '从安装、调试到验收全流程统一标准，降低返工率并提升长期稳定运行能力。',
-      image: 'https://images.unsplash.com/photo-1526401485004-2aa6b5f6c2e5?w=1400&h=900&fit=crop',
-    },
-    {
-      id: 4,
       date: '2026-04-12',
       tag: '行业观察',
       title: '训练体验从"器械"走向"系统"',
@@ -151,38 +145,26 @@ const About = () => {
       image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1400&h=900&fit=crop',
     },
     {
-      id: 5,
+      id: 4,
       date: '2026-04-05',
       tag: '交付案例',
       title: '酒店健身房空间方案上线',
       excerpt: '针对高频与高净值客群优化器械组合与动线，强调噪音控制与安全冗余。',
       image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&h=900&fit=crop',
     },
-    {
-      id: 6,
-      date: '2026-03-28',
-      tag: '培训支持',
-      title: '门店教练产品培训第 6 期完成',
-      excerpt: '围绕有氧、力量与恢复区的教学与维护要点，形成可复用的上手资料包。',
-      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1400&h=900&fit=crop',
-    },
-    {
-      id: 7,
-      date: '2026-03-18',
-      tag: '体验优化',
-      title: '器械标识与引导系统升级',
-      excerpt: '统一信息层级与视觉规范，降低用户学习成本，提升训练路径连贯性。',
-      image: 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=1400&h=900&fit=crop',
-    },
-    {
-      id: 8,
-      date: '2026-03-06',
-      tag: '行业观察',
-      title: '从"单点爆品"到"矩阵组合"',
-      excerpt: '不同场馆的增长逻辑不一样，我们把品类组合策略拆成了可执行的清单。',
-      image: 'https://images.unsplash.com/photo-1517960413843-0aee8e2d471c?w=1400&h=900&fit=crop',
-    },
   ];
+
+  // 将接口数据映射到组件使用的格式
+  const updates = apiNews.length > 0
+    ? apiNews.map((n) => ({
+        id: n.id,
+        date: n.publishDate ? new Date(n.publishDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-') : '',
+        tag: n.dynamicTypeName || '',
+        title: n.title || '',
+        excerpt: n.description || '',
+        image: n.imageUrl || '',
+      }))
+    : mockUpdates;
 
   const [activeUpdate, setActiveUpdate] = useState(0);
   const [isUpdatesHovered, setIsUpdatesHovered] = useState(false);

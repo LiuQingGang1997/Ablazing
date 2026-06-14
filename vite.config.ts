@@ -173,6 +173,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api\/team-members/, '/api/team-members')
       },
+      '^/api/dynamic-news': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/dynamic-news/, '/api/dynamic-news')
+      },
     },
   }
 })
