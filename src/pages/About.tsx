@@ -42,7 +42,7 @@ const About = () => {
         title: lang === 'zh' ? '产品矩阵与增长策略' : 'Portfolio & Growth Strategy',
         description:
           lang === 'zh'
-            ? '结合用户画像与训练需求，构建分层产品矩阵，协助伙伴打造可复购的“训练体验”。'
+            ? '结合用户画像与训练需求，构建分层产品矩阵，协助伙伴打造可复购的"训练体验"。'
             : 'We build tiered portfolios based on personas and training needs to help partners create repeatable training experiences.',
       },
       {
@@ -88,57 +88,20 @@ const About = () => {
   const teamMembers = apiMembers.length > 0
     ? apiMembers.map((m: any) => ({
         name: m.name || '',
-        title: m.position || '', // 使用position作为职称
+        title: m.title || '', // 使用position作为职称
         position: m.position || '',
-        desc: m.introduction || '',
-        avatar: m.avatar ? `${m.avatar}${m.avatar.includes('?') ? '&' : '?'}w=600&h=600&fit=crop` : '',
+        desc: m.position || '',
+        avatar: m.photoUrl ? `${m.photoUrl}${m.photoUrl.includes('?') ? '&' : '?'}w=600&h=600&fit=crop` : '',
       }))
     : mockTeamMembers;
 
-  const teamPrinciples = [
-    {
-      ...teamMembers[0],
-      content: '深耕中国健身运动产业的优质化之路，坚守长期主义，让健康运动成为生活常态，让更多人拥有美好的运动生活——这是我们的使命。',
-    },
-    {
-      ...teamMembers[1],
-      content: '以“稳定交付”为底线，把复杂供应链变成可复制的流程，保证质量、节奏与体验一致。',
-    },
-    {
-      ...teamMembers[2],
-      content: '从用户训练路径出发做产品工程，让器械不只“参数漂亮”，更要“用起来顺”。',
-    },
-    {
-      ...teamMembers[3],
-      content: '把服务做成体系：售前有方法、交付有标准、售后可追踪，让合作伙伴持续省心。',
-    },
-    {
-      ...teamMembers[4],
-      content: '用设计语言统一空间体验，兼顾安全与美感，让训练空间更有品牌记忆点。',
-    },
-    {
-      ...teamMembers[5],
-      content: '以增长为目标做选品策略：覆盖关键品类、建立梯度结构，提升转化与复购。',
-    },
-    {
-      ...teamMembers[6],
-      content: '尊重真实使用场景，把人机工学与交互细节做到位，降低学习成本与维护成本。',
-    },
-    {
-      ...teamMembers[7],
-      content: '用清晰表达与内容资产链接市场，让好产品被看见、被理解、被选择。',
-    },
-  ];
-  const teamPrinciplesEn = [
-    'Make decisions with verifiable data and cost models, so every selection compounds long-term certainty.',
-    'Treat stable delivery as the baseline—turn complex supply chains into repeatable processes with consistent quality, pace, and experience.',
-    'Engineer products from real training journeys: not just great specs, but smooth and intuitive use.',
-    'Systemize service: methods for pre-sales, standards for delivery, and traceable after-sales—so partners stay worry-free.',
-    'Unify spatial experience with design language, balancing safety and aesthetics to create strong brand memory.',
-    'Build selection strategies for growth: cover key categories, create tiered structures, and improve conversion and repeat purchases.',
-    'Respect real-world scenarios: refine ergonomics and interaction details to reduce learning and maintenance costs.',
-    'Connect products to the market with clear communication and content assets—so great products get seen, understood, and chosen.',
-  ];
+  // 使用接口返回的团队成员数据，description作为简介内容
+  const teamPrinciples = teamMembers.map((m) => ({
+    ...m,
+    content: m.desc || '', // desc是从description映射来的
+  }));
+
+  const teamPrinciplesEn = teamMembers.map((m) => m.desc || '');
 
   const [activePrinciple, setActivePrinciple] = useState(0);
 
@@ -179,7 +142,7 @@ const About = () => {
       id: 4,
       date: '2026-04-12',
       tag: '行业观察',
-      title: '训练体验从“器械”走向“系统”',
+      title: '训练体验从"器械"走向"系统"',
       excerpt: '我们整理了近期场馆运营反馈，沉淀出适配不同客群的产品矩阵与组合方法。',
       image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1400&h=900&fit=crop',
     },
@@ -211,7 +174,7 @@ const About = () => {
       id: 8,
       date: '2026-03-06',
       tag: '行业观察',
-      title: '从“单点爆品”到“矩阵组合”',
+      title: '从"单点爆品"到"矩阵组合"',
       excerpt: '不同场馆的增长逻辑不一样，我们把品类组合策略拆成了可执行的清单。',
       image: 'https://images.unsplash.com/photo-1517960413843-0aee8e2d471c?w=1400&h=900&fit=crop',
     },
@@ -365,7 +328,7 @@ const About = () => {
             </div>
             <div className="mt-8 max-w-3xl text-white/70 text-sm md:text-base leading-relaxed">
               {lang === 'zh'
-                ? '醒动以“产品与场景”为核心：从跑步机、椭圆机、爬楼机、动感单车等主力品类出发，为健身房、酒店、企业与学校等多场景提供可落地的选品与方案服务。'
+                ? '醒动以"产品与场景"为核心：从跑步机、椭圆机、爬楼机、动感单车等主力品类出发，为健身房、酒店、企业与学校等多场景提供可落地的选品与方案服务。'
                 : 'Ablazing puts products and scenarios at the center. Starting from core categories like treadmills, ellipticals, stair climbers and cycling, we deliver actionable curation and solutions for gyms, hotels, enterprises, and schools.'}
             </div>
           </div>
@@ -382,7 +345,7 @@ const About = () => {
               <div className="mt-8 space-y-4 text-black/70 text-sm md:text-base leading-relaxed">
                 <p>
                   {lang === 'zh'
-                    ? '我们聚焦运动健身产业链的“选品—交付—运营”全流程：围绕有氧、力量、恢复与数字化训练等方向，帮助合作伙伴快速搭建可持续的产品矩阵。'
+                    ? '我们聚焦运动健身产业链的"选品—交付—运营"全流程：围绕有氧、力量、恢复与数字化训练等方向，帮助合作伙伴快速搭建可持续的产品矩阵。'
                     : 'We focus on the full cycle of curation, delivery, and operations—across cardio, strength, recovery, and digital training—helping partners build sustainable product portfolios faster.'}
                 </p>
                 <p>
@@ -430,7 +393,7 @@ const About = () => {
                     </div>
                     <div className="mt-6 text-lg md:text-xl font-bold leading-relaxed">
                       {lang === 'zh'
-                        ? '从“单品采购”升级为“体验系统”，让每一次选品都指向更好的训练结果与更高的运营效率。'
+                        ? '从"单品采购"升级为"体验系统"，让每一次选品都指向更好的训练结果与更高的运营效率。'
                         : 'Upgrade from one-off purchasing to an experience system—so every selection drives better training outcomes and higher operational efficiency.'}
                     </div>
                     <div className="mt-4 text-sm text-white/70">
@@ -489,8 +452,8 @@ const About = () => {
             </h2>
             <div className="mt-4 text-black/60 text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
               {lang === 'zh'
-                ? '团队覆盖选品、供应链、产品运营与交付服务，让产品从“看起来很强”到“用起来很稳”，并能持续迭代。'
-                : 'Our team covers curation, supply chain, product operations, and delivery—so products go from “great on paper” to “stable in real use”, and keep improving over time.'}
+                ? '团队覆盖选品、供应链、产品运营与交付服务，让产品从"看起来很强"到"用起来很稳"，并能持续迭代。'
+                : 'Our team covers curation, supply chain, product operations, and delivery—so products go from "great on paper" to "stable in real use", and keep improving over time.'}
             </div>
           </div>
 
@@ -524,7 +487,7 @@ const About = () => {
               </h2>
               <div className="mt-4 text-black/60 text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
                 {lang === 'zh'
-                  ? '每一条理念，都来自团队日常工作中对“专业、稳定与长期价值”的坚持。'
+                  ? '每一条理念，都来自团队日常工作中对"专业、稳定与长期价值"的坚持。'
                   : 'Each principle comes from our daily commitment to professionalism, stability, and long-term value.'}
               </div>
             </div>
@@ -535,30 +498,34 @@ const About = () => {
               </div>
 
               <div className="relative z-10 min-h-[300px] flex flex-col justify-center">
-                <p
-                  key={activePrinciple}
-                  className="text-xl md:text-3xl text-gray-800 leading-[1.8] text-center font-medium mb-16 animate-fade-in"
-                >
-                  "{lang === 'zh' ? teamPrinciples[activePrinciple].content : teamPrinciplesEn[activePrinciple]}"
-                </p>
-
-                <div className="flex flex-col items-center gap-5 mt-auto">
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-white shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
-                    <img
-                      key={`avatar-${activePrinciple}`}
-                      src={teamPrinciples[activePrinciple].avatar}
-                      alt={teamPrinciples[activePrinciple].name}
-                      className="w-full h-full object-cover animate-fade-in"
-                      draggable="false"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <h4 className="text-black font-bold text-xl mb-1">{teamPrinciples[activePrinciple].name}</h4>
-                    <p className="text-gray-500 text-sm tracking-wide font-medium">
-                      {teamPrinciples[activePrinciple].title} · {teamPrinciples[activePrinciple].desc}
+                {teamPrinciples.length > 0 && (
+                  <>
+                    <p
+                      key={activePrinciple}
+                      className="text-xl md:text-3xl text-gray-800 leading-[1.8] text-center font-medium mb-16 animate-fade-in"
+                    >
+                      "{lang === 'zh' ? teamPrinciples[activePrinciple].content : teamPrinciplesEn[activePrinciple]}"
                     </p>
-                  </div>
-                </div>
+
+                    <div className="flex flex-col items-center gap-5 mt-auto">
+                      <div className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-white shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
+                        <img
+                          key={`avatar-${activePrinciple}`}
+                          src={teamPrinciples[activePrinciple].avatar}
+                          alt={teamPrinciples[activePrinciple].name}
+                          className="w-full h-full object-cover animate-fade-in"
+                          draggable="false"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h4 className="text-black font-bold text-xl mb-1">{teamPrinciples[activePrinciple].name}</h4>
+                        <p className="text-gray-500 text-sm tracking-wide font-medium">
+                          {teamPrinciples[activePrinciple].title} · {teamPrinciples[activePrinciple].desc}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="flex justify-center items-center gap-4 mt-12 md:absolute md:top-1/2 md:-left-12 md:-right-12 md:-translate-y-1/2 md:mt-0 md:justify-between pointer-events-none">
@@ -595,7 +562,7 @@ const About = () => {
               <div className="mt-4 text-black/60 text-sm md:text-base max-w-2xl leading-relaxed">
                 {lang === 'zh'
                   ? '记录项目交付、新品引入、服务升级与行业观察，让你更快了解醒动的最新进展。'
-                  : 'Project delivery, new arrivals, service upgrades and insights—so you can quickly catch up on what’s happening.'}
+                  : 'Project delivery, new arrivals, service upgrades and insights—so you can quickly catch up on what s happening.'}
               </div>
             </div>
           </div>
