@@ -15,7 +15,7 @@ export const useTeamMembers = () => {
     })
       .then((res) => {
         const data = res.data?.data || res.data;
-        if (data && Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setMembers(data);
         } else {
           setMembers([]);

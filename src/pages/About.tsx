@@ -3,11 +3,13 @@ import { ArrowLeft, ArrowRight, Award, Globe, Quote, Target, TrendingUp, Users }
 import { useImageConfig } from '../hooks/useImageConfig';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
+import { useTeamMembers } from '../hooks/useTeamMembers';
 
 const About = () => {
   const { config, loading } = useImageConfig();
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
+  const { members: apiMembers } = useTeamMembers();
 
   const businessTypes = useMemo(
     () => [
@@ -55,7 +57,7 @@ const About = () => {
     [lang],
   );
 
-  const teamMembers = [
+  const mockTeamMembers = [
     {
       name: 'Star Liu',
       title: 'Founder',
@@ -81,6 +83,17 @@ const About = () => {
       avatar: 'https://ablazing.oss-cn-shanghai.aliyuncs.com/ABLAZINGHOME/team/team4.png?w=600&h=600&fit=crop',
     },
   ];
+
+  // 将接口数据映射到组件使用的格式
+  const teamMembers = apiMembers.length > 0
+    ? apiMembers.map((m: any) => ({
+        name: m.name || '',
+        title: m.title || '',
+        position: m.position || '',
+        desc: m.description || '',
+        avatar: m.photoUrl ? `${m.photoUrl}${m.photoUrl.includes('?') ? '&' : '?'}w=600&h=600&fit=crop` : '',
+      }))
+    : mockTeamMembers;
 
   const teamPrinciples = [
     {
