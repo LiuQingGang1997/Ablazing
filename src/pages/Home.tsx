@@ -1040,7 +1040,7 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
               {t('home.cta.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.cta.titleRight')}
             </h2>
-            <Link to="/hot-stores" className="inline-flex bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
+            <Link to="/hot-stores" className="inline-flex bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300 rounded-full">
               {t('cta.learnMore')}
             </Link>
           </div>

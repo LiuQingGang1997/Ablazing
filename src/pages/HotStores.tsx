@@ -1438,7 +1438,7 @@ const HotStores = () => {
                 {t('home.cta.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.cta.titleRight')}
               </h2>
               <div className="flex items-center justify-center md:justify-end">
-                <Link to="/contact" className="bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300">
+                <Link to="/contact" className="bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300 rounded-full">
                   {t('cta.learnMore')}
                 </Link>
               </div>

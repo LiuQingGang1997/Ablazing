@@ -46,7 +46,7 @@ const Contact = () => {
     () => [
       { title: lang === 'zh' ? '公众号' : 'Official', value: '@ABLAZING', icon: AtSign },
       { title: lang === 'zh' ? '联系地址' : 'Address', value: lang === 'zh' ? '领巢大厦，上海市' : 'Lingchao Building, Shanghai', icon: MapPin },
-      { title: lang === 'zh' ? '联系电话' : 'Phone', value: '+1234 5678978', icon: Phone },
+      { title: lang === 'zh' ? '联系电话' : 'Phone', value: '+18516081780', icon: Phone },
     ],
     [lang],
   );
