@@ -985,11 +985,11 @@ const HotStores = () => {
                           : 'border-white/10 hover:border-white/30'
                       }`}
                     >
-                      <div className="relative aspect-[9/16] md:aspect-[3/4] bg-gray-200">
+                      <div className="relative aspect-[9/16] md:aspect-[3/4] bg-gray-200 flex items-center justify-center">
                         <img
                           src={t.image}
                           alt={t.zh}
-                          className="absolute inset-0 w-full h-full object-cover"
+                          className="max-w-full max-h-full object-contain"
                           draggable="false"
                         />
                         <div className={`absolute inset-0 transition-colors ${isActive ? 'bg-black/25' : 'bg-black/55'}`} />
