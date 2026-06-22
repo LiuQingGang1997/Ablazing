@@ -789,7 +789,7 @@ const HotStores = () => {
                       }}
                       onMouseEnter={() => setHoveredBrandIndex(i)}
                       onMouseLeave={() => setHoveredBrandIndex(null)}
-                      className={`group relative flex-none w-[calc(25%-12px)] md:w-28 lg:w-36 xl:w-40 aspect-square rounded-full bg-[#111] transition-all duration-300 will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
+                      className={`group relative flex-none w-[calc(25%-12px)] md:w-28 lg:w-36 xl:w-40 aspect-square rounded-full bg-gray-200 transition-all duration-300 will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                         isActive
                           ? ''
                           : ''
@@ -800,10 +800,10 @@ const HotStores = () => {
                         className={`pointer-events-none absolute -inset-[2px] rounded-full ${
                           isActive
                             ? 'animate-breath-glow'
-                            : 'shadow-[0_0_0_1px_rgba(255,255,255,0.10),0_0_18px_rgba(255,255,255,0.10)] blur-[0.4px] group-hover:shadow-[0_0_0_1px_rgba(255,255,255,0.16),0_0_22px_rgba(255,255,255,0.14)]'
+                            : 'shadow-[0_0_0_1px_rgba(0,0,0,0.10),0_0_18px_rgba(0,0,0,0.10)] blur-[0.4px] group-hover:shadow-[0_0_0_1px_rgba(0,0,0,0.16),0_0_22px_rgba(0,0,0,0.14)]'
                         }`}
                       />
-                      <div className="relative w-full h-full rounded-full overflow-hidden">
+                      <div className="relative w-full h-full rounded-full overflow-hidden bg-gray-100">
                         {isHovered && brand.video ? (
                           <video
                             src={isMdUp ? (brand.videoPc || brand.video) : (brand.videoMobile || brand.video)}
@@ -817,35 +817,24 @@ const HotStores = () => {
                             }`}
                           />
                         ) : (
-                          <img
-                            src={brand.cardImage}
-                            alt={brand.name}
-                            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out ${
-                              isActive ? 'scale-150 opacity-100' : 'opacity-90 group-hover:scale-125'
-                            }`}
-                            draggable="false"
-                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                            <img
+                              src={brand.logo}
+                              alt={brand.name}
+                              className={`w-2/3 h-2/3 object-contain transition-transform duration-700 ease-out ${
+                                isActive ? 'scale-110' : 'group-hover:scale-105'
+                              }`}
+                              draggable="false"
+                            />
+                          </div>
                         )}
                         <div
                           className={`absolute inset-0 transition-all duration-300 ${
                             isActive
                               ? 'bg-black/10 backdrop-blur-[2px]'
-                              : 'bg-black/50 group-hover:bg-black/35 backdrop-blur-[1px]'
+                              : 'bg-transparent group-hover:bg-black/20'
                           }`}
                         />
-                        <div
-                          ref={(el) => {
-                            if (el) brandStripLogoOverlayRefs.current[i] = el;
-                          }}
-                          className="absolute inset-0 flex items-center justify-center px-2 pointer-events-none will-change-transform transform-gpu"
-                        >
-                          <img
-                            src={brand.logo}
-                            alt={brand.name}
-                            className="h-4 sm:h-5 md:h-6 w-auto pointer-events-none opacity-95"
-                            draggable="false"
-                          />
-                        </div>
                       </div>
                     </button>
                   );
@@ -868,8 +857,8 @@ const HotStores = () => {
                   {lang === 'zh' ? '了解品牌' : 'About the Brand'}
                 </div>
                 <div className="hidden lg:flex items-center gap-2 text-xs text-black/60 tracking-widest">
-                  SCROLL DOWN
-                  <span className="text-black/60">↓</span>
+                  
+                  
                 </div>
               </div>
 
@@ -897,16 +886,7 @@ const HotStores = () => {
                     </div>
                     <div className="text-xs text-black/50 font-semibold">24 Feb</div>
                   </div>
-                  <div className="px-4 pb-4">
-                    <div className="aspect-square md:aspect-[16/10] rounded-xl overflow-hidden bg-black/5">
-                      <img
-                        src={activeBrand.cardImage}
-                        alt={activeBrand.name}
-                        className="w-full h-full object-cover"
-                        draggable="false"
-                      />
-                    </div>
-                  </div>
+                  
                 </div>
               </div>
             </div>
