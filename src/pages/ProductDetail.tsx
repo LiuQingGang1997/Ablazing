@@ -882,7 +882,7 @@ const ProductDetail = () => {
                 >
                   <div
                     data-products-strip-card="1"
-                    className={`rounded-[24px] overflow-hidden bg-white/5 border transition-colors ${
+                    className={`rounded-[24px] overflow-hidden bg-gray-200 border transition-colors ${
                       isActive ? 'border-[#c8ff00] shadow-[0_0_0_1px_rgba(200,255,0,0.35)]' : 'border-white/10 hover:border-white/20'
                     }`}
                   >
