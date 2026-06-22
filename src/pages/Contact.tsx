@@ -44,9 +44,9 @@ const Contact = () => {
 
   const contactInfo = useMemo(
     () => [
-      { title: lang === 'zh' ? '公众号' : 'Official', value: '@ABLAZING', icon: AtSign },
-      { title: lang === 'zh' ? '联系地址' : 'Address', value: lang === 'zh' ? '领巢大厦，上海市' : 'Lingchao Building, Shanghai', icon: MapPin },
-      { title: lang === 'zh' ? '联系电话' : 'Phone', value: '+18516081780', icon: Phone },
+      { title: lang === 'zh' ? '公众号' : 'Official', value: '@醒动ABLAZING', icon: AtSign },
+      { title: lang === 'zh' ? '联系地址' : 'Address', value: lang === 'zh' ? '上海市青浦区赵巷镇沪青平公路3398号1幢2层X区278室' : 'Room 278, Zone X, 2nd Floor, Building 1, No. 3398, Huqingping Road, Zhaoxiang Town, Qingpu District, Shanghai', icon: MapPin },
+      { title: lang === 'zh' ? '联系电话' : 'Phone', value: '18516081780', icon: Phone },
     ],
     [lang],
   );
