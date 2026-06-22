@@ -821,7 +821,7 @@ const HotStores = () => {
                             <img
                               src={brand.logo}
                               alt={brand.name}
-                              className={`w-2/3 h-2/3 object-contain transition-transform duration-700 ease-out ${
+                              className={`max-w-[80%] max-h-[80%] object-contain transition-transform duration-700 ease-out ${
                                 isActive ? 'scale-110' : 'group-hover:scale-105'
                               }`}
                               draggable="false"
