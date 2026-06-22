@@ -985,7 +985,7 @@ const HotStores = () => {
                           : 'border-white/10 hover:border-white/30'
                       }`}
                     >
-                      <div className="relative aspect-[9/16] md:aspect-[3/4]">
+                      <div className="relative aspect-[9/16] md:aspect-[3/4] bg-gray-200">
                         <img
                           src={t.image}
                           alt={t.zh}
