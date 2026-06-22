@@ -890,13 +890,13 @@ const ProductDetail = () => {
                       <img src={item.image} alt={item.name} className="w-full h-full object-contain" draggable="false" />
                     </div>
                     <div className="p-4">
-                      <div className="text-white text-sm font-bold line-clamp-1">{item.name}</div>
+                      <div className="text-black text-sm font-bold line-clamp-1">{item.name}</div>
                       {typeof item.weightKg === 'number' && typeof item.weightLb === 'number' ? (
-                        <div className="mt-1 text-white/60 text-xs">
+                        <div className="mt-1 text-black/60 text-xs">
                           {item.weightKg}kg / {item.weightLb}lbs
                         </div>
                       ) : (
-                        <div className="mt-1 text-white/60 text-xs">{safePayload.categoryLabel ?? t('productDetail.recommended.sameCategory')}</div>
+                        <div className="mt-1 text-black/60 text-xs">{safePayload.categoryLabel ?? t('productDetail.recommended.sameCategory')}</div>
                       )}
                     </div>
                   </div>
