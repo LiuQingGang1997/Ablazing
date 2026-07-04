@@ -721,9 +721,7 @@ const HotStores = () => {
             playsInline
             className="w-full h-full object-cover pointer-events-none"
           />
-          <div className="absolute inset-0 bg-black/70 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#c8ff00]/35 via-black/20 to-black/70 pointer-events-none" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(200,255,0,0.15),transparent_45%)]" />
+          <div className="absolute inset-0 bg-black pointer-events-none" />
         </div>
 
         <div className="content-container relative z-10 py-16 md:py-24">
@@ -758,7 +756,7 @@ const HotStores = () => {
         </div>
 
         <div className="absolute left-0 right-0 bottom-0 z-20">
-          <div className="h-28 md:h-36 bg-gradient-to-t from-[#c8ff00]/30 via-black/10 to-transparent" />
+          <div className="h-28 md:h-36 bg-black" />
           <div className="absolute inset-x-0 bottom-0 pb-10 md:pb-14">
             <div className="content-container">
               <div
