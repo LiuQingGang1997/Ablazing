@@ -721,7 +721,8 @@ const HotStores = () => {
             playsInline
             className="w-full h-full object-cover pointer-events-none"
           />
-          <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+          <div className="absolute inset-0 bg-black/60 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-40 md:h-60 bg-gradient-to-t from-[#111] to-transparent pointer-events-none z-[1]" />
         </div>
 
         <div className="content-container relative z-10 py-16 md:py-24">
