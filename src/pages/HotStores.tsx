@@ -1,5 +1,5 @@
-import { mockBrands, mockCurrentBrand, mockProductTypes, mockProducts, mockCategories } from '../mock/mallData';
-import { useEffect, useRef, useState } from 'react';
+import { mockBrands, mockCurrentBrand, mockProductTypes, mockProducts } from '../mock/mallData';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowLeft, ArrowRight, Play, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
@@ -11,14 +11,6 @@ const HotStores = () => {
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
 
-
-  // 数据统计
-  const stats = [
-    { value: '72+', label: lang === 'zh' ? '合作品牌' : 'Partner brands' },
-    { value: '2000+', label: lang === 'zh' ? '合作门店' : 'Partner stores' },
-    { value: '5000+', label: lang === 'zh' ? 'SKU数量' : 'SKUs' },
-    { value: '100%', label: lang === 'zh' ? '正品保障' : 'Authenticity' },
-  ];
 
   type Option = { value: string; label: string };
   type FilterDef = { key: string; label: string; options: Option[] };
@@ -56,6 +48,7 @@ const HotStores = () => {
     overview: currentBrandData.detailDescription || '',
     metrics: currentBrandData.metrics || [],
     highlights: currentBrandData.highlights || [],
+    parameters: currentBrandData.parameters || {},
     productTypes: (apiProductTypes.length > 0 ? apiProductTypes : mockProductTypes).map(t => ({
       id: String(t.id),
       zh: t.name || t.typeName || '',
@@ -73,6 +66,23 @@ const HotStores = () => {
     heroImage: currentBrandData.promoImageUrl || '',
     cardImage: currentBrandData.promoImageUrl || ''
   };
+
+  const stats = useMemo(() => {
+    const params = activeBrand.parameters || {};
+    const entries = Object.entries(params);
+    if (entries.length > 0) {
+      return entries.map(([key, value]) => ({
+        value: String(value),
+        label: key
+      }));
+    }
+    return [
+      { value: '72+', label: lang === 'zh' ? '合作品牌' : 'Partner brands' },
+      { value: '2000+', label: lang === 'zh' ? '合作门店' : 'Partner stores' },
+      { value: '5000+', label: lang === 'zh' ? 'SKU数量' : 'SKUs' },
+      { value: '100%', label: lang === 'zh' ? '正品保障' : 'Authenticity' },
+    ];
+  }, [activeBrand.parameters, lang]);
 
   const [isMdUp, setIsMdUp] = useState(false);
   const brandPhilosophyRef = useRef<HTMLElement | null>(null);
@@ -576,32 +586,14 @@ const HotStores = () => {
 
   const categoriesData = apiProducts.length > 0 
     ? [] 
-    : mockCategories;
+    : [];
 
   const categoryOptions: { value: string; label: string; level: number; parentId: number | null }[] = [
     { value: 'all', label: '全部分类', level: 0, parentId: null }
   ];
 
   if (categoriesData.length > 0) {
-    const level1Categories = categoriesData.filter(c => c.level === 1);
-    level1Categories.forEach(parent => {
-      categoryOptions.push({
-        value: String(parent.id),
-        label: parent.name,
-        level: parent.level,
-        parentId: parent.parentId
-      });
-      
-      const children = categoriesData.filter(c => c.parentId === parent.id);
-      children.forEach(child => {
-        categoryOptions.push({
-          value: String(child.id),
-          label: child.name,
-          level: child.level,
-          parentId: child.parentId
-        });
-      });
-    });
+    
   } else {
     const seenCategoryIds = new Set<string>();
     sourceProducts.forEach(p => {
@@ -746,7 +738,7 @@ const HotStores = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-              {stats.map((stat, index) => (
+              {stats.map((stat: { value: string; label: string }, index: number) => (
                 <div key={index} className="text-left">
                   <div className="text-4xl md:text-4xl font-black text-[#c8ff00] mb-2 md:mb-1">{stat.value}</div>
                   <div className="text-white/60 text-base md:text-sm tracking-wider">{stat.label}</div>
