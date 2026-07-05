@@ -722,13 +722,13 @@ const HotStores = () => {
             className="w-full h-full object-cover pointer-events-none"
           />
           <div className="absolute inset-0 bg-black/60 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 right-0 h-40 md:h-60 bg-gradient-to-t from-[#111] to-transparent pointer-events-none z-[1]" />
+          <div className="absolute bottom-0 left-0 right-0 h-40 md:h-60  to-transparent pointer-events-none z-[1]" />
         </div>
 
         <div className="content-container relative z-10 py-16 md:py-24">
           <div className="max-w-3xl">
             <div className="mb-10">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-white flex items-center justify-center p-4 md:p-5 mb-6 shadow-xl">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full bg-white flex items-center justify-center p-2 md:p-3 mb-6 shadow-xl">
                 <img
                   src={activeBrand.logo}
                   alt={activeBrand.name}
@@ -757,7 +757,7 @@ const HotStores = () => {
         </div>
 
         <div className="absolute left-0 right-0 bottom-0 z-20">
-          <div className="h-28 md:h-36 bg-gradient-to-t from-[#c8ff00]/30 via-black/10 to-transparent" />
+          <div className="h-28 md:h-36  from-[#c8ff00]/30 via-black/10 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 pb-10 md:pb-14">
             <div className="content-container">
               <div
@@ -924,7 +924,7 @@ const HotStores = () => {
      
 
       {/* Feature Section */}
-      <section className="py-16 md:py-24 bg-black">
+      <section className="py-16 md:py-24 bg-[#111]">
         <div className="content-container">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 md:gap-10 mb-10 md:mb-14">
             <div>
@@ -1096,7 +1096,7 @@ const HotStores = () => {
         </div>
       </section>
       {/* Products Section */}
-      <section className="py-16 md:py-24 bg-[#111]">
+      <section className="py-16 md:py-24 bg-white">
         <div className="content-container">
           <div
             ref={productsBoxRef}
@@ -1429,7 +1429,7 @@ const HotStores = () => {
       </section>
       )}
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-black">
+      <section className="py-16 md:py-24 bg-[#0B0B0B]">
         <div className="content-container">
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-10">
