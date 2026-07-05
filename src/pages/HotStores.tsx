@@ -728,7 +728,7 @@ const HotStores = () => {
         <div className="content-container relative z-10 py-16 md:py-24">
           <div className="max-w-3xl">
             <div className="mb-10">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full bg-white flex items-center justify-center p-2 md:p-3 mb-6 shadow-xl">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full bg-white flex items-center justify-center p-1 md:p-2 mb-6 shadow-xl">
                 <img
                   src={activeBrand.logo}
                   alt={activeBrand.name}
