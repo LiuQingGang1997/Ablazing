@@ -1036,8 +1036,8 @@ const Home = () => {
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-black">
         <div className="content-container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
+          <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-white">
               {t('home.cta.titleLeft')} <span className="text-[#c8ff00]">·</span> {t('home.cta.titleRight')}
             </h2>
             <Link to="/hot-stores" className="inline-flex bg-[#c8ff00] text-black px-10 py-5 font-semibold hover:bg-white transition-colors duration-300 rounded-full">

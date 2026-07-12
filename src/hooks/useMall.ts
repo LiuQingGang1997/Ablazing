@@ -118,8 +118,10 @@ export const useProductDetail = (productId: string | number | null) => {
   return { product, loading, error };
 };
 
-export const useProductsSearch = ({ brandId, categoryId, seriesId, sceneId, typeId, keyword, page, size }: { brandId?: number; categoryId?: number; seriesId?: number; sceneId?: number; typeId?: number; keyword?: string; page?: number; size?: number }) => {
+export const useProductsSearch = ({ brandId, categoryId, seriesId, sceneId, typeId, keyword, page = 0, size = 20 }: { brandId?: number; categoryId?: number; seriesId?: number; sceneId?: number; typeId?: number; keyword?: string; page?: number; size?: number }) => {
   const [products, setProducts] = useState<any[]>([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -131,8 +133,8 @@ export const useProductsSearch = ({ brandId, categoryId, seriesId, sceneId, type
     if (sceneId) query.append('sceneId', sceneId.toString());
     if (typeId) query.append('typeId', typeId.toString());
     if (keyword) query.append('keyword', keyword);
-    if (page !== undefined) query.append('page', page.toString());
-    if (size !== undefined) query.append('size', size.toString());
+    query.append('page', page.toString());
+    query.append('size', size.toString());
 
     axios.get(`/api/products?${query.toString()}`, {
       headers: {
@@ -143,16 +145,60 @@ export const useProductsSearch = ({ brandId, categoryId, seriesId, sceneId, type
     })
       .then((res) => {
         const responseData = res.data?.data || res.data;
-        setProducts(Array.isArray(responseData) ? responseData : []);
+        if (responseData.content) {
+          setProducts(responseData.content);
+          setTotalElements(responseData.totalElements || 0);
+          setTotalPages(responseData.totalPages || 0);
+        } else if (Array.isArray(responseData)) {
+          setProducts(responseData);
+          setTotalElements(responseData.length);
+          setTotalPages(1);
+        } else {
+          setProducts([]);
+          setTotalElements(0);
+          setTotalPages(0);
+        }
       })
       .catch((err) => {
         console.error('Failed to fetch products:', err);
         setProducts([]);
+        setTotalElements(0);
+        setTotalPages(0);
       })
       .finally(() => {
         setLoading(false);
       });
   }, [brandId, categoryId, seriesId, sceneId, typeId, keyword, page, size]);
 
-  return { products, loading };
+  return { products, loading, totalElements, totalPages };
+};
+
+export const useProductTypes = (brandId?: number) => {
+  const [productTypes, setProductTypes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const url = brandId ? `/api/product-types/brand/${brandId}` : '/api/product-types/frontend/list';
+    axios.get(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: false
+    })
+      .then((res) => {
+        const responseData = res.data?.data || res.data;
+        setProductTypes(Array.isArray(responseData) ? responseData : []);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch product types:', err);
+        setProductTypes([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [brandId]);
+
+  return { productTypes, loading };
 };

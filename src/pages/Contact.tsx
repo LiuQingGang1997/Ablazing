@@ -232,10 +232,8 @@ const Contact = () => {
       {/* Hero Section */}
       <section className="relative min-h-[100svh] flex flex-col justify-center pt-20 pb-20 md:pt-32 md:pb-32">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-[#6f7e35] to-[#f6f2e8]" />
-          <div className="absolute -top-40 left-[-15%] w-[70vw] h-[70vw] rounded-full bg-[#c8ff00]/25 blur-3xl" />
-          <div className="absolute top-0 right-[-20%] w-[60vw] h-[60vw] rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-[url('https://ablazing.oss-cn-shanghai.aliyuncs.com/uploads/abd27e8aff4f4678b4b8e006d28be1ff.png')] bg-cover bg-center" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
         <div className="content-container">
           <div className="relative">
@@ -248,7 +246,7 @@ const Contact = () => {
               <p className="mt-6 text-xl md:text-2xl font-bold text-white/85">
                 {t('home.services.title')}
               </p>
-              <p className="mt-8 max-w-3xl text-sm md:text-base text-white/75 md:text-black/70 leading-relaxed">
+              <p className="mt-8 max-w-3xl text-sm md:text-base text-white/75 leading-relaxed">
                 {t('home.hero.descLine1')}
                 <br />
                 {t('home.hero.descLine2')}
@@ -261,8 +259,8 @@ const Contact = () => {
                       <info.icon className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <div className="text-xs font-semibold text-white/70 md:text-black/60">{info.title}</div>
-                      <div className="mt-1 text-sm md:text-base font-semibold text-white md:text-black">{info.value}</div>
+                      <div className="text-xs font-semibold text-white/70">{info.title}</div>
+                      <div className="mt-1 text-sm md:text-base font-semibold text-white">{info.value}</div>
                     </div>
                   </div>
                 ))}

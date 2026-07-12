@@ -84,7 +84,7 @@ const Header = () => {
           <div className="hidden md:flex items-center gap-6">
             <Link
               to="/contact"
-              className="group inline-flex items-center gap-2 bg-[#c8ff00] text-black px-6 py-3 text-sm font-semibold hover:bg-white transition-colors duration-300"
+              className="group inline-flex items-center gap-2 bg-[#c8ff00] text-black px-6 py-3 text-sm font-semibold hover:bg-white transition-colors duration-300 rounded-full"
             >
               <span>{t('cta.consultNow')}</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

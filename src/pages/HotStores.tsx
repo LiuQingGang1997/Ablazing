@@ -25,12 +25,12 @@ const HotStores = () => {
     slogan: b.slogan || '',
     introduction: b.introduction || '',
     promoImageUrl: b.promoImageUrl || '',
-    promoVideoUrl: b.promoVideoUrl || '',
-    mobilePromoVideoUrl: b.mobilePromoVideoUrl || '',
+    coverVideoUrl: b.coverVideoUrl || '',
+    mobileCoverVideoUrl: b.mobileCoverVideoUrl || '',
     detailDescription: b.detailDescription || '',
-    video: b.promoVideoUrl || '',
-    videoPc: b.promoVideoUrl || '',
-    videoMobile: b.mobilePromoVideoUrl || '',
+    video: b.coverVideoUrl || '',
+    videoPc: b.coverVideoUrl || '',
+    videoMobile: b.mobileCoverVideoUrl || '',
     cardImage: b.promoImageUrl || ''
   }));
 
@@ -60,9 +60,9 @@ const HotStores = () => {
     })),
     heroImagePc: currentBrandData.promoImageUrl || '',
     heroImageMobile: currentBrandData.promoImageUrl || '',
-    videoPc: currentBrandData.promoVideoUrl || '',
-    videoMobile: currentBrandData.mobilePromoVideoUrl || '',
-    video: currentBrandData.promoVideoUrl || '',
+    videoPc: currentBrandData.coverVideoUrl || '',
+    videoMobile: currentBrandData.mobileCoverVideoUrl || '',
+    video: currentBrandData.coverVideoUrl || '',
     heroImage: currentBrandData.promoImageUrl || '',
     cardImage: currentBrandData.promoImageUrl || ''
   };
@@ -552,14 +552,16 @@ const HotStores = () => {
 
   const brandIdForSearch = activeBrandId ? Number(activeBrandId) : Number(activeBrand.id);
   
-  const { products: apiProducts } = useProductsSearch({
+  const { products: apiProducts, totalPages } = useProductsSearch({
     brandId: brandIdForSearch,
+    page: productPage - 1,
+    size: 10,
   });
 
   const currentBrandIdForFilter = brandIdForSearch;
   const sourceProducts = apiProducts.length > 0 
-    ? apiProducts 
-    : mockProducts.filter(p => p.brandId === currentBrandIdForFilter);
+    ? apiProducts.filter(p => p.enabled === true || p.enabled === 1 || p.enabled === '1') 
+    : mockProducts.filter(p => p.brandId === currentBrandIdForFilter && p.enabled === true);
   const displayProducts = sourceProducts.map(p => ({
     id: String(p.id),
     name: p.name || '',
@@ -681,10 +683,8 @@ const HotStores = () => {
     return true;
   });
 
-  const pageSize = 10;
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
-  const safePage = Math.min(Math.max(productPage, 1), totalPages);
-  const pagedProducts = filteredProducts.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const safePage = Math.min(Math.max(productPage, 1), totalPages || 1);
+  const pagedProducts = filteredProducts;
 
   const getPageItems = () => {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -748,10 +748,10 @@ const HotStores = () => {
           </div>
         </div>
 
-        <div className="absolute left-0 right-0 bottom-0 z-20">
-          <div className="h-28 md:h-36  from-[#c8ff00]/30 via-black/10 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 pb-10 md:pb-14">
+        <div className="absolute left-0 right-0 bottom-0 z-20 overflow-visible">
+          <div className="absolute inset-x-0 bottom-0 pt-10 pb-10 md:pt-14 md:pb-14">
             <div className="content-container">
+              <div className="absolute inset-x-0 bottom-0 h-32 md:h-40 bg-gradient-to-t from-[#c8ff00]/30 via-black/10 to-transparent -z-10" />
               <div
                 ref={brandStripRef}
                 onMouseDown={onBrandStripMouseDown}
@@ -782,7 +782,7 @@ const HotStores = () => {
                       onMouseLeave={() => setHoveredBrandIndex(null)}
                       className={`group relative flex-none w-[calc(25%-12px)] md:w-28 lg:w-36 xl:w-40 aspect-square rounded-full bg-gray-200 transition-all duration-300 will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                         isActive
-                          ? ''
+                          ? 'shadow-[0_0_0_3px_rgba(200,255,0,0.4),0_0_24px_rgba(200,255,0,0.3),0_0_48px_rgba(200,255,0,0.2)]'
                           : ''
                       }`}
                     >
@@ -790,7 +790,7 @@ const HotStores = () => {
                         aria-hidden="true"
                         className={`pointer-events-none absolute -inset-[2px] rounded-full ${
                           isActive
-                            ? 'animate-breath-glow'
+                            ? 'shadow-[0_0_0_2px_rgba(200,255,0,0.6),0_0_16px_rgba(200,255,0,0.4),0_0_32px_rgba(200,255,0,0.2)]'
                             : 'shadow-[0_0_0_1px_rgba(0,0,0,0.10),0_0_18px_rgba(0,0,0,0.10)] blur-[0.4px] group-hover:shadow-[0_0_0_1px_rgba(0,0,0,0.16),0_0_22px_rgba(0,0,0,0.14)]'
                         }`}
                       />
@@ -820,12 +820,12 @@ const HotStores = () => {
                           </div>
                         )}
                         <div
-                          className={`absolute inset-0 transition-all duration-300 ${
-                            isActive
-                              ? 'bg-black/10 backdrop-blur-[2px]'
-                              : 'bg-transparent group-hover:bg-black/20'
-                          }`}
-                        />
+                        className={`absolute inset-0 transition-all duration-300 ${
+                          isActive
+                            ? 'bg-[rgba(200,255,0,0.05)]'
+                            : 'bg-transparent group-hover:bg-black/20'
+                        }`}
+                      />
                       </div>
                     </button>
                   );
@@ -970,29 +970,29 @@ const HotStores = () => {
                         setProductTypeVirtualIndex(i, 1500);
                         scrollToProducts(t.id);
                       }}
-                      className={`rounded-2xl overflow-hidden bg-[#111] border transition-all outline-none ${
+                      className={`rounded-2xl overflow-hidden bg-white border-2 transition-all outline-none ${
                         isActive
-                          ? 'border-[#c8ff00] shadow-[0_0_0_1px_rgba(200,255,0,0.35)]'
-                          : 'border-white/10 hover:border-white/30'
+                          ? 'border-[#c8ff00] shadow-[0_0_0_3px_rgba(200,255,0,0.4),0_8px_32px_rgba(200,255,0,0.25)]'
+                          : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <div className="relative aspect-[9/16] md:aspect-[3/4] bg-gray-200 flex items-center justify-center">
+                      <div className="group relative aspect-[9/16] md:aspect-[3/4] bg-white flex items-center justify-center overflow-hidden">
                         <img
                           src={t.image}
                           alt={t.zh}
-                          className="max-w-full max-h-full object-contain"
+                          className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110"
                           draggable="false"
                         />
-                        <div className={`absolute inset-0 transition-colors ${isActive ? 'bg-black/25' : 'bg-black/55'}`} />
+                        <div className={`absolute inset-0 transition-colors ${isActive ? 'bg-white/10' : 'bg-white/20'}`} />
                         {isFocusCard ? (
                           <div className="absolute inset-0 flex flex-col justify-end p-6">
-                            <div className="text-3xl md:text-4xl font-black text-white tracking-tight">
+                            <div className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
                               {t.focusTitle}
                             </div>
-                            <div className="mt-2 text-xl md:text-2xl font-black text-white/95 tracking-tight">
+                            <div className="mt-2 text-xl md:text-2xl font-black text-gray-800 tracking-tight">
                               {t.focusSubtitle}
                             </div>
-                            <div className="mt-4 text-white/70 text-sm leading-relaxed max-w-[22rem]">
+                            <div className="mt-4 text-gray-600 text-sm leading-relaxed max-w-[22rem]">
                               {t.focusDesc}
                             </div>
                           </div>
@@ -1001,7 +1001,7 @@ const HotStores = () => {
                     </div>
                     <div className="mt-4">
                       <div className="text-white font-bold tracking-wide">{t.zh}</div>
-                      <div className="text-white/50 text-sm mt-1">{t.en}</div>
+                      <div className="text-gray-600 text-sm mt-1">{t.en}</div>
                     </div>
                   </div>
                 );

@@ -64,6 +64,7 @@ export const mockProducts = [
     typeName: '跑步机',
     sceneId: 501,
     sceneName: '商业健身房',
-    parameters: { '颜色': '黑色', '系列': 'PRO 系列', '控制台': '触控屏' }
+    parameters: { '颜色': '黑色', '系列': 'PRO 系列', '控制台': '触控屏' },
+    enabled: true
   }
 ];

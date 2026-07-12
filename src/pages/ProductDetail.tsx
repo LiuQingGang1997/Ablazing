@@ -29,13 +29,17 @@ type ProductDetailPayload = {
   brandName?: string;
   title: string;
   summary?: string;
+  summaryEn?: string;
   description?: string;
+  descriptionEn?: string;
   detailDescription?: string;
+  detailDescriptionEn?: string;
   images: string[];
   tag?: string;
   weightKg?: number;
   weightLb?: number;
   priceUsd?: number;
+  priceCny?: number;
   categoryId?: string;
   categoryLabel?: string;
   categoryName?: string;
@@ -102,7 +106,7 @@ const ProductDetail = () => {
     return result;
   }, [apiProduct, brandProducts]);
 
-  const payload = useMemo<{ productId: string; brandId?: string; brandName?: string; title: string; summary?: string; description?: string; images: string[]; tag?: string; weightKg?: number; weightLb?: number; priceUsd?: number; categoryId?: string; categoryLabel?: string; categoryName?: string; seriesId?: string; seriesName?: string; variantGroups?: VariantGroup[]; recommendedProducts?: RecommendedProduct[]; model?: string; detailDescription?: string; detailImages?: string[]; parameters?: Record<string, string> } | null>(() => {
+  const payload = useMemo<{ productId: string; brandId?: string; brandName?: string; title: string; summary?: string; summaryEn?: string; description?: string; descriptionEn?: string; images: string[]; tag?: string; weightKg?: number; weightLb?: number; priceUsd?: number; priceCny?: number; categoryId?: string; categoryLabel?: string; categoryName?: string; seriesId?: string; seriesName?: string; variantGroups?: VariantGroup[]; recommendedProducts?: RecommendedProduct[]; model?: string; detailDescription?: string; detailDescriptionEn?: string; detailImages?: string[]; parameters?: Record<string, string> } | null>(() => {
     if (apiProduct && !apiError) {
       const params = apiProduct.parameters || {};
       const variantGroups: VariantGroup[] = Object.entries(params).map(([key, value]) => ({
@@ -121,12 +125,15 @@ const ProductDetail = () => {
         brandName: apiProduct.brandName || '',
         title: apiProduct.name || '',
         summary: apiProduct.summary || '',
+        summaryEn: apiProduct.summaryEn || '',
         description: apiProduct.detailDescription || apiProduct.description || '',
+        descriptionEn: apiProduct.detailDescriptionEn || apiProduct.detailDescription || apiProduct.description || '',
         images,
         tag: apiProduct.tag,
         weightKg: apiProduct.weightKg,
         weightLb: apiProduct.weightLb,
-        priceUsd: apiProduct.price,
+        priceUsd: apiProduct.usdPrice ?? apiProduct.price,
+        priceCny: apiProduct.price,
         categoryId: String(apiProduct.categoryId || apiProduct.typeId),
         categoryLabel: apiProduct.typeName || '',
         categoryName: apiProduct.categoryName || apiProduct.typeName || '',
@@ -136,6 +143,7 @@ const ProductDetail = () => {
         recommendedProducts,
         model: apiProduct.model,
         detailDescription: apiProduct.detailDescription,
+        detailDescriptionEn: apiProduct.detailDescriptionEn,
         detailImages,
         parameters: apiProduct.parameters
       };
@@ -146,7 +154,14 @@ const ProductDetail = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [detailTab, setDetailTab] = useState<'overview' | 'specs'>('overview');
   const [priceCurrency, setPriceCurrency] = useState<'USD' | 'CNY'>('CNY');
-  const [exchangeRate, setExchangeRate] = useState<number>(7.2);
+  const thumbnailStripRef = useRef<HTMLDivElement>(null);
+  const [isThumbnailStripDragging, setIsThumbnailStripDragging] = useState(false);
+  const [isThumbnailStripHovered, setIsThumbnailStripHovered] = useState(false);
+  const thumbnailStripPointerDownRef = useRef(false);
+  const thumbnailStripDidDragRef = useRef(false);
+  const thumbnailStripStartXRef = useRef(0);
+  const thumbnailStripScrollLeftRef = useRef(0);
+  const thumbnailStripStartClientXRef = useRef(0);
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
   const [isPartnersLogoWallDragging, setIsPartnersLogoWallDragging] = useState(false);
   const [partnersLogoWallStartX, setPartnersLogoWallStartX] = useState(0);
@@ -154,17 +169,6 @@ const ProductDetail = () => {
 
   useEffect(() => {
     setActiveImageIndex(0);
-    // 获取实时汇率
-    fetch('https://api.exchangerate-api.com/v4/latest/CNY')
-      .then(res => res.json())
-      .then(data => {
-        if (data.rates?.USD) {
-          setExchangeRate(data.rates.USD);
-        }
-      })
-      .catch(() => {
-        // 使用默认汇率7.2
-      });
   }, [payload?.productId]);
   const [isPartnersLogoWallHovered, setIsPartnersLogoWallHovered] = useState(false);
 
@@ -192,17 +196,21 @@ const ProductDetail = () => {
 
   const images = payload?.images ?? [];
   const activeImage = images[activeImageIndex] ?? images[0];
-  const heroBg = images[1] ?? images[0] ?? '';
-  const displayedPriceText = useMemo(() => {
-    const cny = payload?.priceUsd;
-    if (typeof cny !== 'number' || Number.isNaN(cny)) return null;
-    const locale = lang === 'zh' ? 'zh-CN' : 'en-US';
-    if (priceCurrency === 'CNY') {
-      return new Intl.NumberFormat(locale, { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 }).format(cny);
+  const heroBg = useMemo(() => {
+    if (apiProduct?.typeFamilyImageUrl) {
+      return apiProduct.typeFamilyImageUrl;
     }
-    const usd = cny / exchangeRate;
-    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(usd);
-  }, [lang, payload?.priceUsd, priceCurrency, exchangeRate]);
+    if (apiProduct?.productType?.familyImageUrl) {
+      return apiProduct.productType.familyImageUrl;
+    }
+    return images[1] ?? images[0] ?? '';
+  }, [images, apiProduct]);
+  const displayedPriceText = useMemo(() => {
+    const price = priceCurrency === 'USD' ? payload?.priceUsd : payload?.priceCny;
+    if (typeof price !== 'number' || Number.isNaN(price)) return null;
+    const locale = lang === 'zh' ? 'zh-CN' : 'en-US';
+    return new Intl.NumberFormat(locale, { style: 'currency', currency: priceCurrency, maximumFractionDigits: 0 }).format(price);
+  }, [lang, payload?.priceUsd, payload?.priceCny, priceCurrency]);
   const withUnsplashSize = (url: string, w: number, h: number) => {
     if (!url || !url.includes('images.unsplash.com')) return url;
     try {
@@ -470,6 +478,75 @@ const ProductDetail = () => {
     el.scrollBy({ left: step * dir, behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    const el = thumbnailStripRef.current;
+    if (!el) return;
+    let rafId = 0;
+    const tick = () => {
+      if (!isThumbnailStripDragging && !isThumbnailStripHovered) {
+        el.scrollLeft += 0.5;
+        if (el.scrollLeft >= el.scrollWidth - el.clientWidth) {
+          el.scrollLeft = 0;
+        }
+      }
+      rafId = window.requestAnimationFrame(tick);
+    };
+    rafId = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [isThumbnailStripDragging, isThumbnailStripHovered]);
+
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      if (!thumbnailStripPointerDownRef.current) return;
+      const el = thumbnailStripRef.current;
+      if (!el) return;
+      const delta = e.clientX - thumbnailStripStartClientXRef.current;
+      if (!thumbnailStripDidDragRef.current && Math.abs(delta) < 6) return;
+      thumbnailStripDidDragRef.current = true;
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const walk = (x - thumbnailStripStartXRef.current) * 1.2;
+      el.scrollLeft = thumbnailStripScrollLeftRef.current - walk;
+    };
+    const onUp = () => {
+      if (!thumbnailStripPointerDownRef.current) return;
+      thumbnailStripPointerDownRef.current = false;
+      setIsThumbnailStripDragging(false);
+      window.setTimeout(() => {
+        thumbnailStripDidDragRef.current = false;
+      }, 0);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+  }, []);
+
+  const handleThumbnailStripStart = (clientX: number) => {
+    const el = thumbnailStripRef.current;
+    if (!el) return;
+    thumbnailStripPointerDownRef.current = true;
+    thumbnailStripDidDragRef.current = false;
+    setIsThumbnailStripDragging(true);
+    const rect = el.getBoundingClientRect();
+    thumbnailStripStartXRef.current = clientX - rect.left;
+    thumbnailStripScrollLeftRef.current = el.scrollLeft;
+    thumbnailStripStartClientXRef.current = clientX;
+  };
+
+  const handleThumbnailStripEnd = () => {
+    if (!thumbnailStripPointerDownRef.current) return;
+    thumbnailStripPointerDownRef.current = false;
+    setIsThumbnailStripDragging(false);
+    window.setTimeout(() => {
+      thumbnailStripDidDragRef.current = false;
+    }, 0);
+  };
+
   if (apiLoading) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
@@ -558,15 +635,35 @@ const ProductDetail = () => {
                 </div>
 
                 {images.length > 1 ? (
-                  <div className="mt-6">
-                    <div className="flex gap-4 overflow-x-auto pb-2 [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <div className="mt-6 min-w-0">
+                    <div
+                      ref={thumbnailStripRef}
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.setPointerCapture(e.pointerId);
+                        handleThumbnailStripStart(e.clientX);
+                      }}
+                      onPointerUp={handleThumbnailStripEnd}
+                      onPointerCancel={handleThumbnailStripEnd}
+                      onPointerLeave={handleThumbnailStripEnd}
+                      onMouseEnter={() => setIsThumbnailStripHovered(true)}
+                      onMouseLeave={() => setIsThumbnailStripHovered(false)}
+                      className={`flex gap-4 overflow-x-auto pb-2 [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${
+                        isThumbnailStripDragging ? 'cursor-grabbing' : 'cursor-grab'
+                      }`}
+                      style={{ scrollBehavior: 'auto', touchAction: 'pan-y' }}
+                    >
                       {images.map((img, idx) => {
                         const isActive = idx === activeImageIndex;
                         return (
                           <button
                             key={`${img}-${idx}`}
                             type="button"
-                            onClick={() => setActiveImageIndex(idx)}
+                            onClick={() => {
+                              if (!thumbnailStripDidDragRef.current) {
+                                setActiveImageIndex(idx);
+                              }
+                            }}
                             className={`flex-none w-24 h-24 rounded-2xl overflow-hidden border transition-colors ${
                               isActive ? 'border-[#c8ff00]' : 'border-black/10 hover:border-black/20'
                             }`}
@@ -616,9 +713,9 @@ const ProductDetail = () => {
                 </div>
               ) : null}
 
-                {(safePayload.summary || safePayload.description) ? (
+                {(lang === 'zh' ? safePayload.summary : safePayload.summaryEn) || (lang === 'zh' ? safePayload.description : safePayload.descriptionEn) ? (
                   <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed whitespace-pre-line">
-                    {safePayload.summary || safePayload.description}
+                    {(lang === 'zh' ? safePayload.summary : safePayload.summaryEn) || (lang === 'zh' ? safePayload.description : safePayload.descriptionEn)}
                   </div>
                 ) : (
                   <div className="mt-6 text-sm md:text-base text-black/70 leading-relaxed">
@@ -712,10 +809,10 @@ const ProductDetail = () => {
 
           {detailTab === 'overview' ? (
             <div className="pt-10">
-              {(safePayload.detailDescription || safePayload.description) ? (
+              {(lang === 'zh' ? safePayload.detailDescription : safePayload.detailDescriptionEn) || (lang === 'zh' ? safePayload.description : safePayload.descriptionEn) ? (
                 <div 
                   className="text-sm md:text-base text-black/70 leading-relaxed rich-text-content"
-                  dangerouslySetInnerHTML={{ __html: safePayload.detailDescription || safePayload.description || '' }}
+                  dangerouslySetInnerHTML={{ __html: (lang === 'zh' ? safePayload.detailDescription : safePayload.detailDescriptionEn) || (lang === 'zh' ? safePayload.description : safePayload.descriptionEn) || '' }}
                 />
               ) : (
                 <div className="text-sm md:text-base text-black/70 leading-relaxed">

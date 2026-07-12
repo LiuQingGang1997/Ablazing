@@ -11,7 +11,9 @@ const About = () => {
   const { lang, t } = useI18n();
   const { brands: partnersLogos } = useBrands();
   const { members: apiMembers } = useTeamMembers();
-  const { news: apiNews } = useDynamicNews(8);
+  const pageSize = 3;
+  const [currentPage, setCurrentPage] = useState(0);
+  const { news: apiNews, totalPages } = useDynamicNews(currentPage, pageSize);
 
   const businessTypes = useMemo(
     () => [
@@ -166,26 +168,6 @@ const About = () => {
       }))
     : mockUpdates;
 
-  const [activeUpdate, setActiveUpdate] = useState(0);
-  const [isUpdatesHovered, setIsUpdatesHovered] = useState(false);
-
-  const handleUpdateChange = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setActiveUpdate((prev) => (prev > 0 ? prev - 1 : updates.length - 1));
-    } else {
-      setActiveUpdate((prev) => (prev < updates.length - 1 ? prev + 1 : 0));
-    }
-  };
-
-  useEffect(() => {
-    if (updates.length <= 1) return;
-    if (isUpdatesHovered) return;
-    const id = window.setInterval(() => {
-      setActiveUpdate((prev) => (prev < updates.length - 1 ? prev + 1 : 0));
-    }, 4500);
-    return () => window.clearInterval(id);
-  }, [isUpdatesHovered, updates.length]);
-
   const partnersLogoWallRef = useRef<HTMLDivElement>(null);
   const [isPartnersLogoWallDragging, setIsPartnersLogoWallDragging] = useState(false);
   const [partnersLogoWallStartX, setPartnersLogoWallStartX] = useState(0);
@@ -297,7 +279,7 @@ const About = () => {
     <div className="bg-white min-h-screen animate-fade-in">
       <section className="relative min-h-[100svh] pt-32 pb-20 md:pt-48 md:pb-32">
         <div className="absolute inset-0 overflow-hidden">
-          {config.company.hero ? <img src={config.company.hero} alt="" className="w-full h-full object-cover object-center" draggable="false" /> : null}
+          <div className="absolute inset-0 bg-[url('https://ablazing.oss-cn-shanghai.aliyuncs.com/uploads/0589af163f4747fe93ea2967e2ba200c.png')] bg-cover bg-center" />
           <div className="absolute inset-0 bg-black/60" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-white/80" />
         </div>
@@ -314,7 +296,7 @@ const About = () => {
             </div>
             <div className="mt-8 max-w-3xl text-white/70 text-sm md:text-base leading-relaxed">
               {lang === 'zh'
-                ? '醒动以"产品与场景"为核心：从跑步机、椭圆机、爬楼机、动感单车等主力品类出发，为健身房、酒店、企业与学校等多场景提供可落地的选品与方案服务。'
+                ? <div dangerouslySetInnerHTML={{ __html: '醒动ABLAZING，做为专业高品质运动生活方式的先锋探索构建者。用专业的运动健身商业洞见与系统践行，为更多前沿的美学与专业运动场景打造，提供全方位的运动商业场景功能设计、咨询、与全球顶尖运动设备产品的定制化选品供应服务。<br /><br />同时深入持续协同运营，构建场馆差异化C端运动训练者特色服务。提供从运动装备、营养、恢复、运动表现提升、抗衰、专项运动赛事活动等，全维度、全场景的运动生活方式与运动成长的专业需求服务。' }} />
                 : 'Ablazing puts products and scenarios at the center. Starting from core categories like treadmills, ellipticals, stair climbers and cycling, we deliver actionable curation and solutions for gyms, hotels, enterprises, and schools.'}
             </div>
           </div>
@@ -553,65 +535,70 @@ const About = () => {
             </div>
           </div>
 
-          <div
-            className="mt-12 relative"
-            onMouseEnter={() => setIsUpdatesHovered(true)}
-            onMouseLeave={() => setIsUpdatesHovered(false)}
-          >
-            <div className="rounded-[28px] md:rounded-[36px] overflow-hidden border border-gray-200 bg-white">
-              <div className="grid grid-cols-1 md:grid-cols-12">
-                <div className="md:col-span-5 bg-black/5">
-                  <div className="aspect-[16/10]">
-                    <img
-                      key={`update-img-${activeUpdate}`}
-                      src={updates[activeUpdate]?.image}
-                      alt={updates[activeUpdate]?.title}
-                      className="w-full h-full object-cover"
-                      draggable="false"
-                    />
-                  </div>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {updates.map((update, index) => (
+              <div key={update.id} className="rounded-[28px] md:rounded-[36px] overflow-hidden border border-gray-200 bg-white">
+                <div className="aspect-[16/10] bg-black/5">
+                  <img
+                    key={`update-img-${index}`}
+                    src={update.image}
+                    alt={update.title}
+                    className="w-full h-full object-cover"
+                    draggable="false"
+                  />
                 </div>
-                <div className="md:col-span-7 p-7 md:p-10">
+                <div className="p-6 md:p-8">
                   <div className="flex items-center justify-between gap-4">
                     <div className="inline-flex items-center bg-black/5 border border-black/10 px-3 py-1 rounded-full text-xs font-bold text-black">
-                      {updates[activeUpdate]?.tag}
+                      {update.tag}
                     </div>
-                    <div className="text-xs text-black/40 font-semibold">{updates[activeUpdate]?.date}</div>
+                    <div className="text-xs text-black/40 font-semibold">{update.date}</div>
                   </div>
-                  <div className="mt-6 text-2xl md:text-3xl font-black text-black tracking-tight">
-                    {updates[activeUpdate]?.title}
+                  <div className="mt-4 text-lg md:text-xl font-black text-black tracking-tight line-clamp-2">
+                    {update.title}
                   </div>
-                  <div className="mt-4 text-sm md:text-base text-black/60 leading-relaxed">
-                    {updates[activeUpdate]?.excerpt}
-                  </div>
-
-                  <div className="mt-10 flex items-center justify-between gap-4">
-                    <div className="text-xs text-black/40 font-semibold tracking-[0.2em]">
-                      {String(activeUpdate + 1).padStart(2, '0')}/{String(updates.length).padStart(2, '0')}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateChange('prev')}
-                        className="w-10 h-10 rounded-full bg-black/5 border border-black/10 text-black/70 hover:bg-[#c8ff00] hover:text-black hover:border-transparent transition-colors flex items-center justify-center"
-                        aria-label={lang === 'zh' ? '上一条动态' : 'Previous update'}
-                      >
-                        <ArrowLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateChange('next')}
-                        className="w-10 h-10 rounded-full bg-black/5 border border-black/10 text-black/70 hover:bg-[#c8ff00] hover:text-black hover:border-transparent transition-colors flex items-center justify-center"
-                        aria-label={lang === 'zh' ? '下一条动态' : 'Next update'}
-                      >
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
+                  <div className="mt-3 text-sm text-black/60 leading-relaxed line-clamp-3">
+                    {update.excerpt}
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-10 flex items-center justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                disabled={currentPage === 0}
+                className="w-10 h-10 rounded-full bg-black/5 border border-black/10 text-black/70 hover:bg-[#c8ff00] hover:text-black hover:border-transparent transition-colors flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label={lang === 'zh' ? '上一页' : 'Previous page'}
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setCurrentPage(i)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      i === currentPage ? 'bg-[#c8ff00] w-6' : 'bg-black/20 hover:bg-black/40'
+                    }`}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
+                disabled={currentPage === totalPages - 1}
+                className="w-10 h-10 rounded-full bg-black/5 border border-black/10 text-black/70 hover:bg-[#c8ff00] hover:text-black hover:border-transparent transition-colors flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label={lang === 'zh' ? '下一页' : 'Next page'}
+              >
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
