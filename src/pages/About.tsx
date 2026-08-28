@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Award, Globe, Quote, Target, TrendingUp, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Quote } from 'lucide-react';
 import { useImageConfig } from '../hooks/useImageConfig';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
@@ -15,49 +15,67 @@ const About = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const { news: apiNews, totalPages } = useDynamicNews(currentPage, pageSize);
 
-  const businessTypes = useMemo(
-    () => [
-      {
-        icon: Globe,
-        title: lang === 'zh' ? '全球选品与品牌引入' : 'Global Curation & Brand Sourcing',
-        description:
+  const businessContent = useMemo(
+    () => ({
+      intro: {
+        title: lang === 'zh' ? '我们交付的，远不止设备' : 'We deliver far more than equipment',
+        paragraphs: [
           lang === 'zh'
-            ? '围绕跑步机、椭圆机、爬楼机、动感单车等核心品类，提供趋势洞察、品牌筛选与对接落地。'
-            : 'Across treadmills, ellipticals, stair climbers, cycling and more, we deliver trend insights, brand screening, and end-to-end onboarding.',
-      },
-      {
-        icon: Target,
-        title: lang === 'zh' ? '场景化解决方案' : 'Scenario-based Solutions',
-        description:
+            ? '醒动ABLAZING，是一家专注于国际顶尖健身器材与康复抗衰设备的经销代理公司。但我们交付的，远不止设备本身。'
+            : 'ABLAZING is a distributor of internationally top-tier fitness equipment and rehabilitation/anti-aging solutions. But what we deliver goes far beyond the equipment itself.',
           lang === 'zh'
-            ? '针对健身房、酒店、企业、学校等不同场景，输出从选型到陈列动线与交付的整体方案。'
-            : 'For gyms, hotels, enterprises, and schools, we provide full solutions from selection to layout planning and delivery.',
+            ? '我们更核心的能力，是帮助健身俱乐部完成品牌升级——从空间体验、产品矩阵到服务内容，让每一家俱乐部都具备更强的竞争力与更良性的盈利能力。'
+            : 'Our core capability is helping fitness clubs complete brand upgrades—from spatial experience and product portfolio to service content—giving every club stronger competitiveness and healthier profitability.',
+        ],
       },
-      {
-        icon: Award,
-        title: lang === 'zh' ? '品质与合规把控' : 'Quality & Compliance',
-        description:
+      drivers: {
+        title: lang === 'zh' ? '如何驱动增长？我们有一套可量化的逻辑' : 'How do we drive growth? We have a quantifiable logic',
+        items: [
+          {
+            title: lang === 'zh' ? '品牌溢价提升' : 'Brand premium growth',
+            description:
+              lang === 'zh'
+                ? '通过引入国际一线设备与康复抗衰科技，帮助俱乐部实现单店坪效提升，客户续费率同比提高15%-20%。'
+                : 'By introducing internationally top-tier equipment and rehabilitation/anti-aging technology, we help clubs improve per-square-meter efficiency and increase member renewal rates by 15%-20% year-over-year.',
+          },
+          {
+            title: lang === 'zh' ? '差异化内容赋能' : 'Differentiated content empowerment',
+            description:
+              lang === 'zh'
+                ? '我们提供的不仅是器械，更是可落地的训练与恢复课程体系，让俱乐部从“同质化竞争”中跳脱，客户到店频次提升30%。'
+                : 'We provide not only equipment but also actionable training and recovery course systems, helping clubs break away from homogeneous competition and increasing customer visit frequency by 30%.',
+          },
+          {
+            title: lang === 'zh' ? '全生命周期服务' : 'Full-lifecycle service',
+            description:
+              lang === 'zh'
+                ? '从空间规划、设备选型到售后运维，减少客户运营痛点，设备故障率降低30%，延长设备使用周期，降低长期运营成本。'
+                : 'From spatial planning and equipment selection to after-sales operation and maintenance, we reduce operational pain points, lower equipment failure rates by 30%, extend equipment lifespan, and reduce long-term operating costs.',
+          },
+          {
+            title: lang === 'zh' ? '数据驱动的迭代建议' : 'Data-driven iteration recommendations',
+            description:
+              lang === 'zh'
+                ? '基于我们服务超过200+高端物业与俱乐部运营经验，反向输出设备配置优化方案，帮助俱乐部精准匹配会员需求，单客年均消费提升25%。'
+                : 'Based on our experience serving 200+ premium properties and clubs, we reverse-engineer equipment configuration optimization plans to help clubs precisely match member needs and increase annual consumption per customer by 25%.',
+          },
+        ],
+      },
+      conclusion: {
+        title: lang === 'zh' ? '不止懂器材，更懂俱乐部的生意' : 'We understand not just equipment, but the club business',
+        paragraphs: [
           lang === 'zh'
-            ? '从供应链源头到交付验收，建立可追溯标准体系，确保性能稳定、体验一致与服务可持续。'
-            : 'From source to acceptance, traceable standards ensure stable performance, consistent experience, and sustainable service.',
-      },
-      {
-        icon: TrendingUp,
-        title: lang === 'zh' ? '产品矩阵与增长策略' : 'Portfolio & Growth Strategy',
-        description:
+            ? '醒动ABLAZING的差异化壁垒在于：我们不止懂器材，更懂俱乐部的生意。'
+            : 'ABLAZING\'s differentiation lies in this: we understand not just equipment, but the club business.',
           lang === 'zh'
-            ? '结合用户画像与训练需求，构建分层产品矩阵，协助伙伴打造可复购的"训练体验"。'
-            : 'We build tiered portfolios based on personas and training needs to help partners create repeatable training experiences.',
-      },
-      {
-        icon: Users,
-        title: lang === 'zh' ? '服务与培训支持' : 'Service & Training',
-        description:
+            ? '过去，代理商只关心“卖出去”；今天，我们关心“用得好、赚得到、持续增长”。从高端酒店、顶级住宅会所，到专业健身俱乐部与企业总部，醒动ABLAZING已经帮助超过200家机构完成品牌升级，实现了从“普通场馆”到“区域标杆”的跃迁。'
+            : 'In the past, distributors only cared about “selling”; today, we care about “using well, earning well, and sustaining growth.” From luxury hotels and premium residential clubs to professional fitness clubs and corporate headquarters, ABLAZING has helped over 200 institutions complete brand upgrades, leaping from “ordinary venues” to “regional benchmarks.”',
           lang === 'zh'
-            ? '提供售前咨询、产品培训、内容运营素材与售后协同，提升落地效率与长期口碑。'
-            : 'We support pre-sales, product training, content assets, and after-sales collaboration to improve rollout efficiency and long-term trust.',
+            ? '让设备为增长服务，让每一处运动空间真正“醒”过来。'
+            : 'Let equipment serve growth, and let every movement space truly “wake up.”',
+        ],
       },
-    ],
+    }),
     [lang],
   );
 
@@ -303,45 +321,44 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-12 md:py-16 bg-white">
         <div className="content-container">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
             <div className="lg:col-span-6">
-              <h2 className="text-3xl md:text-5xl font-black text-black tracking-tight">
-                {lang === 'zh' ? '用全球选品，服务每一次增长' : 'Global curation for every growth moment'}
-              </h2>
-              <div className="mt-8 space-y-4 text-black/70 text-sm md:text-base leading-relaxed">
-                <p>
-                  {lang === 'zh'
-                    ? '我们聚焦运动健身产业链的"选品—交付—运营"全流程：围绕有氧、力量、恢复与数字化训练等方向，帮助合作伙伴快速搭建可持续的产品矩阵。'
-                    : 'We focus on the full cycle of curation, delivery, and operations—across cardio, strength, recovery, and digital training—helping partners build sustainable product portfolios faster.'}
-                </p>
-                <p>
-                  {lang === 'zh'
-                    ? '在产品层面，我们强调体验一致性与长期稳定性；在方案层面，我们强调场景适配与增长结果，让产品真正服务于训练体验与商业回报。'
-                    : 'On products, we prioritize consistent experience and long-term reliability. On solutions, we prioritize scenario fit and growth outcomes—so products truly serve training results and business returns.'}
-                </p>
+              <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-black tracking-wider">
+                {lang === 'zh' ? '业绩里程碑' : 'Milestones'}
               </div>
+              <h2 className="mt-4 text-3xl md:text-5xl font-black text-black tracking-tight">
+                {lang === 'zh' ? '醒动ABLAZING' : 'ABLAZING'}
+                <span className="block text-black text-2xl md:text-4xl mt-1">
+                  {lang === 'zh' ? '数据化呈现' : 'Data-driven results'}
+                </span>
+              </h2>
+              <p className="mt-4 text-black/70 text-sm md:text-base leading-relaxed">
+                {lang === 'zh'
+                  ? '用数据说话，用结果证明。每一组数字，都是品牌升级带来的真实回报。'
+                  : 'Let data speak, let results prove. Every number represents real returns from brand upgrades.'}
+              </p>
 
-              <div className="mt-10 grid grid-cols-2 gap-4">
+              <div className="mt-6 grid grid-cols-2 gap-3">
                 {[
-                  { k: '200+', v: lang === 'zh' ? '合作工厂与品牌' : 'Factories & brands' },
-                  { k: '10Y+', v: lang === 'zh' ? '深耕产业链经验' : 'Supply-chain experience' },
-                  { k: lang === 'zh' ? '多品类' : 'Multi-category', v: lang === 'zh' ? '覆盖训练场景' : 'Scenario coverage' },
-                  { k: lang === 'zh' ? '高标准' : 'Standards', v: lang === 'zh' ? '交付与售后体系' : 'Delivery & after-sales' },
+                  { k: '200+', v: lang === 'zh' ? '高端服务客户' : 'High-end clients' },
+                  { k: '50+', v: lang === 'zh' ? '国际一线品牌' : 'Top brands' },
+                  { k: '+25%', v: lang === 'zh' ? '单客年均消费提升' : 'Consumption growth' },
+                  { k: '15年+', v: lang === 'zh' ? '行业深耕经验' : 'Industry expertise' },
                 ].map((item) => (
-                  <div key={item.k} className="rounded-2xl border border-gray-200 bg-white p-5">
+                  <div key={item.k} className="rounded-xl border-2 border-black/10 bg-white p-4 hover:border-black/30 transition-colors duration-300">
                     <div className="text-2xl md:text-3xl font-black text-black">{item.k}</div>
-                    <div className="mt-2 text-sm text-black/60 font-semibold">{item.v}</div>
+                    <div className="mt-1 text-xs md:text-sm text-black/70 font-bold">{item.v}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="lg:col-span-6">
-              <div className="rounded-[28px] md:rounded-[36px] overflow-hidden bg-black/5 border border-black/10">
+              <div className="rounded-[24px] md:rounded-[32px] overflow-hidden border-2 border-black/10 bg-white">
                 <div className="aspect-square md:aspect-[16/11]">
-                  {config.company.office ? (
+                  {config?.company?.office ? (
                     <img
                       src={config.company.office}
                       alt={lang === 'zh' ? '公司办公环境' : 'Office'}
@@ -349,25 +366,35 @@ const About = () => {
                       draggable="false"
                     />
                   ) : (
-                    <div className="w-full h-full" />
+                    <div className="w-full h-full bg-black/5" />
                   )}
                 </div>
               </div>
-              <div className="mt-6 rounded-[28px] md:rounded-[36px] overflow-hidden bg-black text-white border border-white/10">
-                <div className="aspect-square md:aspect-auto">
-                  <div className="h-full md:h-auto p-8 md:p-10 flex flex-col justify-center">
-                    <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider">
-                      {lang === 'zh' ? '业务定位' : 'Positioning'}
-                    </div>
-                    <div className="mt-6 text-lg md:text-xl font-bold leading-relaxed">
-                      {lang === 'zh'
-                        ? '从"单品采购"升级为"体验系统"，让每一次选品都指向更好的训练结果与更高的运营效率。'
-                        : 'Upgrade from one-off purchasing to an experience system—so every selection drives better training outcomes and higher operational efficiency.'}
-                    </div>
-                    <div className="mt-4 text-sm text-white/70">
-                      {lang === 'zh'
-                        ? '适配健身房/酒店/企业/学校等多场景，覆盖有氧、力量、恢复与数字化训练解决方案。'
-                        : 'Built for gyms, hotels, enterprises, and schools, covering cardio, strength, recovery, and digital training solutions.'}
+              <div className="mt-4 rounded-[24px] md:rounded-[32px] overflow-hidden bg-black border-2 border-black/10">
+                <div className="p-5 md:p-6">
+                  <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-black tracking-wider">
+                    {lang === 'zh' ? '业绩亮点' : 'Key Results'}
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    {[
+                      { title: lang === 'zh' ? '服务体量' : 'Service Scale', desc: lang === 'zh' ? '200+ 高端酒店、会所、俱乐部及企业总部' : '200+ high-end hotels, clubs & enterprises' },
+                      { title: lang === 'zh' ? '品牌资源' : 'Brand Resources', desc: lang === 'zh' ? '50+ 国际一线运动健康品牌直连' : '50+ top international sports brands' },
+                      { title: lang === 'zh' ? '运营赋能' : 'Operational Empowerment', desc: lang === 'zh' ? '单客年均消费提升25%，续费率提高15%-20%' : '25% consumption growth, 15-20% renewal increase' },
+                      { title: lang === 'zh' ? '服务保障' : 'Service Assurance', desc: lang === 'zh' ? '设备故障率降低30%，交付周期缩短20%' : '30% failure reduction, 20% faster delivery' },
+                      { title: lang === 'zh' ? '行业深耕' : 'Industry Expertise', desc: lang === 'zh' ? '核心团队15年+经验，50+标杆项目全案落地' : '15+ years expertise, 50+ benchmark projects' },
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-3">
+                        <span className="flex-none w-6 h-6 rounded-full bg-white text-black font-black text-sm flex items-center justify-center">{idx + 1}</span>
+                        <div className="min-w-0">
+                          <div className="text-white font-black text-sm">{item.title}</div>
+                          <div className="text-white/70 text-xs font-medium mt-0.5">{item.desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-white/10">
+                    <div className="text-white/90 text-sm font-black">
+                      {lang === 'zh' ? '醒动ABLAZING。用数据说话，用结果证明。' : 'ABLAZING. Let data speak, let results prove.'}
                     </div>
                   </div>
                 </div>
@@ -377,34 +404,49 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-12 md:py-16 bg-white">
         <div className="content-container">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-[#c8ff00] text-black px-4 py-2 rounded-full text-xs font-bold tracking-wider">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+            <div className="lg:col-span-5">
+              <div className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-xs font-black tracking-wider">
                 {lang === 'zh' ? '业务类型' : 'Business'}
               </div>
-              <h2 className="mt-6 text-3xl md:text-5xl font-black text-black tracking-tight">
+              <h2 className="mt-4 text-3xl md:text-5xl font-black text-black tracking-tight">
                 {lang === 'zh' ? '我们提供什么' : 'What we provide'}
               </h2>
-              <div className="mt-4 text-black/60 text-sm md:text-base max-w-2xl leading-relaxed">
-                {lang === 'zh'
-                  ? '以产品信息为输入，以场景与用户需求为约束，输出可落地、可复制、可持续优化的选品与交付体系。'
-                  : 'We take product information as input and scenario/user needs as constraints, delivering an actionable, repeatable, and continuously optimizable curation and delivery system.'}
+              <div className="mt-6 rounded-[24px] border-2 border-black/10 bg-black p-6 md:p-8">
+                <h3 className="text-xl md:text-2xl font-black text-white">{businessContent.intro.title}</h3>
+                <div className="mt-4 space-y-3 text-white/80 text-sm md:text-base leading-relaxed">
+                  {businessContent.intro.paragraphs.map((p, idx) => (
+                    <p key={idx}>{p}</p>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {businessTypes.map((b) => (
-              <div key={b.title} className="rounded-[24px] border border-gray-200 bg-white p-7 md:p-8">
-                <div className="w-12 h-12 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-center">
-                  <b.icon className="w-6 h-6 text-black" />
-                </div>
-                <div className="mt-6 text-xl font-black text-black">{b.title}</div>
-                <div className="mt-3 text-sm md:text-base text-black/65 leading-relaxed">{b.description}</div>
+            <div className="lg:col-span-7">
+              <h3 className="text-xl md:text-2xl font-black text-black">{businessContent.drivers.title}</h3>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {businessContent.drivers.items.map((item, idx) => (
+                  <div key={idx} className="rounded-xl border-2 border-black/10 bg-white p-5 hover:border-black/30 transition-colors duration-300">
+                    <div className="flex items-center gap-3">
+                      <span className="flex-none w-7 h-7 rounded-full bg-black text-white text-xs font-black flex items-center justify-center">{idx + 1}</span>
+                      <span className="text-base md:text-lg font-black text-black">{item.title}</span>
+                    </div>
+                    <p className="mt-3 text-sm text-black/70 leading-relaxed">{item.description}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              <div className="mt-6 rounded-[24px] border-2 border-black/10 bg-white p-6 md:p-8">
+                <h3 className="text-lg md:text-xl font-black text-black">{businessContent.conclusion.title}</h3>
+                <div className="mt-4 space-y-3 text-black/70 text-sm md:text-base leading-relaxed">
+                  {businessContent.conclusion.paragraphs.map((p, idx) => (
+                    <p key={idx}>{p}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

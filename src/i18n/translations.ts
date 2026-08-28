@@ -43,7 +43,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'footer.slogan': '用心实践，创造价值',
     'footer.values':
       '性能 · 品质 · 生活 · 设计 · 体验 · 美学 · 制造',
-    'footer.qr.miniprogram': '@ 醒动ABLAZING 小程序',
+    'footer.qr.miniprogram': '@ 醒动ABLAZING 商务',
     'footer.qr.official': '@ 醒动ABLAZING 公众号',
 
     'about.title': '公司介绍',
@@ -134,7 +134,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'footer.slogan': 'Practice with heart, create value',
     'footer.values':
       'Performance · Quality · Lifestyle · Design · Experience · Aesthetics · Manufacturing',
-    'footer.qr.miniprogram': '@ Ablazing Mini Program',
+    'footer.qr.miniprogram': '@ Ablazing Business',
     'footer.qr.official': '@ Ablazing Official Account',
 
     'about.title': 'About',

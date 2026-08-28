@@ -5,7 +5,7 @@ import { CheckCircle, ArrowLeft, ArrowRight, Play, ChevronDown } from 'lucide-re
 import gsap from 'gsap';
 import { useI18n } from '../i18n/I18nProvider';
 import { useBrands } from '../hooks/useBrands';
-import { useMallBrands, useProductsSearch } from '../hooks/useMall';
+import { useMallBrands, useProductFilterOptions, useProductsSearch } from '../hooks/useMall';
 
 const HotStores = () => {
   const { lang, t } = useI18n();
@@ -181,41 +181,29 @@ const HotStores = () => {
     const singleSetWidth = el.scrollWidth / 3;
     if (singleSetWidth <= 0) return;
     if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
-    if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+    if (el.scrollLeft < 0) el.scrollLeft += singleSetWidth;
   };
 
   useEffect(() => {
     const el = partnersLogoWallRef.current;
     if (!el) return;
 
-    const ensureMiddle = () => {
-      const singleSetWidth = el.scrollWidth / 3;
-      if (singleSetWidth <= 0) return;
-      if (el.scrollLeft === 0) el.scrollLeft = singleSetWidth;
-    };
-
-    ensureMiddle();
     let tries = 0;
     const intervalId = window.setInterval(() => {
-      ensureMiddle();
       normalizePartnersLogoWallScroll();
       tries += 1;
       if (tries >= 30) window.clearInterval(intervalId);
-      const singleSetWidth = el.scrollWidth / 3;
-      if (singleSetWidth > 0 && el.scrollLeft !== 0) window.clearInterval(intervalId);
     }, 100);
 
     let ro: ResizeObserver | null = null;
     if ('ResizeObserver' in window) {
       ro = new ResizeObserver(() => {
-        ensureMiddle();
         normalizePartnersLogoWallScroll();
       });
       ro.observe(el);
     }
 
     const onResize = () => {
-      ensureMiddle();
       normalizePartnersLogoWallScroll();
     };
     window.addEventListener('resize', onResize);
@@ -246,11 +234,10 @@ const HotStores = () => {
 
     const tick = () => {
       if (!paused && !isPartnersLogoWallDragging) {
-        el.scrollLeft += 0.6;
+        el.scrollLeft += 1.5;
         const singleSetWidth = el.scrollWidth / 3;
-        if (singleSetWidth > 0) {
-          if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
-          if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+        if (singleSetWidth > 0 && el.scrollLeft >= singleSetWidth * 2) {
+          el.scrollLeft -= singleSetWidth;
         }
       }
       rafId = requestAnimationFrame(tick);
@@ -304,12 +291,11 @@ const HotStores = () => {
 
   useEffect(() => {
     setActiveProductTypeIndex(0);
-    setActiveProductTypeVirtualIndex(productTypes.length);
+    setActiveProductTypeVirtualIndex(0);
     const el = productTypesStripRef.current;
     if (!el) return;
     requestAnimationFrame(() => {
-      const singleSetWidth = el.scrollWidth / 3;
-      el.scrollLeft = singleSetWidth;
+      el.scrollLeft = 0;
     });
   }, [activeBrandId]);
 
@@ -332,13 +318,10 @@ const HotStores = () => {
 
     const tick = () => {
       if (!paused && !isProductTypesDragging && Date.now() >= productTypesPauseUntilRef.current) {
-        el.scrollLeft += 0.3;
+        el.scrollLeft += 1.0;
         const singleSetWidth = el.scrollWidth / 3;
-        if (el.scrollLeft >= singleSetWidth * 2) {
+        if (singleSetWidth > 0 && el.scrollLeft >= singleSetWidth * 2) {
           el.scrollLeft -= singleSetWidth;
-        }
-        if (el.scrollLeft < singleSetWidth) {
-          el.scrollLeft += singleSetWidth;
         }
       }
       rafId = requestAnimationFrame(tick);
@@ -373,12 +356,12 @@ const HotStores = () => {
     const singleSetWidth = el.scrollWidth / 3;
     let normalized = nextVirtualIndex;
 
-    while (normalized >= productTypes.length * 2) {
+    while (normalized >= productTypes.length) {
       el.scrollLeft -= singleSetWidth;
       normalized -= productTypes.length;
     }
 
-    while (normalized < productTypes.length) {
+    while (normalized < 0) {
       el.scrollLeft += singleSetWidth;
       normalized += productTypes.length;
     }
@@ -395,7 +378,7 @@ const HotStores = () => {
     const singleSetWidth = el.scrollWidth / 3;
     if (singleSetWidth > 0) {
       if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
-      if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
+      if (el.scrollLeft < 0) el.scrollLeft += singleSetWidth;
     }
     setProductTypesStartX(clientX - el.offsetLeft);
     setProductTypesScrollLeft(el.scrollLeft);
@@ -413,7 +396,7 @@ const HotStores = () => {
         el.scrollLeft -= singleSetWidth;
         setProductTypesScrollLeft((prev) => prev - singleSetWidth);
       }
-      if (el.scrollLeft < singleSetWidth) {
+      if (el.scrollLeft < 0) {
         el.scrollLeft += singleSetWidth;
         setProductTypesScrollLeft((prev) => prev + singleSetWidth);
       }
@@ -451,13 +434,10 @@ const HotStores = () => {
 
     let paused = false;
     let singleSetWidth = 0;
-    const pxPerSecond = 42;
+    const pxPerSecond = 120;
 
     const updateMetrics = () => {
       singleSetWidth = el.scrollWidth / 3;
-      if (singleSetWidth <= 0) return;
-      if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
-      if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
     };
 
     const onEnter = () => {
@@ -498,10 +478,8 @@ const HotStores = () => {
       if (singleSetWidth > 0 && !paused && !isBrandStripDraggingRef.current) {
         el.scrollLeft += (pxPerSecond / 60) * gsap.ticker.deltaRatio();
         if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
-        if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
       } else if (singleSetWidth > 0) {
         if (el.scrollLeft >= singleSetWidth * 2) el.scrollLeft -= singleSetWidth;
-        if (el.scrollLeft < singleSetWidth) el.scrollLeft += singleSetWidth;
       }
       renderOverlays();
     };
@@ -551,20 +529,28 @@ const HotStores = () => {
   
 
   const brandIdForSearch = activeBrandId ? Number(activeBrandId) : Number(activeBrand.id);
-  
+  const activeCategoryId = productFilters.category ?? 'all';
+
   const { products: apiProducts, totalPages } = useProductsSearch({
     brandId: brandIdForSearch,
+    typeId: activeCategoryId !== 'all' ? Number(activeCategoryId) : undefined,
+    categoryId: productFilters.productCategory && productFilters.productCategory !== 'all' ? Number(productFilters.productCategory) : undefined,
+    seriesId: productFilters.series && productFilters.series !== 'all' ? Number(productFilters.series) : undefined,
+    sceneId: productFilters.scene && productFilters.scene !== 'all' ? Number(productFilters.scene) : undefined,
     page: productPage - 1,
     size: 10,
   });
 
+  const { filterOptions } = useProductFilterOptions(brandIdForSearch);
+
   const currentBrandIdForFilter = brandIdForSearch;
   const sourceProducts = apiProducts.length > 0 
-    ? apiProducts.filter(p => p.enabled === true || p.enabled === 1 || p.enabled === '1') 
-    : mockProducts.filter(p => p.brandId === currentBrandIdForFilter && p.enabled === true);
+    ? apiProducts
+    : mockProducts.filter(p => p.brandId === currentBrandIdForFilter);
   const displayProducts = sourceProducts.map(p => ({
     id: String(p.id),
     name: p.name || '',
+    nameEn: p.nameEn || '',
     subtitle: p.subtitle || '',
     image: p.coverImageUrl || p.image || 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=900&fit=crop',
     categoryId: String(p.categoryId || p.typeId),
@@ -576,71 +562,37 @@ const HotStores = () => {
     tag: p.tag || undefined,
     weightKg: p.weightKg || undefined,
     weightLb: p.weightLb || undefined,
-    priceUsd: p.price || 0,
+    priceUsd: p.usdPrice,
+    priceCny: p.price,
+    model: p.model || '',
     attrs: p.parameters || {},
     sceneId: String(p.sceneId)
   }));
 
-  const typeOptions: Option[] = [{ value: 'all', label: '全部产品' }];
-  const sceneOptions: Option[] = [{ value: 'all', label: '全部场景' }];
-  const seriesOptions: Option[] = [{ value: 'all', label: '全部系列' }];
-  const paramOptionsMap: Record<string, Option[]> = {};
+  const langLabel = (item: any) => (lang === 'zh' ? item.name : (item.nameEn || item.name));
 
-  const categoriesData = apiProducts.length > 0 
-    ? [] 
-    : [];
-
-  const categoryOptions: { value: string; label: string; level: number; parentId: number | null }[] = [
-    { value: 'all', label: '全部分类', level: 0, parentId: null }
+  const typeOptions: Option[] = [
+    { value: 'all', label: lang === 'zh' ? '全部产品' : 'All Products' },
+    ...filterOptions.types.map((t: any) => ({ value: String(t.id), label: langLabel(t) }))
+  ];
+  const sceneOptions: Option[] = [
+    { value: 'all', label: lang === 'zh' ? '全部场景' : 'All Scenes' },
+    ...filterOptions.scenes.map((s: any) => ({ value: String(s.id), label: langLabel(s) }))
+  ];
+  const seriesOptions: Option[] = [
+    { value: 'all', label: lang === 'zh' ? '全部系列' : 'All Series' },
+    ...filterOptions.seriesList.map((s: any) => ({ value: String(s.id), label: langLabel(s) }))
+  ];
+  const categoryOptions: Option[] = [
+    { value: 'all', label: lang === 'zh' ? '全部分类' : 'All Categories' },
+    ...filterOptions.categories.map((c: any) => ({ value: String(c.id), label: langLabel(c) }))
   ];
 
-  if (categoriesData.length > 0) {
-    
-  } else {
-    const seenCategoryIds = new Set<string>();
-    sourceProducts.forEach(p => {
-      if (p.categoryId && !seenCategoryIds.has(String(p.categoryId))) {
-        seenCategoryIds.add(String(p.categoryId));
-        categoryOptions.push({
-          value: String(p.categoryId),
-          label: p.categoryName || String(p.categoryId),
-          level: 1,
-          parentId: null
-        });
-      }
-    });
-  }
-
-  if (sourceProducts.length > 0) {
-    sourceProducts.forEach(p => {
-      if (p.typeId && !typeOptions.some(o => o.value === String(p.typeId))) {
-        typeOptions.push({ value: String(p.typeId), label: p.typeName || String(p.typeId) });
-      }
-      if (p.sceneId && !sceneOptions.some(o => o.value === String(p.sceneId))) {
-        sceneOptions.push({ value: String(p.sceneId), label: p.sceneName || String(p.sceneId) });
-      }
-      if (p.seriesId && !seriesOptions.some(o => o.value === String(p.seriesId))) {
-        seriesOptions.push({ value: String(p.seriesId), label: p.seriesName || String(p.seriesId) });
-      }
-      if (p.parameters) {
-        Object.entries(p.parameters).forEach(([k, v]) => {
-          if (!paramOptionsMap[k]) paramOptionsMap[k] = [{ value: 'all', label: k }];
-          if (!paramOptionsMap[k].some(o => o.value === String(v))) {
-            paramOptionsMap[k].push({ value: String(v), label: String(v) });
-          }
-        });
-      }
-    });
-  }
-
-  const activeCategoryId = productFilters.category ?? 'all';
-  
   const filterDefs: FilterDef[] = [
-    { key: 'category', label: '产品类型', options: typeOptions },
-    ...(categoryOptions.length > 1 ? [{ key: 'productCategory', label: '分类', options: categoryOptions }] : []),
-    ...(seriesOptions.length > 1 ? [{ key: 'series', label: '系列', options: seriesOptions }] : []),
-    ...(sceneOptions.length > 1 ? [{ key: 'scene', label: '场景', options: sceneOptions }] : []),
-    ...Object.entries(paramOptionsMap).map(([k, opts]) => ({ key: `param_${k}`, label: k, options: opts }))
+    { key: 'category', label: lang === 'zh' ? '产品类型' : 'Product Type', options: typeOptions },
+    ...(categoryOptions.length > 1 ? [{ key: 'productCategory', label: lang === 'zh' ? '分类' : 'Category', options: categoryOptions }] : []),
+    ...(seriesOptions.length > 1 ? [{ key: 'series', label: lang === 'zh' ? '系列' : 'Series', options: seriesOptions }] : []),
+    ...(sceneOptions.length > 1 ? [{ key: 'scene', label: lang === 'zh' ? '场景' : 'Scene', options: sceneOptions }] : [])
   ];
 
   useEffect(() => {
@@ -667,21 +619,7 @@ const HotStores = () => {
     return () => window.removeEventListener('mousedown', onMouseDown);
   }, []);
 
-  const filteredProducts = displayProducts.filter((p) => {
-    if (activeCategoryId !== 'all' && p.typeId !== activeCategoryId) return false;
-    
-    if (productFilters.productCategory && productFilters.productCategory !== 'all' && p.categoryId !== productFilters.productCategory) return false;
-    
-    if (productFilters.series && productFilters.series !== 'all' && p.seriesId !== productFilters.series) return false;
-    
-    if (productFilters.scene && productFilters.scene !== 'all' && p.sceneId !== productFilters.scene) return false;
-    for (const k of Object.keys(paramOptionsMap)) {
-      const sel = productFilters[`param_${k}`] ?? 'all';
-      if (sel === 'all') continue;
-      if ((p.attrs?.[k] ?? '') !== sel) return false;
-    }
-    return true;
-  });
+  const filteredProducts = displayProducts;
 
   const safePage = Math.min(Math.max(productPage, 1), totalPages || 1);
   const pagedProducts = filteredProducts;
@@ -749,9 +687,9 @@ const HotStores = () => {
         </div>
 
         <div className="absolute left-0 right-0 bottom-0 z-20 overflow-visible">
-          <div className="absolute inset-x-0 bottom-0 pt-10 pb-10 md:pt-14 md:pb-14">
+          <div className="absolute inset-x-0 bottom-0 pb-0">
             <div className="content-container">
-              <div className="absolute inset-x-0 bottom-0 h-32 md:h-40 bg-gradient-to-t from-[#c8ff00]/30 via-black/10 to-transparent -z-10" />
+
               <div
                 ref={brandStripRef}
                 onMouseDown={onBrandStripMouseDown}
@@ -762,7 +700,7 @@ const HotStores = () => {
                 onTouchMove={onBrandStripTouchMove}
                 onTouchEnd={handleBrandStripEnd}
                 onTouchCancel={handleBrandStripEnd}
-                className={`flex gap-4 md:gap-6 overflow-x-auto pb-2 select-none [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isBrandStripDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                className={`flex gap-4 md:gap-6 overflow-x-auto pb-10 pt-8 select-none [&&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isBrandStripDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
               >
                 {brandStripItems.map((brand, i) => {
                   const isActive = brand.id === activeBrand.id;
@@ -780,7 +718,7 @@ const HotStores = () => {
                       }}
                       onMouseEnter={() => setHoveredBrandIndex(i)}
                       onMouseLeave={() => setHoveredBrandIndex(null)}
-                      className={`group relative flex-none w-[calc(25%-12px)] md:w-28 lg:w-36 xl:w-40 aspect-square rounded-full bg-gray-200 transition-all duration-300 will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
+                      className={`group relative flex-none w-[72px] h-[72px] sm:w-20 sm:h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 xl:w-36 xl:h-36 rounded-full bg-gray-200 transition-all duration-300 will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                         isActive
                           ? 'shadow-[0_0_0_3px_rgba(200,255,0,0.4),0_0_24px_rgba(200,255,0,0.3),0_0_48px_rgba(200,255,0,0.2)]'
                           : ''
@@ -788,44 +726,46 @@ const HotStores = () => {
                     >
                       <span
                         aria-hidden="true"
-                        className={`pointer-events-none absolute -inset-[2px] rounded-full ${
+                        className={`pointer-events-none absolute -inset-[1px] rounded-full ${
                           isActive
                             ? 'shadow-[0_0_0_2px_rgba(200,255,0,0.6),0_0_16px_rgba(200,255,0,0.4),0_0_32px_rgba(200,255,0,0.2)]'
                             : 'shadow-[0_0_0_1px_rgba(0,0,0,0.10),0_0_18px_rgba(0,0,0,0.10)] blur-[0.4px] group-hover:shadow-[0_0_0_1px_rgba(0,0,0,0.16),0_0_22px_rgba(0,0,0,0.14)]'
                         }`}
                       />
-                      <div className="relative w-full h-full rounded-full overflow-hidden bg-gray-100">
-                        {isHovered && brand.video ? (
-                          <video
-                            src={isMdUp ? (brand.videoPc || brand.video) : (brand.videoMobile || brand.video)}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="metadata"
-                            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out ${
-                              isActive ? 'scale-150' : 'group-hover:scale-125'
+                      <div className="relative w-full h-full rounded-full p-[3px] bg-gray-100">
+                        <div className="relative w-full h-full rounded-full overflow-hidden bg-gray-100">
+                          {isHovered && brand.video ? (
+                            <video
+                              src={isMdUp ? (brand.videoPc || brand.video) : (brand.videoMobile || brand.video)}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out ${
+                                isActive ? 'scale-150' : 'group-hover:scale-125'
+                              }`}
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                              <img
+                                src={brand.logo}
+                                alt={brand.name}
+                                className={`max-w-[78%] max-h-[78%] object-contain transition-transform duration-700 ease-out ${
+                                  isActive ? 'scale-110' : 'group-hover:scale-105'
+                                }`}
+                                draggable="false"
+                              />
+                            </div>
+                          )}
+                          <div
+                            className={`absolute inset-0 transition-all duration-300 ${
+                              isActive
+                                ? 'bg-[rgba(200,255,0,0.05)]'
+                                : 'bg-transparent group-hover:bg-black/20'
                             }`}
                           />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                            <img
-                              src={brand.logo}
-                              alt={brand.name}
-                              className={`max-w-[80%] max-h-[80%] object-contain transition-transform duration-700 ease-out ${
-                                isActive ? 'scale-110' : 'group-hover:scale-105'
-                              }`}
-                              draggable="false"
-                            />
-                          </div>
-                        )}
-                        <div
-                        className={`absolute inset-0 transition-all duration-300 ${
-                          isActive
-                            ? 'bg-[rgba(200,255,0,0.05)]'
-                            : 'bg-transparent group-hover:bg-black/20'
-                        }`}
-                      />
+                        </div>
                       </div>
                     </button>
                   );
@@ -983,7 +923,6 @@ const HotStores = () => {
                           className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110"
                           draggable="false"
                         />
-                        <div className={`absolute inset-0 transition-colors ${isActive ? 'bg-white/10' : 'bg-white/20'}`} />
                         {isFocusCard ? (
                           <div className="absolute inset-0 flex flex-col justify-end p-6">
                             <div className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
@@ -1261,11 +1200,13 @@ const HotStores = () => {
                     .map((x) => ({
                       id: x.id,
                       name: x.name,
+                      nameEn: x.nameEn,
                       image: x.image,
                       tag: x.tag,
                       weightKg: x.weightKg,
                       weightLb: x.weightLb,
                       priceUsd: x.priceUsd,
+                      priceCny: x.priceCny,
                       categoryId: x.categoryId,
                       categoryLabel: getCategoryLabel(x.categoryId),
                     }));
@@ -1274,12 +1215,14 @@ const HotStores = () => {
                     brandId: activeBrand.id,
                     brandName: activeBrand.name,
                     title: p.name,
+                    nameEn: p.nameEn,
                     description: (activeBrand.description || '根据不同品牌与品类展示对应的产品清单。'),
                     images,
                     tag: p.tag,
                     weightKg: p.weightKg,
                     weightLb: p.weightLb,
                     priceUsd: p.priceUsd,
+                    priceCny: p.priceCny,
                     categoryId: p.categoryId,
                     categoryLabel,
                     variantGroups,
@@ -1312,7 +1255,7 @@ const HotStores = () => {
                       </div>
                       <div className="mt-4">
                         <div className="text-sm text-black/50 font-semibold">{categoryLabel}</div>
-                        <div className="mt-1 text-lg font-black text-black tracking-tight">{p.name}</div>
+                        <div className="mt-1 text-lg font-black text-black tracking-tight">{p.model ? `${p.model} ` : ''}{lang === 'zh' ? p.name : (p.nameEn || p.name)}</div>
                         {p.subtitle ? (
                           <div className="mt-1 text-sm text-black/60">{p.subtitle}</div>
                         ) : null}

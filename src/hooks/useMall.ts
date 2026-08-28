@@ -136,7 +136,7 @@ export const useProductsSearch = ({ brandId, categoryId, seriesId, sceneId, type
     query.append('page', page.toString());
     query.append('size', size.toString());
 
-    axios.get(`/api/products?${query.toString()}`, {
+    axios.get(`/api/products/frontend/list?${query.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -171,6 +171,56 @@ export const useProductsSearch = ({ brandId, categoryId, seriesId, sceneId, type
   }, [brandId, categoryId, seriesId, sceneId, typeId, keyword, page, size]);
 
   return { products, loading, totalElements, totalPages };
+};
+
+export const useProductFilterOptions = (brandId?: number) => {
+  const [filterOptions, setFilterOptions] = useState<{
+    brands: any[];
+    scenes: any[];
+    types: any[];
+    categories: any[];
+    seriesList: any[];
+  }>({
+    brands: [],
+    scenes: [],
+    types: [],
+    categories: [],
+    seriesList: [],
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const query = new URLSearchParams();
+    if (brandId != null) query.append('brandId', brandId.toString());
+
+    axios.get(`/api/products/frontend/filter-options?${query.toString()}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: false
+    })
+      .then((res) => {
+        const responseData = res.data?.data || res.data;
+        setFilterOptions({
+          brands: responseData.brands || [],
+          scenes: responseData.scenes || [],
+          types: responseData.types || [],
+          categories: responseData.categories || [],
+          seriesList: responseData.seriesList || [],
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to fetch product filter options:', err);
+        setFilterOptions({ brands: [], scenes: [], types: [], categories: [], seriesList: [] });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [brandId]);
+
+  return { filterOptions, loading };
 };
 
 export const useProductTypes = (brandId?: number) => {

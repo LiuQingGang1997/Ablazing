@@ -901,7 +901,7 @@ const Home = () => {
                   </div>
                   <div>
                     <h4 className="text-white font-bold text-xl mb-2 leading-snug">
-                      {lang === 'zh' ? '10年+深耕全球运动健身产业链' : '10+ years in the global sports & fitness supply chain'}
+                      {lang === 'zh' ? '20年+深耕全球运动健身产业链' : '20+ years in the global sports & fitness supply chain'}
                     </h4>
                     <p className="text-[#a3a3a3] text-sm leading-relaxed font-light">10+ years of deep cultivation in the global sports and fitness industry chain.</p>
                   </div>
